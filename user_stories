@@ -1,0 +1,47 @@
+Several user stories describing proposed features
+
+1. Tutorial Mode
+
+Alex turns on his computer to play battleship. He is brand new and does not
+yet know the rules of the game. From the start menu, he selects the "tutorial" option.
+This takes him to an interactive battleship board which simulates setting up and playing
+a real game, explaining each step. Alex uses this tutorial to learn the rules of the game
+as well as how to use the interface.
+
+2. Single Player Mode
+
+Alex wishes to practice playing battleship against a computer. From the start menu,
+he selects the "single player" option. He is then given a choice between 3 different
+levels of difficulty: beginner, intermediate, and advanced. He selects the beginner
+level and the game begins. He sets up and plays the game (see 4. Setting Up, 5. Playing)
+Once a winner is declared, the game ends and Alex is brought back to the main menu.
+
+3. Multi Player Mode
+
+Alex and John wish to play battleship against each other. From the start menu, they
+select "multi player" mode from their own devices. They are given instructions on how
+to connect to each other. The game begins and both players set up their boards. They
+play the game until a winner is declared. Once this happens, both Alex and John are
+returned to the main menu.
+
+4. Setting Up 
+Alex has just started a game of battle ship. He is given 60 seconds to set up his position.
+He is shown a graphical representation of his battle field, which is a grid whose 
+rows are indexed by numbers and columns indexed by letters. Cells can be identified using a
+letter-number pair (ex. C6). Alex is given ships which he must place on the board. Ships are
+1 cell wide and 1-5 cells tall and can be oriented either horizontally or vertically. For
+each ship, Alex rotates it to his desired orientation and then clicks and drags it to his
+desired position on the board. Ships may not overlap (ie. one cell may be occupied by at
+most 1 ship). Once a player is finished setting up, they may click the "done" button. If
+all players finish early, the game may begin without waiting the full 60 seconds. If a player
+is not finished setting up in 60 seconds, the game will choose a random position for their
+ships. A player may also click a button to generate a random position.
+
+5. Playing
+Alex has finished setting up his board and now is playing the game. He is shown a graphical 
+representation of his opponent's board. When it is his turn, he is given 20 seconds to select
+a cell on which to fire. If he does not choose a cell in time, a random one is chosen. If his
+shot is in the same cell as one of his opponent's ships, the game displays a "hit" graphic in 
+that cell. If not, the game displays a "miss" graphic. Once his turn is over, the screen 
+transitions into a view of Alex's board which includes the position of his ships and the cells
+in which his opponent has shot. The game continues until one player sinks all the opposing ships.
