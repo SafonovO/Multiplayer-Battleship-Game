@@ -45,9 +45,9 @@ class NewGameOption(MenuElement):
         self.internalbutton = pygame_gui.elements.UIButton(relative_rect=pygame.Rect(position, (120, 40)),
                                                            text=self.text, manager=manager)
 
-    def execute_action(self, Container: []):
+    def execute_action(self, RoutingStack ,Container: []):
         self.DeactivateView()
-        Views.ActivateView(Container, self.internalmanager, 'New Game View')
+        Views.ActivateView(RoutingStack, Container, self.internalmanager, 'New Game View', False)
 
 
 class LoadGameOption(MenuElement):
@@ -126,7 +126,7 @@ class BackOption(MenuElement):
         self.internalbutton = pygame_gui.elements.UIButton(relative_rect=pygame.Rect(position, (120, 40)),
                                                            text=self.text, manager=manager)
 
-    def execute_action(self, Container: []):
-        if self.view == 'New Game View':
-            self.DeactivateView()
-            Views.ActivateView(Container,self.internalmanager, 'Menu View')
+    def execute_action(self, RoutingStack, Container: []):
+        RoutingStack.pop()
+        self.DeactivateView()
+        Views.ActivateView(RoutingStack,Container,self.internalmanager,RoutingStack[-1],True)

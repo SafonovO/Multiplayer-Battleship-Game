@@ -5,10 +5,10 @@ def DisableElement(ElementWrapper):
     ElementWrapper.internalbutton.hide()
 
 
-def LoadAllViews(container: [], manager):
+def LoadAllViews(RoutingStack, container: [], manager):
     LoadMenuView(container, manager)
     LoadNewGameView(container, manager)
-    ActivateView(container,manager,'Menu View')
+    ActivateView(RoutingStack, container,manager,'Menu View', False)
 
 
 def LoadMenuView(container: [], manager):
@@ -40,7 +40,10 @@ def LoadNewGameView(container: [], manager):
     container.append(BackButton)
     DisableElement(BackButton)
 
-def ActivateView(container: [], manager, View):
+def ActivateView(RoutingStack, container: [], manager, View,isback: bool):
     for element in container:
         if element.view == View:
             element.internalbutton.show()
+    if not isback :
+        RoutingStack.append(View)
+    print(len(RoutingStack))
