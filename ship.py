@@ -13,7 +13,7 @@ class Ship:
     A ship is destroyed if all its squares are hit
     '''
 
-    def isSunk(self) -> bool:
+    def is_sunk(self) -> bool:
         pass
 
     '''
@@ -21,20 +21,20 @@ class Ship:
 	This method tells us if the ship is horizontal
 	'''
 
-    def isHorizontal(self) -> bool:
+    def is_horizontal(self) -> bool:
         pass
 
     # Returns a list of all squares on this ship that are hit
 
-    def hitSquares(self):
+    def hit_squares(self):
         pass
 
     # Returns a list of all squares on this ship that are not hit
 
-    def healthySquares(self):
+    def healthy_squares(self):
         pass
 
     # Returns a list of all Coords occupied by this ship
 
-    def getCoords(self):
+    def get_coords(self):
         pass
