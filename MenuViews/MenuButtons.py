@@ -1,7 +1,7 @@
-from abc import ABC, abstractmethod
 
 import pygame
 import pygame_gui
+from pygame_gui.core import ObjectID
 
 from MenuViews import Views
 
@@ -10,13 +10,14 @@ Abstract class to describe the basic menu option(button)
 """
 
 
-class MenuElement(ABC):
+class MenuElement:
     """
     Constructor method
     """
     position = ()
     text = ''
     view = ''
+
     def __init__(self, text, view, position, manager):
         self.text = text
         self.position = position
@@ -27,96 +28,87 @@ class MenuElement(ABC):
     Routing action
     """
 
-    @abstractmethod
-    def execute_action(self, Container: []):  # return the new view that is related to this button
+
+    def execute_action(self, routingStack, container: []):  # return the new view that is related to this button
         pass
 
-    def is_clicked(self) -> bool:
-        pass
-
-
-    def DeactivateView(self):
+    def deactivateView(self):
         for i in self.internalmanager.root_container.elements:
             i.hide()
+
 
 class NewGameOption(MenuElement):
     def __init__(self, text, view, position, manager):
         super().__init__(text, view, position, manager)
         self.internalbutton = pygame_gui.elements.UIButton(relative_rect=pygame.Rect(position, (120, 40)),
                                                            text=self.text, manager=manager)
+    def execute_action(self, routingStack, container: []):
+        self.deactivateView()
+        Views.ActivateView(routingStack, container, self.internalmanager, 'New Game View', False)
 
-    def execute_action(self, RoutingStack ,Container: []):
-        self.DeactivateView()
-        Views.ActivateView(RoutingStack, Container, self.internalmanager, 'New Game View', False)
 
-
-class LoadGameOption(MenuElement):
+class LoadGameOption(MenuElement): #TODO implement
     def __init__(self, text, view, position, manager):
         super().__init__(text, view, position, manager)
         self.internalbutton = pygame_gui.elements.UIButton(relative_rect=pygame.Rect(position, (120, 40)),
                                                            text=self.text, manager=manager)
+    def execute_action(self, RoutingStack, Container: []):
+        self.deactivateView()
+        Views.ActivateView(RoutingStack, Container, self.internalmanager, 'Load Game View', False)
 
-    def execute_action(self, Container: []):
+
+class TutorialOption(MenuElement):#TODO implement
+    def __init__(self, text, view, position, manager):
+        super().__init__(text, view, position, manager)
+        self.internalbutton = pygame_gui.elements.UIButton(relative_rect=pygame.Rect(position, (120, 40)),
+                                                           text=self.text, manager=manager)
+    def execute_action(self, routingStack, container: []):
+        self.deactivateView()
+        Views.ActivateView(routingStack, container, self.internalmanager, 'Tutorial View', False)
+
+
+class CreditsOption(MenuElement):#TODO implement
+    def __init__(self, text, view, position, manager):
+        super().__init__(text, view, position, manager)
+        self.internalbutton = pygame_gui.elements.UIButton(relative_rect=pygame.Rect(position, (120, 40)),
+                                                           text=self.text, manager=manager)
+    def execute_action(self, routingStack, container: []):
         pass
 
 
-class TutorialOption(MenuElement):
+class QuitOption(MenuElement):#TODO implement
+    def __init__(self, text, view, position, manager):
+        super().__init__(text, view, position, manager)
+        self.internalbutton = pygame_gui.elements.UIButton(relative_rect=pygame.Rect(position, (120, 40)),
+                                                           text=self.text, manager=manager,object_id=ObjectID(class_id = '@quit_button'))
+    def execute_action(self, rutingStack, container: []):
+        pygame.quit()
+
+
+class SinglePlayerOption(MenuElement):#TODO implement
     def __init__(self, text, view, position, manager):
         super().__init__(text, view, position, manager)
         self.internalbutton = pygame_gui.elements.UIButton(relative_rect=pygame.Rect(position, (120, 40)),
                                                            text=self.text, manager=manager)
-
-    def execute_action(self, Container: []):
+    def execute_action(self, routingStack, container: []):
         pass
 
 
-class CreditsOption(MenuElement):
+class CreateGameOption(MenuElement):#TODO implement
     def __init__(self, text, view, position, manager):
         super().__init__(text, view, position, manager)
         self.internalbutton = pygame_gui.elements.UIButton(relative_rect=pygame.Rect(position, (120, 40)),
                                                            text=self.text, manager=manager)
-
-    def execute_action(self, Container: []):
+    def execute_action(self, routingStack, container: []):
         pass
 
 
-class QuitOption(MenuElement):
+class JoinGameOption(MenuElement):#TODO implement
     def __init__(self, text, view, position, manager):
         super().__init__(text, view, position, manager)
         self.internalbutton = pygame_gui.elements.UIButton(relative_rect=pygame.Rect(position, (120, 40)),
                                                            text=self.text, manager=manager)
-
-    def execute_action(self, Container: []):
-        pass
-
-
-class SinglePlayerOption(MenuElement):
-    def __init__(self, text, view, position, manager):
-        super().__init__(text, view, position, manager)
-        self.internalbutton = pygame_gui.elements.UIButton(relative_rect=pygame.Rect(position, (120, 40)),
-                                                           text=self.text, manager=manager)
-
-    def execute_action(self, Container: []):
-        pass
-
-
-class CreateGameOption(MenuElement):
-    def __init__(self, text, view, position, manager):
-        super().__init__(text, view, position, manager)
-        self.internalbutton = pygame_gui.elements.UIButton(relative_rect=pygame.Rect(position, (120, 40)),
-                                                           text=self.text, manager=manager)
-
-    def execute_action(self, Container: []):
-        pass
-
-
-class JoinGameOption(MenuElement):
-    def __init__(self, text, view, position, manager):
-        super().__init__(text, view, position, manager)
-        self.internalbutton = pygame_gui.elements.UIButton(relative_rect=pygame.Rect(position, (120, 40)),
-                                                           text=self.text, manager=manager)
-
-    def execute_action(self, Container: []):
+    def execute_action(self, routingStack, container: []):
         pass
 
 
@@ -125,8 +117,7 @@ class BackOption(MenuElement):
         super().__init__(text, view, position, manager)
         self.internalbutton = pygame_gui.elements.UIButton(relative_rect=pygame.Rect(position, (120, 40)),
                                                            text=self.text, manager=manager)
-
-    def execute_action(self, RoutingStack, Container: []):
-        RoutingStack.pop()
-        self.DeactivateView()
-        Views.ActivateView(RoutingStack,Container,self.internalmanager,RoutingStack[-1],True)
+    def execute_action(self, routingStack, container: []):
+        routingStack.pop()
+        self.deactivateView()
+        Views.ActivateView(routingStack, container, self.internalmanager, routingStack[-1], True)

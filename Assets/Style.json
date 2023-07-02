@@ -1,0 +1,20 @@
+{
+  "@quit_button": {
+  "colours": {
+    "normal_bg": "#D30404",
+    "hovered_bg":"#A80505",
+    "active_bg": "#870101"
+  }
+  },
+  "button":{
+
+    "colours": {
+      "normal_bg": "#093881",
+      "normal_border": "#785600"
+    },
+    "misc": {
+      "shape": "rounded_rectangle",
+      "shape_corner_radius": "11"
+    }
+}
+}

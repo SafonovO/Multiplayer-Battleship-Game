@@ -1,6 +1,5 @@
 import pygame
 import pygame_gui
-
 from MenuViews import Views
 
 
@@ -11,11 +10,9 @@ def main():
     pygame.display.set_caption("Battleship")
     pygame.display.set_mode((1280, 720))
     window_surface = pygame.display.set_mode((1280, 720))
-    background = pygame.Surface((1280, 720))
-    background.fill(pygame.Color('#000000'))
+    background = pygame.image.load('Assets\Background.png')
 
-    manager = pygame_gui.UIManager((1280, 720))
-
+    manager = pygame_gui.UIManager((1280, 720), 'Assets\Style.json')
     clock = pygame.time.Clock()
     running = True
     Views.LoadAllViews(RoutingStack,ElementContainer, manager)
