@@ -2,7 +2,7 @@ import pygame
 import pygame_gui
 from pygame_gui.core import ObjectID
 
-from MenuViews import Views
+from menu_views import views
 
 """
 Abstract class to describe the basic menu option(button)
@@ -43,7 +43,7 @@ class NewGameOption(MenuElement):
 
     def execute_action(self, routingStack, container: []):
         self.deactivateView()
-        Views.ActivateView(routingStack, container, self.internalmanager, 'New Game View', False)
+        views.ActivateView(routingStack, container, self.internalmanager, 'New Game View', False)
 
 
 class LoadGameOption(MenuElement):  # TODO implement
@@ -95,7 +95,7 @@ class SinglePlayerOption(MenuElement):
 
     def execute_action(self, routingStack, container: []):
         self.deactivateView()
-        Views.ActivateView(routingStack, container, self.internalmanager, 'Single Player View', False)
+        views.ActivateView(routingStack, container, self.internalmanager, 'Single Player View', False)
 
 
 class CreateGameOption(MenuElement):  # TODO implement
@@ -127,7 +127,7 @@ class BackOption(MenuElement):
     def execute_action(self, routingStack, container: []):
         routingStack.pop()
         self.deactivateView()
-        Views.ActivateView(routingStack, container, self.internalmanager, routingStack[-1], True)
+        views.ActivateView(routingStack, container, self.internalmanager, routingStack[-1], True)
 
 
 class DifficultyOption(MenuElement):

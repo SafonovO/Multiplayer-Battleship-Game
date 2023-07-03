@@ -1,6 +1,6 @@
 import pygame
 import pygame_gui
-from MenuViews import Views
+from menu_views import views
 
 
 def main():
@@ -10,13 +10,13 @@ def main():
     pygame.display.set_caption("Battleship")
     pygame.display.set_mode((1280, 720))
     window_surface = pygame.display.set_mode((1280, 720))
-    background = pygame.image.load('Assets\Background.png')
+    background = pygame.image.load('assets\Background.png')
 
-    manager = pygame_gui.UIManager((1280, 720), 'Assets\Style.json')
+    manager = pygame_gui.UIManager((1280, 720), 'assets\Style.json')
     manager.preload_fonts([{'name': 'fira_code', 'point_size': 32, 'style': 'regular'}])
     clock = pygame.time.Clock()
     running = True
-    Views.LoadAllViews(RoutingStack, ElementContainer, manager)
+    views.LoadAllViews(RoutingStack, ElementContainer, manager)
     while running:
         time_delta = clock.tick(60) / 1000.0
         for event in pygame.event.get():
