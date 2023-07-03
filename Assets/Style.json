@@ -10,11 +10,38 @@
 
     "colours": {
       "normal_bg": "#093881",
-      "normal_border": "#785600"
+      "hovered_bg":"#032D73",
+      "active_bg": "#011f4f",
+      "normal_border": "#785600",
+      "normal_text": "#FFFFFF"
     },
     "misc": {
       "shape": "rounded_rectangle",
       "shape_corner_radius": "11"
     }
-}
+},
+"@rectangle":{
+  "colours": {
+    "dark_bg" : "#04327B",
+    "normal_border": "#6D540D"
+  },
+  "misc": {
+    "shape": "rounded_rectangle",
+    "shape_corner_radius": "10"
+  }
+},
+  "@menu_title": {
+   "colours": {
+    "dark_bg" : "#04327B",
+    "normal_border": "#6D540D",
+     "normal_text": "#FFFFFF"
+  },
+  "misc": {
+    "padding": "15,0",
+    "text_horiz_alignment": "left",
+    "text_vert_alignment": "center",
+    "line_spacing": "1.49",
+    "size": "40px"
+  }
+  }
 }

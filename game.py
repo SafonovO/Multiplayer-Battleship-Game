@@ -15,7 +15,7 @@ def main():
     manager = pygame_gui.UIManager((1280, 720), 'Assets\Style.json')
     clock = pygame.time.Clock()
     running = True
-    Views.LoadAllViews(RoutingStack,ElementContainer, manager)
+    Views.LoadAllViews(RoutingStack, ElementContainer, manager)
     while running:
         time_delta = clock.tick(60) / 1000.0
         for event in pygame.event.get():
@@ -24,7 +24,8 @@ def main():
             manager.process_events(event)
             if event.type == pygame_gui.UI_BUTTON_PRESSED:
                 if issubclass(type(event.ui_element), pygame_gui.elements.UIButton):
-                    ElementContainer[manager.root_container.elements.index(event.ui_element)].execute_action(RoutingStack,
+                    next(x for x in ElementContainer if x.internalelement == event.ui_element).execute_action(
+                        RoutingStack,
                         ElementContainer)
 
         manager.update(time_delta)
