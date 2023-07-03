@@ -1,5 +1,6 @@
 import pygame
 import pygame_gui
+import os
 from menu_views import views
 from assets import fonts
 
@@ -10,9 +11,9 @@ def main():
     pygame.display.set_caption("Battleship")
     pygame.display.set_mode((1280, 720))
     window_surface = pygame.display.set_mode((1280, 720))
-    background = pygame.image.load('assets\\background.png')
+    background = pygame.image.load(os.path.join('assets','background.png'))
 
-    manager = pygame_gui.UIManager((1280, 720), 'assets\\style.json')
+    manager = pygame_gui.UIManager((1280, 720), os.path.join('assets','style.json'))
     manager.preload_fonts(fonts.font_list)
     clock = pygame.time.Clock()
     running = True
