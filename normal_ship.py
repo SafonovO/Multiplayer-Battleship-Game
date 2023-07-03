@@ -87,7 +87,7 @@ class NormalShip(Ship):
 
 	Assumes the cell is part of the ship. If it isnt, return None
 	'''
-	def checkCell(self, coord):
+	def check_cell(self, coord):
 		if self.occupies(coord):
 			return self._coords[coord]
 
@@ -98,7 +98,7 @@ class NormalShip(Ship):
 	Returns if this ship is destoryed
 	A ship is destroyed if all its squares are hit
 	'''
-	def isSunk(self) -> bool:
+	def is_sunk(self) -> bool:
 		for coord in self._coords:
 			# If any square is healthy, ship is not sunk
 			if self._coords[coord] == True:
@@ -111,19 +111,19 @@ class NormalShip(Ship):
 	Ships can be oriented Horizontally or vertically.
 	This method tells us if the ship is horizontal
 	'''
-	def isHorizontal(self) -> bool:
+	def is_horizontal(self) -> bool:
 		return self._isHorizontal
 
 	'''
 	Ships can chnage their orientation. This will be implemented
 	as a "toggle".
 	'''
-	def toggleOrientation(self):
+	def toggle_orientation(self):
 		self._isHorizontal = not self._isHorizontal
 
 
 	# Returns a list of all squares on this ship that are hit
-	def hitSquares(self):
+	def hit_squares(self):
 		hit_squares = []
 
 		# a square is hit if it maps to F in _coords
@@ -135,7 +135,7 @@ class NormalShip(Ship):
 
 
 	# Returns a list of all squares on this ship that are not hit
-	def healthySquares(self):
+	def healthy_squares(self):
 		healthy_squares = []
 
 		for c in self._coords:
@@ -146,7 +146,7 @@ class NormalShip(Ship):
 
 
 	# Returns a list of all Coords occupied by this ship
-	def getCoords(self):
+	def get_coords(self):
 		return list(self._coords.keys())
 
 
