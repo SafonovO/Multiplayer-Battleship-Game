@@ -1,4 +1,4 @@
-from Ship import Ship
+from ship import Ship
 from coords import Coords
 
 class NormalShip(Ship):
@@ -38,7 +38,7 @@ class NormalShip(Ship):
 	'''
 	def set_coords(self, tip):
 		# coords of the tip are x_0, y_0
-		x_0, y_0 = tip.get_cocords()
+		x_0, y_0 = tip.get_coords()
 
 		'''
 		By default, ships are vertical. The length and width
