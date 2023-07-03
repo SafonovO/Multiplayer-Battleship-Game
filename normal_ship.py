@@ -1,5 +1,5 @@
 from Ship import Ship
-from Coords import Coords
+from coords import Coords
 
 class NormalShip(Ship):
 	# These store the length and width of the ship

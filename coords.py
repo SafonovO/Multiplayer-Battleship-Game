@@ -26,6 +26,6 @@ class Coords:
     def get_coords(self) -> tuple:
         return (self._x, self._y)
 
-    # Tells us if this is a valid Coord (ie. not None)
+    # Tells us if this is a valid Coord (i.e. not None)
     def valid(self) -> bool:
         return self._x is not None and self._y is not None
