@@ -13,6 +13,7 @@ def main():
     background = pygame.image.load('Assets\Background.png')
 
     manager = pygame_gui.UIManager((1280, 720), 'Assets\Style.json')
+    manager.preload_fonts([{'name': 'fira_code', 'point_size': 32, 'style': 'regular'}])
     clock = pygame.time.Clock()
     running = True
     Views.LoadAllViews(RoutingStack, ElementContainer, manager)
