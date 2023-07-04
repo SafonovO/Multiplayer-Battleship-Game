@@ -1,5 +1,4 @@
 from ship import Ship
-from coords import Coords
 
 class NormalShip(Ship):
 	# These store the length and width of the ship
@@ -27,6 +26,10 @@ class NormalShip(Ship):
 		self._length = length
 		self._width = width
 
+	# length and width getter
+	def get_size(self):
+		# return in dict form
+		return {"length": self._length, "width": self._width}
 	'''
 	We need to set the Coords of the ship when we place it on
 	the board. This function will do that
@@ -38,7 +41,10 @@ class NormalShip(Ship):
 	'''
 	def set_coords(self, tip):
 		# coords of the tip are x_0, y_0
-		x_0, y_0 = tip.get_coords()
+		x_0 = tip[0]
+		y_0 = tip[1]
+
+		self._coords = {}
 
 		'''
 		By default, ships are vertical. The length and width
@@ -58,19 +64,25 @@ class NormalShip(Ship):
 		if not self._isHorizontal:
 			for x in range(self._width):
 				for y in range(self._length):
-					newcoord = Coords(x_0 + x, y_0 + y)
-					self._coords[newcoord] = True
+					newcoord = (x_0 + x, y_0 + y)
+					self._coords.update({newcoord: True})
 
 		else:
 			for x in range(self._length):
 				for y in range(self._width):
-					newcoord = Coords(x_0 + x, y_0 + y)
-					self._coords[newcoord] = True
+					newcoord = (x_0 + x, y_0 + y)
+					self._coords.update({newcoord: True})
 
 
 	# This function checks if this ship occupies a given coord (x, y)
-	def occupies(self, coord) -> bool:
-		return coord in self.getCoords()
+	def occupies(self, coord):
+		# Return None if coords ave not been set yet
+		if self._coords == None:
+			return None
+
+		coords_list = self.get_coords()
+
+		return coord in coords_list
 
 
 	'''
@@ -79,6 +91,10 @@ class NormalShip(Ship):
 	just do nothing.
 	'''
 	def hit(self, coord):
+		# Return immediately if coords are not set
+		if self._coords == None:
+			return None
+
 		if self.occupies(coord):
 			self._coords[coord] = False
 
@@ -88,6 +104,10 @@ class NormalShip(Ship):
 	Assumes the cell is part of the ship. If it isnt, return None
 	'''
 	def check_cell(self, coord):
+		# return immediately if coords are not set
+		if self._coords == None:
+			return None
+
 		if self.occupies(coord):
 			return self._coords[coord]
 
@@ -98,7 +118,11 @@ class NormalShip(Ship):
 	Returns if this ship is destoryed
 	A ship is destroyed if all its squares are hit
 	'''
-	def is_sunk(self) -> bool:
+	def is_sunk(self):
+		# return immediately if coords are not set
+		if self._coords == None:
+			return None
+
 		for coord in self._coords:
 			# If any square is healthy, ship is not sunk
 			if self._coords[coord] == True:
@@ -111,12 +135,12 @@ class NormalShip(Ship):
 	Ships can be oriented Horizontally or vertically.
 	This method tells us if the ship is horizontal
 	'''
-	def is_horizontal(self) -> bool:
+	def is_horizontal(self):
 		return self._isHorizontal
 
 	'''
 	Ships can chnage their orientation. This will be implemented
-	as a "toggle".
+	as a "toggle"
 	'''
 	def toggle_orientation(self):
 		self._isHorizontal = not self._isHorizontal
@@ -124,6 +148,10 @@ class NormalShip(Ship):
 
 	# Returns a list of all squares on this ship that are hit
 	def hit_squares(self):
+		# return immediately if coords are not set
+		if self._coords == None:
+			return None
+
 		hit_squares = []
 
 		# a square is hit if it maps to F in _coords
@@ -136,6 +164,10 @@ class NormalShip(Ship):
 
 	# Returns a list of all squares on this ship that are not hit
 	def healthy_squares(self):
+		# return immediately if coords are not set
+		if self._coords == None:
+			return None
+
 		healthy_squares = []
 
 		for c in self._coords:
@@ -147,6 +179,17 @@ class NormalShip(Ship):
 
 	# Returns a list of all Coords occupied by this ship
 	def get_coords(self):
+		# return none if coords are not set
+		if self._coords == None:
+			return None
+
 		return list(self._coords.keys())
 
+	def print_ship(self):
+		# For reference, prints all the coords occupied by this ship
+		if self._coords == None:
+			return None
+
+		for item in self._coords:
+			print(item, ":", self._coords[item])
 
