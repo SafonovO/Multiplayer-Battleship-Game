@@ -2,7 +2,7 @@ from ships.ship import Ship
 from ships.normal_ship import NormalShip
 from cell import Cell
 from board_factory import BoardFactory
-import pygame
+import math
 
 class Board:
 	# number of ships on the board
@@ -106,12 +106,17 @@ class Board:
 
 				cell.draw_cell(screen)
 
-	def get_active_cell(self, mouse):
+	def get_active_cell(self, mouse_pos):
 		'''
 		Given the position of a mouse, find a cell in self._cells
 		such that the mouse collides with the cell.
 
 		Returns None if the mouse does not collide with any cell
 		'''
-
+		cell_size = self._width / self._size
+		row = math.floor((mouse_pos[1] - self._coordinates[1]) / cell_size)
+		column = math.floor((mouse_pos[0] - self._coordinates[0]) / cell_size)
+		if row < 0 or column < 0 or row >= self._size or column >= self._size:
+			return None
+		return self._cells[row][column]
 

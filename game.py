@@ -35,7 +35,7 @@ def play():
 	playing_surface = pygame.Rect(100, 50, 1500, 700)
 
 	while True:
-		mouse = pygame.mouse.get_pos()
+		mouse_pos = pygame.mouse.get_pos()
 
 		# Draw the backgroudn
 		SCREEN.blit(BG, (0, 0))
@@ -66,7 +66,7 @@ def play():
 				pygame.quit()
 				sys.exit()
 			if event.type == pygame.MOUSEBUTTONDOWN:
-				active_cell = board.get_active_cell()
+				active_cell = board.get_active_cell(mouse_pos)
 
 				# active cell is teh cell we are clicking on
 				if active_cell != None:
