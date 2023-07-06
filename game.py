@@ -35,8 +35,11 @@ def play():
 	should display the true locations of the ships.
 
 	Opponent's board should display, my board should not
+
+	update: im making my board smaller and shifting it downwards
+	to make room for the text headings
 	'''
-	opponent_board = Board(size=8, num_ships=8, coords=(150, 100), width=600, display=False)
+	opponent_board = Board(size=8, num_ships=8, coords=(150, 150), width=550, display=False)
 	opponent_board.build_board()
 
 	opponent_board.place_ships()
@@ -47,14 +50,16 @@ def play():
 
 	My board will be 600 wide
 
-	location will be at 150 + 700, 100 + 700
+	location will be at 150 + 700, 100
+
+	My board should be much smaller than opponent's board
+	since it is not the main focus
 	'''
-	my_board = Board(size=8, num_ships=8, coords=(850, 100), width=600, display=True)
+	my_board = Board(size=8, num_ships=8, coords=(1250, 375), width=300, display=True)
 	my_board.build_board()
 	my_board.place_ships()
-	'''
-	Logic Time:
 
+	'''
 	the screen is 1700 wide and 800 tall.
 
 	First, draw a gigantic rectangle to represent the playing surface.
@@ -62,7 +67,15 @@ def play():
 	should be symmetrical around it, so its position should be at
 	(100, 50)
 	'''
+
 	playing_surface = pygame.Rect(100, 50, 1500, 700)
+
+	# setup labels for the boards
+	opponent_board_label = get_font(30).render("OPPONENT'S BOARD", True, "White")
+	opponent_board_label_rect = opponent_board_label.get_rect(center=(425, 125))
+
+	my_board_label = get_font(30).render("MY BOARD", True, "White")
+	my_board_label_rect = my_board_label.get_rect(center=(1400, 350))
 
 	while True:
 		mouse = pygame.mouse.get_pos()
@@ -72,6 +85,10 @@ def play():
 
 		# Draw the playing surface as described above
 		pygame.draw.rect(SCREEN, "#042574", playing_surface)
+
+		# Draw the labels
+		SCREEN.blit(opponent_board_label, opponent_board_label_rect)
+		SCREEN.blit(my_board_label, my_board_label_rect)
 
 		# draw opponents board
 		opponent_board.draw_board(SCREEN)
