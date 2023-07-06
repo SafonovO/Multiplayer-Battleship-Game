@@ -56,7 +56,7 @@ class BoardFactory:
 				location_x = x_0 + x*cell_size
 				location_y = y_0 + y*cell_size
 
-				row.append( Cell( (x, y), cell_size, (location_x, location_y) ) )
+				row.append( Cell(coords=(x, y), width=cell_size, location=(location_x, location_y)))
 			cells.append(row)
 
 		return cells

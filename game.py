@@ -29,8 +29,14 @@ def play():
 
 	These parameters are all subject to change and 
 	their true values can be found below
+
+	New addition: boards take a boolean parameter
+	"display" which tells the draw function if it
+	should display the true locations of the ships.
+
+	Opponent's board should display, my board should not
 	'''
-	opponent_board = Board(8, 8, (150, 100),600)
+	opponent_board = Board(size=8, num_ships=8, coords=(150, 100), width=600, display=False)
 	opponent_board.build_board()
 
 	opponent_board.place_ships()
@@ -43,7 +49,7 @@ def play():
 
 	location will be at 150 + 700, 100 + 700
 	'''
-	my_board = Board(7, 7, (850, 100), 600)
+	my_board = Board(size=8, num_ships=8, coords=(850, 100), width=600, display=True)
 	my_board.build_board()
 	# my_board.print_cells()
 
@@ -96,11 +102,22 @@ def setup():
 
 	# Render text
 	SETUP_TEXT = get_font(70).render("SETUP YOUR SHIPS", True, "White")
-	SETUP_RECT = SETUP_TEXT.get_rect(center=(640, 100))
+	SETUP_RECT = SETUP_TEXT.get_rect(center=(850, 100))
+
+	# Placeholder text for now
+	placeholder1_text = get_font(20).render("This function has not been implemented yet for this prototype.", True, "White")
+	placeholder2_text = get_font(30).render("Please continue to game.", True, "White")
+	placeholder3_text = get_font(30).render("All ships will be 1x1 and placed randomly", True, "White")
+
+
+	placeholder1_rect = placeholder1_text.get_rect(center=(850, 300))
+	placeholder2_rect = placeholder2_text.get_rect(center=(850, 350))
+	placeholder3_rect = placeholder3_text.get_rect(center=(850, 400))
+
 
 	# Continue to gameplay button
-	CONTINUE_BUTTON = Button(image=pygame.image.load("assets/Options Rect.png"), pos=(640, 550), 
-						text_input="CONTINUE", font=get_font(75), base_color="White", hovering_color="#d7fcd4")
+	CONTINUE_BUTTON = Button(image=pygame.image.load("assets/Options Rect.png"), pos=(850, 550), 
+						text_input="CONTINUE", font=get_font(60), base_color="White", hovering_color="#d7fcd4")
 
 	while True:
 		# paint background
@@ -111,6 +128,10 @@ def setup():
 
 
 		SCREEN.blit(SETUP_TEXT, SETUP_RECT)
+
+		SCREEN.blit(placeholder1_text, placeholder1_rect)
+		SCREEN.blit(placeholder2_text, placeholder2_rect)
+		SCREEN.blit(placeholder3_text, placeholder3_rect)
 
 		CONTINUE_BUTTON.changeColor(SETUP_MOUSE_POS)
 		CONTINUE_BUTTON.update(SCREEN)
@@ -137,12 +158,12 @@ def main_menu():
 	# The loop for the main menu
 	# render menu text, buttons
 	MENU_TEXT = get_font(100).render("MAIN MENU", True, "#b68f40")
-	MENU_RECT = MENU_TEXT.get_rect(center=(640, 100))
+	MENU_RECT = MENU_TEXT.get_rect(center=(850, 100))
 
-	PLAY_BUTTON = Button(image=pygame.image.load("assets/Play Rect.png"), pos=(640, 250), 
+	PLAY_BUTTON = Button(image=pygame.image.load("assets/Play Rect.png"), pos=(850, 250), 
 						text_input="PLAY", font=get_font(75), base_color="White", hovering_color="#d7fcd4")
 	
-	QUIT_BUTTON = Button(image=pygame.image.load("assets/Quit Rect.png"), pos=(640, 550), 
+	QUIT_BUTTON = Button(image=pygame.image.load("assets/Quit Rect.png"), pos=(850, 550), 
 						text_input="QUIT", font=get_font(75), base_color="White", hovering_color="#d7fcd4")
 	while True:
 		# Draw the background

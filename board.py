@@ -27,6 +27,10 @@ class Board:
 	# track the size of the rectangle representing the board
 	_width = 0
 
+	# On my board, I want to display the ships' locations.
+	# On the opponent's board, I do not
+	_display = False
+
 	'''
 	coordinates is a tuple (x, y) that represents the location
 	of the board's top left corner when you draw it on the screen
@@ -35,12 +39,13 @@ class Board:
 	side length of the board
 	'''
 
-	def __init__(self, size, num_ships, coords, width):
+	def __init__(self, size, num_ships, coords, width, display):
 		self._nships = num_ships
 		self._size = size
 
 		self._coordinates = coords
 		self._width = width
+		self._display = display
 
 		self._board_factory = BoardFactory(self._size, self._nships, self._coordinates, self._width)
 
