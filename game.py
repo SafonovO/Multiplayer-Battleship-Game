@@ -18,9 +18,31 @@ def get_font(size): # Returns Press-Start-2P in the desired size
 	return pygame.font.Font("assets/font.ttf", size)
 
 def play():
-	# Make a board
-	board = Board(8, 8, (150, 100),600)
-	board.build_board()
+	'''
+	Opponents board
+
+	constructor takes location, rectangle size, and screen
+
+	location will be (150, 100) (for now, might change)
+
+	rectangle size will be 600 (for now)
+
+	These parameters are all subject to change and 
+	their true values can be found below
+	'''
+	opponent_board = Board(8, 8, (150, 100),600)
+	opponent_board.build_board()
+
+	'''
+	Build a board for my own pieces
+
+	My board will be 600 wide
+
+	location will be at 150 + 700, 100 + 700
+	'''
+	my_board = Board(7, 7, (850, 100), 600)
+	my_board.build_board()
+	# my_board.print_cells()
 
 	'''
 	Logic Time:
@@ -35,7 +57,7 @@ def play():
 	playing_surface = pygame.Rect(100, 50, 1500, 700)
 
 	while True:
-		mouse_pos = pygame.mouse.get_pos()
+		mouse = pygame.mouse.get_pos()
 
 		# Draw the backgroudn
 		SCREEN.blit(BG, (0, 0))
@@ -43,22 +65,11 @@ def play():
 		# Draw the playing surface as described above
 		pygame.draw.rect(SCREEN, "#042574", playing_surface)
 
-		'''
-		Draw the board:
+		# draw opponents board
+		opponent_board.draw_board(SCREEN)
 
-		draw_board() takes location, rectangle size, and screen
-
-		location will be (150, 100) (for now, might change)
-
-		rectangle size will be 600 (for now)
-
-		These parameters are all subject to change and 
-		their true values can be found below
-
-		screen is the screen on which the stuff will
-		be drawn.
-		'''
-		board.draw_board(SCREEN)
+		# draw my board
+		my_board.draw_board(SCREEN)
 
 
 		for event in pygame.event.get():
@@ -66,19 +77,16 @@ def play():
 				pygame.quit()
 				sys.exit()
 			if event.type == pygame.MOUSEBUTTONDOWN:
-				active_cell = board.get_active_cell(mouse_pos)
+				active_cell = opponent_board.get_active_cell(mouse)
 
 				# active cell is teh cell we are clicking on
 				if active_cell != None:
 					# Fire on that cell
 					active_cell.hit()
 
-				if PLAY_BACK.checkForInput(PLAY_MOUSE_POS):
-					main_menu()
+		#pygame.display.update()
+		pygame.display.flip()
 
-
-
-		pygame.display.update()
 
 def setup():
 	# Ship setup screen

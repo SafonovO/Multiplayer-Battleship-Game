@@ -118,5 +118,6 @@ class Board:
 		column = math.floor((mouse_pos[0] - self._coordinates[0]) / cell_size)
 		if row < 0 or column < 0 or row >= self._size or column >= self._size:
 			return None
+
 		return self._cells[row][column]
 
