@@ -58,7 +58,7 @@ class Cell:
         print("Coords:", self.coordinates, "Hit?", self.is_hit, "Ship?", self.ship != None)
 
 
-    def draw_cell(self, screen):
+    def draw_cell(self, screen, display):
         '''
         x, y are the coordinate of the top left corner
         of the cell.
@@ -66,6 +66,10 @@ class Cell:
         self_width is the side length (pixels) of the cell
 
         screen is the screen on which we draw
+
+        display indicates if we should draw unhit
+        ship cells differently. This would be done
+        on my board only, not the opponenets board
         '''
 
         x = self._location[0]
@@ -73,15 +77,23 @@ class Cell:
 
         cell = pygame.Rect(x, y, self._width, self._width)
 
+
+        # if display, draw unhit ships differently
+        if display and self.ship != None and self.is_hit == False:
+            pygame.draw.rect(screen, "Grey", cell)
+
         # draw a cell that has not been fired on
-        if not self.is_hit:
+        elif not self.is_hit:
             pygame.draw.rect(screen, "#59A2E1", cell, 2)
+
         # draw a cell that has been fired on with no ship
         elif self.is_hit and self.ship == None:
             pygame.draw.rect(screen, "#DAE159", cell)
+
         # draw a cell that has been fired on with ship
         elif self.is_hit and self.ship != None:
             pygame.draw.rect(screen, "Red", cell)
+       
 
 
 '''

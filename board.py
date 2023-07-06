@@ -130,15 +130,14 @@ class Board:
 				'''
 				cell.draw_cell() takes the following arguments:
 
-				x, y are coordinates of the top left corner
-
-				cell_size is the side length of the cell
-
 				screen is the screen on which we want to draw it
+
+				display is the boolean toggle if we should draw
+				the unhit ships
 				'''
 				cell = self._cells[i][j]
 
-				cell.draw_cell(screen)
+				cell.draw_cell(screen, self._display)
 
 	def get_active_cell(self, mouse_pos):
 		'''

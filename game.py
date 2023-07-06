@@ -51,8 +51,7 @@ def play():
 	'''
 	my_board = Board(size=8, num_ships=8, coords=(850, 100), width=600, display=True)
 	my_board.build_board()
-	# my_board.print_cells()
-
+	my_board.place_ships()
 	'''
 	Logic Time:
 
