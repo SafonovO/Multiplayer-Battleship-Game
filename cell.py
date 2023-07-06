@@ -27,8 +27,14 @@ class Cell:
     ship: Ship = None
     is_hit: bool = False
 
-    def __init__(self, coords) -> None:
+    # for drawing purposes. the side length and location of the cell
+    _width = 0
+    _location = None
+
+    def __init__(self, coords, width, location) -> None:
         self.coordinates = coords
+        self._width = width
+        self._location = location
 
     def set_ship(self, ship: Ship):
         self.ship = ship
@@ -42,17 +48,20 @@ class Cell:
     def print_cell(self):
         print("Coords:", self.coordinates, "Hit?", self.is_hit)
 
-    def draw_cell(self, x, y, cell_size, screen):
+    def draw_cell(self, screen):
         '''
         x, y are the coordinate of the top left corner
         of the cell.
 
-        cell_size is the side length (pixels) of the cell
+        self_width is the side length (pixels) of the cell
 
         screen is the screen on which we draw
         '''
 
-        cell = pygame.Rect(x, y, cell_size, cell_size)
+        x = self._location[0]
+        y = self._location[1]
+
+        cell = pygame.Rect(x, y, self._width, self._width)
 
         pygame.draw.rect(screen, "#59A2E1", cell, 2)
 

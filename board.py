@@ -20,11 +20,19 @@ class Board:
 	# factory for board setup
 	_board_factory = None
 
-	def __init__(self, size, num_ships):
+	# coordinates where this board should be drawn
+	_coordinates = None
+
+	# track the size of the rectangle representing the board
+	_width = 0
+
+	def __init__(self, size, num_ships, coords, width):
 		self._nships = num_ships
 		self._size = size
+		self._coordinates = coords
+		self._width = width
 
-		self._board_factory = BoardFactory(self._size, self._nships)
+		self._board_factory = BoardFactory(self._size, self._nships, self._coordinates, self._width)
 
 	def build_board(self):
 		self._cells = self._board_factory.create_cells()
@@ -47,7 +55,7 @@ class Board:
 
 			col += 1
 
-	def draw_board(self, location, rect_size, screen):
+	def draw_board(self, screen):
 		'''
 		location is the coordinates of the top left corner
 
@@ -57,8 +65,11 @@ class Board:
 		equal segments.
 
 		screen is the screen on which we draw
+
+
+		UPDATE: i am storing this all in a data member so no need
 		'''
-		square_size = rect_size / self._size
+		# square_size = rect_size / self._size
 
 		'''
 		So, now we have the sqaure sizes. We draw them
@@ -67,8 +78,8 @@ class Board:
 		x_0 and y_0 are the coords of the top left corner
 		of the board
 		'''
-		x_0 = location[0]
-		y_0 = location[1]
+		x_0 = self._coordinates[0]
+		y_0 = self._coordinates[1]
 
 		
 		for i in range(self._size):
@@ -83,9 +94,15 @@ class Board:
 				screen is the screen on which we want to draw it
 				'''
 				cell = self._cells[i][j]
-				x = x_0 + i*square_size
-				y = y_0 + j*square_size
 
-				cell.draw_cell(x, y, square_size, screen)
+				cell.draw_cell(screen)
+
+	def get_active_cell(self, mouse):
+		'''
+		Given the position of a mouse, find a cell in self._cells
+		such that the mouse collides with the cell.
+
+		Returns None if the mouse does not collide with any cell
+		'''
 
 

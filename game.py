@@ -19,7 +19,7 @@ def get_font(size): # Returns Press-Start-2P in the desired size
 
 def play():
 	# Make a board
-	board = Board(8, 8)
+	board = Board(8, 8, (150, 100),600)
 	board.build_board()
 
 	'''
@@ -58,7 +58,7 @@ def play():
 		screen is the screen on which the stuff will
 		be drawn.
 		'''
-		board.draw_board((150, 100), 600, SCREEN)
+		board.draw_board(SCREEN)
 
 
 		for event in pygame.event.get():
@@ -66,8 +66,13 @@ def play():
 				pygame.quit()
 				sys.exit()
 			if event.type == pygame.MOUSEBUTTONDOWN:
+				active_cell = board.get_active_cell()
+
+
 				if PLAY_BACK.checkForInput(PLAY_MOUSE_POS):
 					main_menu()
+
+
 
 		pygame.display.update()
 
@@ -157,4 +162,4 @@ def main_menu():
 		pygame.display.update()
 
 
-play()
+main_menu()
