@@ -26,9 +26,18 @@ class Board:
 	# track the size of the rectangle representing the board
 	_width = 0
 
+	'''
+	coordinates is a tuple (x, y) that represents the location
+	of the board's top left corner when you draw it on the screen
+
+	width is a number that represents the number of pixels in one
+	side length of the board
+	'''
+
 	def __init__(self, size, num_ships, coords, width):
 		self._nships = num_ships
 		self._size = size
+
 		self._coordinates = coords
 		self._width = width
 

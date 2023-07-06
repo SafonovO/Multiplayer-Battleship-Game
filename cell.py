@@ -30,6 +30,13 @@ class Cell:
     # for drawing purposes. the side length and location of the cell
     _width = 0
     _location = None
+    '''
+    width represents a number of pixels that is the side length
+    of the cell when you draw it on the screen
+
+    location is a tuple (x, y) that represents the coordinates of
+    the top left corner of the cell when it is drawn on teh screen
+    '''
 
     def __init__(self, coords, width, location) -> None:
         self.coordinates = coords

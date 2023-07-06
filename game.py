@@ -68,6 +68,10 @@ def play():
 			if event.type == pygame.MOUSEBUTTONDOWN:
 				active_cell = board.get_active_cell()
 
+				# active cell is teh cell we are clicking on
+				if active_cell != None:
+					# Fire on that cell
+					active_cell.hit()
 
 				if PLAY_BACK.checkForInput(PLAY_MOUSE_POS):
 					main_menu()
