@@ -47,13 +47,16 @@ class Cell:
         self.ship = ship
 
     def hit(self) -> bool:
+        self.is_hit = True
+
         if self.ship == None:
             return False
-        self.is_hit = True
+
         return True
 
     def print_cell(self):
-        print("Coords:", self.coordinates, "Hit?", self.is_hit)
+        print("Coords:", self.coordinates, "Hit?", self.is_hit, "Ship?", self.ship != None)
+
 
     def draw_cell(self, screen):
         '''
@@ -77,7 +80,7 @@ class Cell:
         elif self.is_hit and self.ship == None:
             pygame.draw.rect(screen, "#DAE159", cell)
         # draw a cell that has been fired on with ship
-        else:
+        elif self.is_hit and self.ship != None:
             pygame.draw.rect(screen, "Red", cell)
 
 

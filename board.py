@@ -3,6 +3,7 @@ from ships.normal_ship import NormalShip
 from cell import Cell
 from board_factory import BoardFactory
 import math
+import random
 
 class Board:
 	# number of ships on the board
@@ -63,6 +64,34 @@ class Board:
 				cell.print_cell()
 
 			col += 1
+
+	def place_ships(self):
+		'''
+		For the prototype: place the ships in random positions
+
+		Recall: each cell references a ship that occupies it,
+		or None if no ship occupies it
+		'''
+
+		for i in range(self._nships):
+			current_ship = self._ships[i]
+
+			occupied = False
+
+			# Place a ship in a random spot
+
+			while not occupied:
+				x = random.randint(0, self._size-1)
+				y = random.randint(0, self._size-1)
+				
+				# go to cell x, y and put a ship there
+				cell = self._cells[x][y]
+
+				if cell.ship == None:
+					cell.ship = current_ship
+					occupied = True
+			
+
 
 	def draw_board(self, screen):
 		'''

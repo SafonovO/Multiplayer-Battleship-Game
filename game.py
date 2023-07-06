@@ -33,6 +33,9 @@ def play():
 	opponent_board = Board(8, 8, (150, 100),600)
 	opponent_board.build_board()
 
+	opponent_board.place_ships()
+	#opponent_board.print_cells()
+
 	'''
 	Build a board for my own pieces
 
