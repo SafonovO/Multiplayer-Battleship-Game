@@ -71,10 +71,12 @@ class Cell:
         cell = pygame.Rect(x, y, self._width, self._width)
 
         # draw a cell that has not been fired on
-        if self.is_hit == False:
+        if not self.is_hit:
             pygame.draw.rect(screen, "#59A2E1", cell, 2)
-
-        # draw a cell that has been fired on
+        # draw a cell that has been fired on with no ship
+        elif self.is_hit and self.ship == None:
+            pygame.draw.rect(screen, "#DAE159", cell)
+        # draw a cell that has been fired on with ship
         else:
             pygame.draw.rect(screen, "Red", cell)
 
