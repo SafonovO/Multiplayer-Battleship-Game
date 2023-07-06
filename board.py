@@ -119,5 +119,5 @@ class Board:
 		if row < 0 or column < 0 or row >= self._size or column >= self._size:
 			return None
 
-		return self._cells[row][column]
+		return self._cells[column][row]
 
