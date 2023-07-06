@@ -47,4 +47,45 @@ class Board:
 
 			col += 1
 
-	#def draw_board(self, location, size):
+	def draw_board(self, location, rect_size, screen):
+		'''
+		location is the coordinates of the top left corner
+
+		rect_size is the size of the total square
+
+		We need to evenly divide rect_size into self._size
+		equal segments.
+
+		screen is the screen on which we draw
+		'''
+		square_size = rect_size / self._size
+
+		'''
+		So, now we have the sqaure sizes. We draw them
+		in columns
+
+		x_0 and y_0 are the coords of the top left corner
+		of the board
+		'''
+		x_0 = location[0]
+		y_0 = location[1]
+
+		
+		for i in range(self._size):
+			for j in range(self._size):
+				'''
+				cell.draw_cell() takes the following arguments:
+
+				x, y are coordinates of the top left corner
+
+				cell_size is the side length of the cell
+
+				screen is the screen on which we want to draw it
+				'''
+				cell = self._cells[i][j]
+				x = x_0 + i*square_size
+				y = y_0 + j*square_size
+
+				cell.draw_cell(x, y, square_size, screen)
+
+

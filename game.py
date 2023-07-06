@@ -20,7 +20,7 @@ def get_font(size): # Returns Press-Start-2P in the desired size
 def play():
 	# Make a board
 	board = Board(8, 8)
-
+	board.build_board()
 
 	'''
 	Logic Time:
@@ -42,6 +42,23 @@ def play():
 
 		# Draw the playing surface as described above
 		pygame.draw.rect(SCREEN, "#042574", playing_surface)
+
+		'''
+		Draw the board:
+
+		draw_board() takes location, rectangle size, and screen
+
+		location will be (150, 100) (for now, might change)
+
+		rectangle size will be 600 (for now)
+
+		These parameters are all subject to change and 
+		their true values can be found below
+
+		screen is the screen on which the stuff will
+		be drawn.
+		'''
+		board.draw_board((150, 100), 600, SCREEN)
 
 
 		for event in pygame.event.get():

@@ -42,6 +42,20 @@ class Cell:
     def print_cell(self):
         print("Coords:", self.coordinates, "Hit?", self.is_hit)
 
+    def draw_cell(self, x, y, cell_size, screen):
+        '''
+        x, y are the coordinate of the top left corner
+        of the cell.
+
+        cell_size is the side length (pixels) of the cell
+
+        screen is the screen on which we draw
+        '''
+
+        cell = pygame.Rect(x, y, cell_size, cell_size)
+
+        pygame.draw.rect(screen, "#59A2E1", cell, 2)
+
 
 '''
 class UICell(Button):

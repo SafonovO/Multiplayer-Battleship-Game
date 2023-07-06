@@ -30,4 +30,6 @@ class BoardFactory:
 				row.append(Cell((x, y)))
 			cells.append(row)
 
+		print("success")
+
 		return cells
