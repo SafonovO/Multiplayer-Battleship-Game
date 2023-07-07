@@ -75,7 +75,23 @@ def play():
 	my_board_label = get_font(30).render("MY BOARD", True, "White")
 	my_board_label_rect = my_board_label.get_rect(center=(1000, 325))
 	
+	# create a game using the manager
 	manager.create_game([my_board, opponent_board])
+
+	# Create a confirm button
+	confirm_button = Button(image=pygame.image.load("assets/ConfirmButton.png"), pos=(1000, 250))
+	confirm_button = TextButton(confirm_button, text="FIRE", font=get_font(20))
+
+	# Create text
+	select_text = get_font(15).render("YOU HAVE SELECTED:", True, "White")
+	select_text_rect = select_text.get_rect(center=(1000, 150))
+
+	# Coord text
+	coord_text = None
+	coord_text_rect = None
+
+	# track the selected cell
+	active_cell = None
 
 	while True:
 		mouse = pygame.mouse.get_pos()
@@ -90,12 +106,24 @@ def play():
 		SCREEN.blit(opponent_board_label, opponent_board_label_rect)
 		SCREEN.blit(my_board_label, my_board_label_rect)
 
+		SCREEN.blit(select_text, select_text_rect)
+
 		# draw opponents board
 		opponent_board.draw_board(SCREEN)
 
 		# draw my board
 		my_board.draw_board(SCREEN)
 
+		# draw the confirm button
+		confirm_button.render(SCREEN, mouse)
+
+		# draw the coord text if it is not None
+		if coord_text != None and coord_text_rect != None:
+			SCREEN.blit(coord_text, coord_text_rect)
+
+		# Draw active cell if it is not None
+		if active_cell != None:
+			active_cell.draw_selected_cell(SCREEN)
 
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
@@ -106,8 +134,29 @@ def play():
 
 				# active cell is teh cell we are clicking on
 				if active_cell != None:
-					# Fire on that cell
+					'''
+					We have selected a cell.
+
+					First, display the cell as text on screen.
+
+					If the user then clicks FIRE, we call the game
+					manager to execute the fire
+					'''
+					cell_coords = active_cell.coordinates
+					letter = Board.letters[cell_coords[0]]
+					num = cell_coords[1]+1
+
+					coord_text = get_font(15).render("({}, {})".format(letter, num), True, "White")
+					coord_text_rect = coord_text.get_rect(center=(1000, 200))
+
+				# the active cell will be drawn on the next loop
+				# if we hit confirm, fire with the manager
+				if confirm_button.is_hovered(mouse) and active_cell != None:
 					manager.action(active_cell)
+					active_cell = None
+
+					coord_text = None
+					coord_text_rect = None
 
 		#pygame.display.update()
 		pygame.display.flip()

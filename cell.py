@@ -109,6 +109,20 @@ class Cell:
             pygame.draw.rect(screen, "Red", cell)
             # draw the X
             screen.blit(x_text, x_rect)
+
+
+    def draw_selected_cell(self, screen):
+        # Draw a special cell that has been selected
+        x = self._location[0]
+        y = self._location[1]
+
+        cell = pygame.Rect(x, y, self._width, self._width)
+
+        # Get the center of the cell
+        cell_center = self.get_cell_center()
+
+        # Draw teh cell in green
+        pygame.draw.rect(screen, "Green", cell)        
     
     def get_cell_center(self):
         return (self._location[0] + (0.5*self._width), self._location[1] + (0.5*self._width))
