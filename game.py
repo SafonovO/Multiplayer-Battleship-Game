@@ -8,7 +8,7 @@ from game_manager import GameManager
 # Create a pygame window as a global constant
 pygame.init()
 
-SCREEN = pygame.display.set_mode((1700, 800))
+SCREEN = pygame.display.set_mode((1300, 800))
 pygame.display.set_caption("Menu")
 
 BG = pygame.image.load("assets/Background.png")
@@ -53,7 +53,7 @@ def play():
 	My board should be much smaller than opponent's board
 	since it is not the main focus
 	'''
-	my_board = Board(size=8, num_ships=8, coords=(1250, 375), width=300, display=True)
+	my_board = Board(size=8, num_ships=8, coords=(850, 375), width=300, display=True)
 	my_board.build_board()
 	my_board.place_ships()
 
@@ -66,14 +66,14 @@ def play():
 	(100, 50)
 	'''
 
-	playing_surface = pygame.Rect(100, 50, 1500, 700)
+	playing_surface = pygame.Rect(100, 50, 1100, 700)
 
 	# setup labels for the boards
 	opponent_board_label = get_font(30).render("OPPONENT'S BOARD", True, "White")
 	opponent_board_label_rect = opponent_board_label.get_rect(center=(425, 100))
 
 	my_board_label = get_font(30).render("MY BOARD", True, "White")
-	my_board_label_rect = my_board_label.get_rect(center=(1400, 325))
+	my_board_label_rect = my_board_label.get_rect(center=(1000, 325))
 	
 	manager.create_game([my_board, opponent_board])
 
@@ -118,21 +118,21 @@ def setup():
 
 	# Render text
 	text = get_font(70).render("SETUP YOUR SHIPS", True, "White")
-	text_rect = text.get_rect(center=(850, 100))
+	text_rect = text.get_rect(center=(650, 100))
 
 	# Placeholder text for now
-	placeholder1_text = get_font(20).render("This function has not been implemented yet for this prototype.", True, "White")
-	placeholder2_text = get_font(30).render("Please continue to game.", True, "White")
-	placeholder3_text = get_font(30).render("All ships will be 1x1 and placed randomly", True, "White")
+	placeholder1_text = get_font(15).render("This function has not been implemented yet for this prototype.", True, "White")
+	placeholder2_text = get_font(15).render("Please continue to game.", True, "White")
+	placeholder3_text = get_font(15).render("All ships will be 1x1 and placed randomly", True, "White")
 
 
-	placeholder1_rect = placeholder1_text.get_rect(center=(850, 300))
-	placeholder2_rect = placeholder2_text.get_rect(center=(850, 350))
-	placeholder3_rect = placeholder3_text.get_rect(center=(850, 400))
+	placeholder1_rect = placeholder1_text.get_rect(center=(650, 300))
+	placeholder2_rect = placeholder2_text.get_rect(center=(650, 350))
+	placeholder3_rect = placeholder3_text.get_rect(center=(650, 400))
 
 
 	# Continue to gameplay button
-	continue_button = Button(image=pygame.image.load("assets/Options Rect.png"), pos=(850, 550), 
+	continue_button = Button(image=pygame.image.load("assets/Options Rect.png"), pos=(650, 550), 
 						text_input="CONTINUE", font=get_font(60), base_color="White", hovering_color="#d7fcd4")
 
 	while True:
@@ -173,12 +173,12 @@ def main_menu():
 	# The loop for the main menu
 	# render menu text, buttons
 	text = get_font(100).render("BATTLESHIP", True, "#b68f40")
-	text_rect = text.get_rect(center=(850, 100))
+	text_rect = text.get_rect(center=(650, 100))
 
-	play_button = Button(image=pygame.image.load("assets/Play Rect.png"), pos=(850, 250), 
+	play_button = Button(image=pygame.image.load("assets/Play Rect.png"), pos=(650, 250), 
 						text_input="PLAY", font=get_font(75), base_color="White", hovering_color="#d7fcd4")
 	
-	quit_button = Button(image=pygame.image.load("assets/Quit Rect.png"), pos=(850, 550), 
+	quit_button = Button(image=pygame.image.load("assets/Quit Rect.png"), pos=(650, 550), 
 						text_input="QUIT", font=get_font(75), base_color="White", hovering_color="#d7fcd4")
 	while True:
 		# Draw the background
