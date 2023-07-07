@@ -48,15 +48,10 @@ class GameManager:
                 elif(self.turn==2):
                     self.turn=1
             return self.endgame()
+
     '''
     checks if the game is over
     '''
-    def draw(self, SCREEN):
-        self.__player1.draw_board(SCREEN)
-        self.__player2.draw_board(SCREEN)
-        
-        
-    
     def endgame(self):
         if(self.__player1.gameover() or self.__player2.gameover()):
                 return 0
