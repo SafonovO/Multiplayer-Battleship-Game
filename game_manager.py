@@ -3,7 +3,7 @@ from board import Board
 from cell import Cell
 from enum import Enum
 from typing import Union
-
+#from Ai import Ai--
 class Turn(Enum):
      GAME_OVER = 0
      PLAYER_ONE = 1
@@ -25,7 +25,9 @@ class GameManager:
     turn = Turn.PLAYER_ONE
     __player1: Union[Board, None] = None
     __player2: Union[Board, None] = None
-    # __aiplayer= AI()
+    #__ai= Ai()---
+    __aigame=True
+    # __aiplayer= AI()---
     #singleton class
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -42,26 +44,34 @@ class GameManager:
     '''
     #called from play() in game.py
     def action(self, active_cell):
-        #active_cell executes the hit
-            if (not isinstance(active_cell, Cell)):
-               return
-            if not active_cell.hit():
-                
-                '''
-                for phase two calling AI to make a move
-                later version will differentiate between
-                ''' 
-                if self.turn == Turn.PLAYER_ONE:
-                    # self.__aiplayer.guess()
-                    pass
-                elif self.turn == Turn.PLAYER_TWO:
-                    self.turn = Turn.PLAYER_ONE
-            return self.endgame()
+        #checks if it's the right persons turn then proceeds with action
+        if(self.__aigame):
+                self.accepted_action(active_cell)
+                #maybe call ai here? depends on ai implementation---
+        elif(self.turn == Turn.PLAYER_ONE and self.__player1.contains(active_cell)):
+            self.accepted_action(active_cell)
+        elif(self.turn == Turn.PLAYER_TWO and self.__player2.contains(active_cell)):
+            self.accepted_action(active_cell)
 
+    #executes action
+    def accepted_action(self, active_cell):
+        if not isinstance(active_cell, Cell):
+            return
+        if (not active_cell.hit()):
+            '''
+            for phase two calling AI to make a move
+            later version will differentiate between
+            '''                 
+            if self.turn == Turn.PLAYER_ONE:
+                self.turn = Turn.PLAYER_TWO
+                pass
+            elif self.turn == Turn.PLAYER_TWO:
+                self.turn = Turn.PLAYER_ONE
+            self.endgame()
     '''
     checks if the game is over
     '''
     def endgame(self):
         if self.__player1.gameover() or self.__player2.gameover():
-            return Turn.GAME_OVER
-        return self.turn
+            turn = Turn.GAME_OVER
+        turn = self.turn
