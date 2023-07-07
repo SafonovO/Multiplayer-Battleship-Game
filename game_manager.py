@@ -57,7 +57,7 @@ class GameManager:
             return self.endgame()
 
     '''
-    checks if the game is over
+        initializes boards
     '''
     def endgame(self):
         if self.__player1.gameover() or self.__player2.gameover():
