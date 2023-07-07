@@ -13,9 +13,9 @@ BG = pygame.image.load("assets/Background.png")
 
 
 
-
 def get_font(size): # Returns Press-Start-2P in the desired size
 	return pygame.font.Font("assets/font.ttf", size)
+
 
 def play():
 	'''
@@ -149,8 +149,7 @@ def setup():
 		SCREEN.blit(placeholder2_text, placeholder2_rect)
 		SCREEN.blit(placeholder3_text, placeholder3_rect)
 
-		CONTINUE_BUTTON.changeColor(SETUP_MOUSE_POS)
-		CONTINUE_BUTTON.update(SCREEN)
+		CONTINUE_BUTTON.update(SCREEN, SETUP_MOUSE_POS)
 		
 		# get events
 		for event in pygame.event.get():
@@ -160,7 +159,7 @@ def setup():
 
 			# if we clicked, find out if we clicked on a button and execute that buttons action
 			if event.type == pygame.MOUSEBUTTONDOWN:
-				if CONTINUE_BUTTON.checkForInput(SETUP_MOUSE_POS):
+				if CONTINUE_BUTTON.is_clicked(SETUP_MOUSE_POS):
 					play()
 
 		pygame.display.update()
@@ -192,8 +191,7 @@ def main_menu():
 		SCREEN.blit(MENU_TEXT, MENU_RECT)
 
 		for button in [PLAY_BUTTON, QUIT_BUTTON]:
-			button.changeColor(MENU_MOUSE_POS)
-			button.update(SCREEN)
+			button.update(SCREEN, MENU_MOUSE_POS)
 		
 		# get events
 		for event in pygame.event.get():
@@ -203,10 +201,10 @@ def main_menu():
 
 			# if we clicked, find out if we clicked on a button and execute that buttons action
 			if event.type == pygame.MOUSEBUTTONDOWN:
-				if PLAY_BUTTON.checkForInput(MENU_MOUSE_POS):
+				if PLAY_BUTTON.is_clicked(MENU_MOUSE_POS):
 					setup()
 
-				if QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
+				if QUIT_BUTTON.is_clicked(MENU_MOUSE_POS):
 					pygame.quit()
 					# run = False
 					sys.exit()
