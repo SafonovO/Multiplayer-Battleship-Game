@@ -117,8 +117,8 @@ def setup():
 	# Ship setup screen
 
 	# Render text
-	SETUP_TEXT = get_font(70).render("SETUP YOUR SHIPS", True, "White")
-	SETUP_RECT = SETUP_TEXT.get_rect(center=(850, 100))
+	text = get_font(70).render("SETUP YOUR SHIPS", True, "White")
+	text_rect = text.get_rect(center=(850, 100))
 
 	# Placeholder text for now
 	placeholder1_text = get_font(20).render("This function has not been implemented yet for this prototype.", True, "White")
@@ -132,7 +132,7 @@ def setup():
 
 
 	# Continue to gameplay button
-	CONTINUE_BUTTON = Button(image=pygame.image.load("assets/Options Rect.png"), pos=(850, 550), 
+	continue_button = Button(image=pygame.image.load("assets/Options Rect.png"), pos=(850, 550), 
 						text_input="CONTINUE", font=get_font(60), base_color="White", hovering_color="#d7fcd4")
 
 	while True:
@@ -140,16 +140,16 @@ def setup():
 		SCREEN.blit(BG, (0, 0))
 
 		# get mouse position
-		SETUP_MOUSE_POS = pygame.mouse.get_pos()
+		mouse = pygame.mouse.get_pos()
 
 
-		SCREEN.blit(SETUP_TEXT, SETUP_RECT)
+		SCREEN.blit(text, text_rect)
 
 		SCREEN.blit(placeholder1_text, placeholder1_rect)
 		SCREEN.blit(placeholder2_text, placeholder2_rect)
 		SCREEN.blit(placeholder3_text, placeholder3_rect)
 
-		CONTINUE_BUTTON.update(SCREEN, SETUP_MOUSE_POS)
+		continue_button.update(SCREEN, mouse)
 		
 		# get events
 		for event in pygame.event.get():
@@ -159,7 +159,7 @@ def setup():
 
 			# if we clicked, find out if we clicked on a button and execute that buttons action
 			if event.type == pygame.MOUSEBUTTONDOWN:
-				if CONTINUE_BUTTON.is_clicked(SETUP_MOUSE_POS):
+				if continue_button.is_clicked(mouse):
 					play()
 
 		pygame.display.update()
@@ -172,26 +172,26 @@ def setup():
 def main_menu():
 	# The loop for the main menu
 	# render menu text, buttons
-	MENU_TEXT = get_font(100).render("MAIN MENU", True, "#b68f40")
-	MENU_RECT = MENU_TEXT.get_rect(center=(850, 100))
+	text = get_font(100).render("BATTLESHIP", True, "#b68f40")
+	text_rect = text.get_rect(center=(850, 100))
 
-	PLAY_BUTTON = Button(image=pygame.image.load("assets/Play Rect.png"), pos=(850, 250), 
+	play_button = Button(image=pygame.image.load("assets/Play Rect.png"), pos=(850, 250), 
 						text_input="PLAY", font=get_font(75), base_color="White", hovering_color="#d7fcd4")
 	
-	QUIT_BUTTON = Button(image=pygame.image.load("assets/Quit Rect.png"), pos=(850, 550), 
+	quit_button = Button(image=pygame.image.load("assets/Quit Rect.png"), pos=(850, 550), 
 						text_input="QUIT", font=get_font(75), base_color="White", hovering_color="#d7fcd4")
 	while True:
 		# Draw the background
 		SCREEN.blit(BG, (0, 0))
 
 		# Get mouse position
-		MENU_MOUSE_POS = pygame.mouse.get_pos()
+		mouse = pygame.mouse.get_pos()
 
 		# draw meny text, buttons
-		SCREEN.blit(MENU_TEXT, MENU_RECT)
+		SCREEN.blit(text, text_rect)
 
-		for button in [PLAY_BUTTON, QUIT_BUTTON]:
-			button.update(SCREEN, MENU_MOUSE_POS)
+		for button in [play_button, quit_button]:
+			button.update(SCREEN, mouse)
 		
 		# get events
 		for event in pygame.event.get():
@@ -201,10 +201,10 @@ def main_menu():
 
 			# if we clicked, find out if we clicked on a button and execute that buttons action
 			if event.type == pygame.MOUSEBUTTONDOWN:
-				if PLAY_BUTTON.is_clicked(MENU_MOUSE_POS):
+				if play_button.is_clicked(mouse):
 					setup()
 
-				if QUIT_BUTTON.is_clicked(MENU_MOUSE_POS):
+				if quit_button.is_clicked(mouse):
 					pygame.quit()
 					# run = False
 					sys.exit()

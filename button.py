@@ -1,3 +1,18 @@
+'''
+CITATION: I got this button class from a youtube video 
+
+https://www.youtube.com/watch?v=GMBqjxcKogA&embeds_referring_euri=
+https%3A%2F%2Fwww.google.com%2Fsearch%3Fq%3Dbuild%2Bmenu%2Bin%2Bpygame%
+26rlz%3D1C1CHBF_enCA923CA923%26oq%3Dbuild%2Bmenu%2Bin%2Bpygame%26aqs%3D
+chrome..69i57.2316j0j4&source_ve_path=Mjg2NjY&feature=emb_logo&ab_channel=
+BaralTech
+
+Which linked to this git repo:
+
+https://github.com/baraltech/Menu-System-PyGame
+
+From there, I took the Button class that is found in this file
+'''
 class Button():
 	def __init__(self, image, pos, text_input, font, base_color, hovering_color):
 		self.image = image
