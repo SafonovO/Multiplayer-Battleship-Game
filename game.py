@@ -130,7 +130,16 @@ def play():
 				pygame.quit()
 				sys.exit()
 			if event.type == pygame.MOUSEBUTTONDOWN:
-				active_cell = opponent_board.get_active_cell(mouse)
+				if opponent_board.get_active_cell(mouse) != None: 
+					active_cell = opponent_board.get_active_cell(mouse)
+
+				# if we hit confirm, fire with the manager
+				if confirm_button.is_hovered(mouse):
+					manager.action(active_cell)
+					active_cell = None
+
+					coord_text = None
+					coord_text_rect = None
 
 				# active cell is teh cell we are clicking on
 				if active_cell != None:
@@ -150,14 +159,6 @@ def play():
 					coord_text_rect = coord_text.get_rect(center=(1000, 200))
 
 				# the active cell will be drawn on the next loop
-				# if we hit confirm, fire with the manager
-				if confirm_button.is_hovered(mouse) and active_cell != None:
-					manager.action(active_cell)
-					active_cell = None
-
-					coord_text = None
-					coord_text_rect = None
-
 		#pygame.display.update()
 		pygame.display.flip()
 
