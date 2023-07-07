@@ -1,15 +1,13 @@
 '''
-CITATION: I got this button class from a youtube video 
+CITATION: This button class is based on code from https://github.com/baraltech/Menu-System-PyGame
 
-https://www.youtube.com/watch?v=GMBqjxcKogA
-
-Which linked to this git repo:
-
-https://github.com/baraltech/Menu-System-PyGame
-
-From there, I took the Button class that is found in this file
+as introduced in this YouTube video: https://www.youtube.com/watch?v=GMBqjxcKogA
 '''
-class Button():
+class BaseButton():
+	def render(self) -> None:
+		pass
+
+class Button(BaseButton):
 	def __init__(self, image, pos, text_input, font, base_color, hovering_color):
 		self.image = image
 		self.x_pos = pos[0]
@@ -23,7 +21,7 @@ class Button():
 		self.rect = self.image.get_rect(center=(self.x_pos, self.y_pos))
 		self.text_rect = self.text.get_rect(center=(self.x_pos, self.y_pos))
 
-	def update(self, screen, mouse_position):
+	def render(self, screen, mouse_position):
 		color = self.base_color
 
 		if mouse_position[0] in range(self.rect.left, self.rect.right) and mouse_position[1] in range(self.rect.top, self.rect.bottom):
@@ -37,3 +35,16 @@ class Button():
 
 	def is_clicked(self, position):
 		return position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top, self.rect.bottom)
+
+class BaseButtonDecorator(BaseButton):
+	_button: BaseButton = None
+	
+	def __init__(self, button: BaseButton) -> None:
+		self._button = button
+
+	@property
+	def button(self) -> BaseButton:
+		return self._button
+
+	def render(self) -> None:
+		return self._button.render()

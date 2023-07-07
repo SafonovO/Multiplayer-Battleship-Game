@@ -144,7 +144,7 @@ def setup():
 		SCREEN.blit(placeholder2_text, placeholder2_rect)
 		SCREEN.blit(placeholder3_text, placeholder3_rect)
 
-		continue_button.update(SCREEN, mouse)
+		continue_button.render(SCREEN, mouse)
 		
 		# get events
 		for event in pygame.event.get():
@@ -186,7 +186,7 @@ def main_menu():
 		SCREEN.blit(text, text_rect)
 
 		for button in [play_button, quit_button]:
-			button.update(SCREEN, mouse)
+			button.render(SCREEN, mouse)
 		
 		# get events
 		for event in pygame.event.get():
