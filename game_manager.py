@@ -1,7 +1,14 @@
+# from ai import AI
 from board import Board
 from cell import Cell
-# from AI import AI
-import pygame
+from enum import Enum
+from typing import Union
+
+class Turn(Enum):
+     GAME_OVER = 0
+     PLAYER_ONE = 1
+     PLAYER_TWO = 2
+
 class GameManager:
     
     '''
@@ -15,9 +22,9 @@ class GameManager:
     1= player1 
     2=player2
     '''
-    turn=1
-    __player1 = None
-    __player2 = None
+    turn = Turn.PLAYER_ONE
+    __player1: Union[Board, None] = None
+    __player2: Union[Board, None] = None
     # __aiplayer= AI()
     #singleton class
     def __new__(cls):
@@ -36,23 +43,23 @@ class GameManager:
     #called from play() in game.py
     def action(self, active_cell):
         #active_cell executes the hit
-            if (not active_cell.hit()):
+            if not active_cell.hit():
                 
                 '''
                 for phase two calling AI to make a move
                 later version will differentiate between
                 ''' 
-                if (self.turn==1):
+                if self.turn == Turn.PLAYER_ONE:
                     # self.__aiplayer.guess()
                     pass
-                elif(self.turn==2):
-                    self.turn=1
+                elif self.turn == Turn.PLAYER_TWO:
+                    self.turn = Turn.PLAYER_ONE
             return self.endgame()
 
     '''
     checks if the game is over
     '''
     def endgame(self):
-        if(self.__player1.gameover() or self.__player2.gameover()):
-                return 0
+        if self.__player1.gameover() or self.__player2.gameover():
+            return Turn.GAME_OVER
         return self.turn
