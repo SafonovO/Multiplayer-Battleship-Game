@@ -173,8 +173,8 @@ def setup():
 def main_menu():
 	# The loop for the main menu
 	# render menu text, buttons
-	MENU_TEXT = get_font(100).render("MAIN MENU", True, "#b68f40")
-	MENU_RECT = MENU_TEXT.get_rect(center=(850, 100))
+	text = get_font(100).render("BATTLESHIP", True, "#b68f40")
+	text_rect = text.get_rect(center=(850, 100))
 
 	PLAY_BUTTON = Button(image=pygame.image.load("assets/Play Rect.png"), pos=(850, 250), 
 						text_input="PLAY", font=get_font(75), base_color="White", hovering_color="#d7fcd4")
@@ -189,7 +189,7 @@ def main_menu():
 		MENU_MOUSE_POS = pygame.mouse.get_pos()
 
 		# draw meny text, buttons
-		SCREEN.blit(MENU_TEXT, MENU_RECT)
+		SCREEN.blit(text, text_rect)
 
 		for button in [PLAY_BUTTON, QUIT_BUTTON]:
 			button.changeColor(MENU_MOUSE_POS)
