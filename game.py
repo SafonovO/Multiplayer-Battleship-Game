@@ -90,7 +90,7 @@ def play():
 				# active cell is teh cell we are clicking on
 				if active_cell != None:
 					# Fire on that cell
-					active_cell.hit()
+					manager.action(active_cell)
 
 		#pygame.display.update()
 		pygame.display.flip()
