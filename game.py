@@ -1,6 +1,6 @@
 import pygame
 import sys
-from button import Button
+from button import Button, TextButton
 from board import Board
 from fonts import get_font
 from game_manager import GameManager
@@ -132,8 +132,8 @@ def setup():
 
 
 	# Continue to gameplay button
-	continue_button = Button(image=pygame.image.load("assets/Options Rect.png"), pos=(650, 550), 
-						text_input="CONTINUE", font=get_font(60), base_color="White", hovering_color="#d7fcd4")
+	continue_button = Button(image=pygame.image.load("assets/Options Rect.png"), pos=(650, 550))
+	continue_button = TextButton(continue_button, text="CONTINUE", font=get_font(60))
 
 	while True:
 		# paint background
@@ -175,11 +175,12 @@ def main_menu():
 	text = get_font(100).render("BATTLESHIP", True, "#b68f40")
 	text_rect = text.get_rect(center=(650, 100))
 
-	play_button = Button(image=pygame.image.load("assets/Play Rect.png"), pos=(650, 250), 
-						text_input="PLAY", font=get_font(75), base_color="White", hovering_color="#d7fcd4")
+	play_button = Button(image=pygame.image.load("assets/Play Rect.png"), pos=(650, 250))
+	play_button = TextButton(play_button, text="PLAY", font=get_font(75))
 	
-	quit_button = Button(image=pygame.image.load("assets/Quit Rect.png"), pos=(650, 550), 
-						text_input="QUIT", font=get_font(75), base_color="White", hovering_color="#d7fcd4")
+	quit_button = Button(image=pygame.image.load("assets/Quit Rect.png"), pos=(650, 550))
+	quit_button = TextButton(quit_button, text="QUIT", font=get_font(75))
+
 	while True:
 		# Draw the background
 		SCREEN.blit(BG, (0, 0))
