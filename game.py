@@ -117,8 +117,8 @@ def setup():
 	# Ship setup screen
 
 	# Render text
-	SETUP_TEXT = get_font(70).render("SETUP YOUR SHIPS", True, "White")
-	SETUP_RECT = SETUP_TEXT.get_rect(center=(850, 100))
+	text = get_font(70).render("SETUP YOUR SHIPS", True, "White")
+	text_rect = text.get_rect(center=(850, 100))
 
 	# Placeholder text for now
 	placeholder1_text = get_font(20).render("This function has not been implemented yet for this prototype.", True, "White")
@@ -132,7 +132,7 @@ def setup():
 
 
 	# Continue to gameplay button
-	CONTINUE_BUTTON = Button(image=pygame.image.load("assets/Options Rect.png"), pos=(850, 550), 
+	continue_button = Button(image=pygame.image.load("assets/Options Rect.png"), pos=(850, 550), 
 						text_input="CONTINUE", font=get_font(60), base_color="White", hovering_color="#d7fcd4")
 
 	while True:
@@ -140,17 +140,17 @@ def setup():
 		SCREEN.blit(BG, (0, 0))
 
 		# get mouse position
-		SETUP_MOUSE_POS = pygame.mouse.get_pos()
+		mouse = pygame.mouse.get_pos()
 
 
-		SCREEN.blit(SETUP_TEXT, SETUP_RECT)
+		SCREEN.blit(text, text_rect)
 
 		SCREEN.blit(placeholder1_text, placeholder1_rect)
 		SCREEN.blit(placeholder2_text, placeholder2_rect)
 		SCREEN.blit(placeholder3_text, placeholder3_rect)
 
-		CONTINUE_BUTTON.changeColor(SETUP_MOUSE_POS)
-		CONTINUE_BUTTON.update(SCREEN)
+		continue_button.changeColor(mouse)
+		continue_button.update(SCREEN)
 		
 		# get events
 		for event in pygame.event.get():
@@ -160,7 +160,7 @@ def setup():
 
 			# if we clicked, find out if we clicked on a button and execute that buttons action
 			if event.type == pygame.MOUSEBUTTONDOWN:
-				if CONTINUE_BUTTON.checkForInput(SETUP_MOUSE_POS):
+				if continue_button.checkForInput(mouse):
 					play()
 
 		pygame.display.update()
