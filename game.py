@@ -2,10 +2,10 @@ import pygame
 import sys
 from button import Button
 from board import Board
-
+from game_manager import game_manager
 # Create a pygame window as a global constant
 pygame.init()
-
+manager = game_manager()
 SCREEN = pygame.display.set_mode((1700, 800))
 pygame.display.set_caption("Menu")
 

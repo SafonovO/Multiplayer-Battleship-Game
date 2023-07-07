@@ -25,7 +25,7 @@ class game_manager:
             cls.instance = super(game_manager, cls).__new__(cls)
         return cls.instance
     
-    @staticmethod
+
     #might be used later for phase two not using
     def create_game(self, game_type, size, num_of_ships):
         #initializes Board class
@@ -44,7 +44,7 @@ class game_manager:
     Tracks turn
     needs to know if the cell hit contains a ship
     '''
-    @staticmethod
+  
     #called from play() in game.py
     def action(self, active_cell):
         #active_cell executes the hit
@@ -55,21 +55,12 @@ class game_manager:
                 later version will differentiate between
                 ''' 
                 if (self.turn==1):
-                    self.__aiplayer.guess()
+                    self.turn=2
                 elif(self.turn==2):
                     self.turn=1
-            return self.endgame()
     '''
-    checks if the game is over
+        initializes boards
     '''
     def draw(self, SCREEN):
         self.player1.draw_board(SCREEN)
         self.player2.draw_board(SCREEN)
-        
-        
-    
-    @staticmethod
-    def endgame(self):
-        if(self.player1.gameover() or self.player2.gameover()):
-                return 0
-        return self.turn
