@@ -176,23 +176,23 @@ def main_menu():
 	text = get_font(100).render("BATTLESHIP", True, "#b68f40")
 	text_rect = text.get_rect(center=(850, 100))
 
-	PLAY_BUTTON = Button(image=pygame.image.load("assets/Play Rect.png"), pos=(850, 250), 
+	play_button = Button(image=pygame.image.load("assets/Play Rect.png"), pos=(850, 250), 
 						text_input="PLAY", font=get_font(75), base_color="White", hovering_color="#d7fcd4")
 	
-	QUIT_BUTTON = Button(image=pygame.image.load("assets/Quit Rect.png"), pos=(850, 550), 
+	quit_button = Button(image=pygame.image.load("assets/Quit Rect.png"), pos=(850, 550), 
 						text_input="QUIT", font=get_font(75), base_color="White", hovering_color="#d7fcd4")
 	while True:
 		# Draw the background
 		SCREEN.blit(BG, (0, 0))
 
 		# Get mouse position
-		MENU_MOUSE_POS = pygame.mouse.get_pos()
+		mouse = pygame.mouse.get_pos()
 
 		# draw meny text, buttons
 		SCREEN.blit(text, text_rect)
 
-		for button in [PLAY_BUTTON, QUIT_BUTTON]:
-			button.changeColor(MENU_MOUSE_POS)
+		for button in [play_button, quit_button]:
+			button.changeColor(mouse)
 			button.update(SCREEN)
 		
 		# get events
@@ -203,10 +203,10 @@ def main_menu():
 
 			# if we clicked, find out if we clicked on a button and execute that buttons action
 			if event.type == pygame.MOUSEBUTTONDOWN:
-				if PLAY_BUTTON.checkForInput(MENU_MOUSE_POS):
+				if play_button.checkForInput(mouse):
 					setup()
 
-				if QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
+				if quit_button.checkForInput(mouse):
 					pygame.quit()
 					# run = False
 					sys.exit()
