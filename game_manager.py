@@ -1,6 +1,5 @@
 from board import Board
 from cell import Cell
-from AI import AI
 import pygame
 class game_manager:
     
@@ -18,7 +17,7 @@ class game_manager:
     turn=1
     __player1 = None
     __player2 = None
-    __aiplayer= AI()
+
     #singleton class
     def __new__(cls):
         if not hasattr(cls, 'instance'):
