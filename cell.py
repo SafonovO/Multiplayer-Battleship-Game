@@ -2,6 +2,7 @@ import pygame
 #import pygame_gui
 #from menu_views.menu_options import MenuElement
 from ships.normal_ship import Ship
+from fonts import get_font
 
 '''
 
@@ -77,6 +78,16 @@ class Cell:
 
         cell = pygame.Rect(x, y, self._width, self._width)
 
+        # Get the center of the cell
+        cell_center = self.get_cell_center()
+
+        # If cell is a hit ship, print an X on it
+        x_text = get_font(10).render("X", True, "White")
+        x_rect = x_text.get_rect(center=cell_center)
+
+        # if cell missed, print a - on it
+        dash_text = get_font(10).render("-", True, "Black")
+        dash_rect = dash_text.get_rect(center=cell_center)
 
         # if display, draw unhit ships differently
         if display and self.ship != None and self.is_hit == False:
@@ -88,12 +99,36 @@ class Cell:
 
         # draw a cell that has been fired on with no ship
         elif self.is_hit and self.ship == None:
+            # draw the square yellow
             pygame.draw.rect(screen, "#DAE159", cell)
+            # draw the dash
+            screen.blit(dash_text, dash_rect)
 
         # draw a cell that has been fired on with ship
         elif self.is_hit and self.ship != None:
             pygame.draw.rect(screen, "Red", cell)
-       
+            # draw the X
+            screen.blit(x_text, x_rect)
+
+
+    def draw_selected_cell(self, screen):
+        # Draw a special cell that has been selected
+        x = self._location[0]
+        y = self._location[1]
+
+        cell = pygame.Rect(x, y, self._width, self._width)
+
+        # Get the center of the cell
+        cell_center = self.get_cell_center()
+
+        # Draw teh cell in green
+        pygame.draw.rect(screen, "Green", cell)        
+    
+    def get_cell_center(self):
+        return (self._location[0] + (0.5*self._width), self._location[1] + (0.5*self._width))
+
+    def get_width(self):
+        return self._width
 
 
 '''
