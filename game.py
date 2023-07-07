@@ -67,10 +67,10 @@ def play():
 
 	# setup labels for the boards
 	opponent_board_label = get_font(30).render("OPPONENT'S BOARD", True, "White")
-	opponent_board_label_rect = opponent_board_label.get_rect(center=(425, 125))
+	opponent_board_label_rect = opponent_board_label.get_rect(center=(425, 100))
 
 	my_board_label = get_font(30).render("MY BOARD", True, "White")
-	my_board_label_rect = my_board_label.get_rect(center=(1400, 350))
+	my_board_label_rect = my_board_label.get_rect(center=(1400, 325))
 
 	while True:
 		mouse = pygame.mouse.get_pos()
