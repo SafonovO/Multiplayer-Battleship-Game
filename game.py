@@ -3,6 +3,7 @@ import sys
 from button import Button
 from board import Board
 from fonts import get_font
+from game_manager import GameManager
 
 # Create a pygame window as a global constant
 pygame.init()
@@ -11,6 +12,8 @@ SCREEN = pygame.display.set_mode((1700, 800))
 pygame.display.set_caption("Menu")
 
 BG = pygame.image.load("assets/Background.png")
+
+manager = GameManager()
 
 def play():
 	'''
@@ -71,6 +74,8 @@ def play():
 
 	my_board_label = get_font(30).render("MY BOARD", True, "White")
 	my_board_label_rect = my_board_label.get_rect(center=(1400, 325))
+	
+	manager.create_game([my_board, opponent_board])
 
 	while True:
 		mouse = pygame.mouse.get_pos()

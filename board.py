@@ -210,3 +210,5 @@ class Board:
 
         return self._cells[column][row]
 
+    def gameover(self):
+        return all(ship.sunk() for ship in self._ships)
