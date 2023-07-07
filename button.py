@@ -7,7 +7,7 @@ CITATION: This button class is based on code from https://github.com/baraltech/M
 as introduced in this YouTube video: https://www.youtube.com/watch?v=GMBqjxcKogA
 '''
 class Button():
-	def __init__(self, pos: Tuple[int, int], image) -> None:
+	def __init__(self, pos: Tuple[int, int], image: pygame.Surface) -> None:
 		self.pos = pos
 		self.x_pos = pos[0]
 		self.y_pos = pos[1]
@@ -18,13 +18,16 @@ class Button():
 		if self.image is not None:
 			screen.blit(self.image, self.rect)
 
-	def is_clicked(self, position) -> bool:
+	def is_hovered(self, position) -> bool:
 		return position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top, self.rect.bottom)
+	
+	def on_click(self, position):
+		pass
 
 class ButtonDecorator(Button):
-	_button: Button = None
 	
 	def __init__(self, button: Button) -> None:
+		super().__init__(button.pos, button.image)
 		self._button = button
 
 	@property
@@ -65,5 +68,32 @@ class TextButton(ButtonDecorator):
 		self.button.render(screen, mouse_position)
 		screen.blit(self._rendered_text, self._text_rect)
 
-	def is_clicked(self, position: Tuple[int, int]) -> bool:
-		return self.button.is_clicked(position)
+class ReactiveButton(ButtonDecorator):
+	def __init__(self, button: Button, hover_surface: pygame.Surface, active_surface: pygame.Surface) -> None:
+		super().__init__(button)
+		self.hover_surface = hover_surface
+		self.active_surface = active_surface
+
+	@property
+	def hover_surface(self):
+		return self._hover_surface
+
+	@hover_surface.setter
+	def hover_surface(self, surface: pygame.Surface):
+		self._hover_surface = surface
+		self._hover_rect = self._hover_surface.get_rect(center=self.button.pos)
+
+	@property
+	def active_surface(self):
+		return self._active_surface
+
+	@active_surface.setter
+	def active_surface(self, surface: pygame.Surface):
+		self._active_surface = surface
+		self._active_rect = self._active_surface.get_rect(center=self.button.pos)
+
+	def render(self, screen: pygame.Surface, mouse_position: Tuple[int, int]):
+		if self.is_hovered(mouse_position):
+			screen.blit(self.hover_surface, self._hover_rect)
+		else:
+			self.button.render(screen, mouse_position)

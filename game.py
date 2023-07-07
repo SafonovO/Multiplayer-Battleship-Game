@@ -1,6 +1,6 @@
 import pygame
 import sys
-from button import Button, TextButton
+from button import Button, ReactiveButton, TextButton
 from board import Board
 from fonts import get_font
 from game_manager import GameManager
@@ -159,7 +159,7 @@ def setup():
 
 			# if we clicked, find out if we clicked on a button and execute that buttons action
 			if event.type == pygame.MOUSEBUTTONDOWN:
-				if continue_button.is_clicked(mouse):
+				if continue_button.is_hovered(mouse):
 					play()
 
 		pygame.display.update()
@@ -176,6 +176,8 @@ def main_menu():
 	text_rect = text.get_rect(center=(650, 100))
 
 	play_button = Button(image=pygame.image.load("assets/Play Rect.png"), pos=(650, 250))
+	play_button = ReactiveButton(play_button, hover_surface=pygame.image.load("assets/Play Rect.png"),
+					active_surface=pygame.image.load("assets/Play Rect.png"))
 	play_button = TextButton(play_button, text="PLAY", font=get_font(75))
 	
 	quit_button = Button(image=pygame.image.load("assets/Quit Rect.png"), pos=(650, 550))
@@ -202,10 +204,10 @@ def main_menu():
 
 			# if we clicked, find out if we clicked on a button and execute that buttons action
 			if event.type == pygame.MOUSEBUTTONDOWN:
-				if play_button.is_clicked(mouse):
+				if play_button.is_hovered(mouse):
 					setup()
 
-				if quit_button.is_clicked(mouse):
+				if quit_button.is_hovered(mouse):
 					pygame.quit()
 					# run = False
 					sys.exit()
