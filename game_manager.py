@@ -43,6 +43,8 @@ class GameManager:
     #called from play() in game.py
     def action(self, active_cell):
         #active_cell executes the hit
+            if (not isinstance(active_cell, Cell)):
+               return
             if not active_cell.hit():
                 
                 '''
