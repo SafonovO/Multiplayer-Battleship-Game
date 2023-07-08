@@ -45,7 +45,8 @@ class GameManager:
         self.__player1 = boards[0]
         self.__player2 = boards[1]
         if(self.__aigame):
-            # the boards will always be the same size. but AI will always be player 1
+            # the boards will always be the same size. but AI will always be player 2.
+            # thus we need the size of player  1's board to make guesses.
             self.__aiplayer= ai.AI(self.__player1.get_size())
 
     
@@ -70,7 +71,7 @@ class GameManager:
     def accepted_action(self, active_cell):
         if not isinstance(active_cell, Cell):
             return False
-        self.turn = self.turn ^ Turn.PLAYER_TWO
+        self.turn ^= Turn.PLAYER_TWO
         if (active_cell.hit()):
             self.endgame()
             return True
