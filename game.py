@@ -13,6 +13,9 @@ pygame.display.set_caption("Menu")
 
 BG = pygame.image.load("assets/Background.png")
 
+base_button_iamge = pygame.image.load("assets/navy_button.png")
+hovered_button_image = pygame.image.load("assets/navy_button_hover.png")
+
 manager = GameManager()
 
 def play():
@@ -241,12 +244,14 @@ def main_menu():
 	text = get_font(100).render("BATTLESHIP", True, "#b68f40")
 	text_rect = text.get_rect(center=(650, 100))
 
-	play_button = Button(image=pygame.image.load("assets/Play Rect.png"), pos=(650, 250))
-	play_button = ReactiveButton(play_button, hover_surface=pygame.image.load("assets/Play Rect.png"),
-					active_surface=pygame.image.load("assets/Play Rect.png"))
+	play_button = Button(image=base_button_iamge, pos=(650, 250))
+	play_button = ReactiveButton(play_button, hover_surface=hovered_button_image,
+					active_surface=hovered_button_image)
 	play_button = TextButton(play_button, text="PLAY", font=get_font(75))
 	
-	quit_button = Button(image=pygame.image.load("assets/Quit Rect.png"), pos=(650, 550))
+	quit_button = Button(image=base_button_iamge, pos=(650, 550))
+	quit_button = ReactiveButton(quit_button, hover_surface=hovered_button_image,
+					active_surface=hovered_button_image)
 	quit_button = TextButton(quit_button, text="QUIT", font=get_font(75))
 
 	while True:
