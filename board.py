@@ -100,6 +100,7 @@ class Board:
                 if cell.ship == None:
                     cell.ship = current_ship
                     occupied = True
+        
             
 
 
@@ -210,5 +211,13 @@ class Board:
 
         return self._cells[column][row]
 
+    #REMOVE FOR FINAL VERSION TEMP FOR PHASE 2 TO HAVE A GAME OVER
+    def minus(self):
+        self._nships-=1
+    
     def gameover(self):
-        return all(ship.sunk() for ship in self._ships)
+        if(self.get_num_ships()==0):
+            return True
+        return False
+        #CHANGED FOR PHASE TWO CHANGE BACK AFTER
+        #all(ship.sunk() for ship in self._ships)
