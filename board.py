@@ -100,6 +100,7 @@ class Board:
                 if cell.ship == None:
                     cell.ship = current_ship
                     occupied = True
+        
             
 
 
@@ -210,6 +211,6 @@ class Board:
             return None
 
         return self._cells[column][row]
-
+    
     def gameover(self):
         return all(ship.sunk() for ship in self._ships)

@@ -1,12 +1,20 @@
 import ai
+import pygame
+import sys
 from board import Board
 from cell import Cell
 from enum import Flag
 from typing import Union
+from button import Button, ReactiveButton, TextButton
+from fonts import get_font
 
 class Turn(Flag):
      PLAYER_ONE = 0
      PLAYER_TWO = 1
+
+
+SCREEN = pygame.display.set_mode((1300, 800))
+BG = pygame.image.load("assets/Background.png")
 
 class GameManager:
     
@@ -74,6 +82,37 @@ class GameManager:
     '''
     checks if the game is over
     '''
+    
     def endgame(self):
-        if self.__player1.gameover() or self.__player2.gameover():
-            run = False
+        if self.__player1.gameover():
+            self.endgamescreen("Player2")
+        elif self.__player2.gameover():
+            self.endgamescreen("Player1")
+    
+
+    
+    def endgamescreen(self, winner):
+        run = False
+        text=get_font(100).render(winner + " WINS!", True, '#b68f40')
+        text_rect = text.get_rect(center=(650, 100))
+        quit_button = Button(image=pygame.image.load("assets/Quit Rect.png"), pos=(650, 550))
+        quit_button = TextButton(quit_button, text="QUIT", font=get_font(75))
+        while(True):
+            mouse = pygame.mouse.get_pos()
+            SCREEN.blit(BG, (0, 0))
+            SCREEN.blit(text, text_rect)
+            for button in [quit_button]:
+                button.render(SCREEN, mouse)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if quit_button.is_hovered(mouse):
+                        pygame.quit()
+                        sys.exit()
+            pygame.display.update()
+            
+
+    
+    

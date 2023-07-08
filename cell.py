@@ -52,6 +52,8 @@ class Cell:
 
         if self.ship == None:
             return False
+        
+        self.ship.hit()
 
         return True
 

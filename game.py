@@ -93,6 +93,11 @@ def play():
 	# track the selected cell
 	active_cell = None
 
+	# Make a quit button
+	quit_button = Button(image=pygame.image.load("assets/quit.png"), pos=(1000, 25))
+	quit_button = TextButton(quit_button, text="QUIT", font=get_font(20))
+
+
 	while True:
 		mouse = pygame.mouse.get_pos()
 
@@ -116,6 +121,8 @@ def play():
 
 		# draw the confirm button
 		confirm_button.render(SCREEN, mouse)
+
+		quit_button.render(SCREEN, mouse)
 
 		# draw the coord text if it is not None
 		if coord_text != None and coord_text_rect != None:
@@ -159,6 +166,9 @@ def play():
 					coord_text_rect = coord_text.get_rect(center=(1000, 200))
 
 				# the active cell will be drawn on the next loop
+				if quit_button.is_hovered(mouse):
+					# return to main menu
+					main_menu()
 		#pygame.display.update()
 		pygame.display.flip()
 
