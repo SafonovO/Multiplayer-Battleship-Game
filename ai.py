@@ -4,7 +4,6 @@ Class for the AI opponent.
 
 import random
 from time import sleep
-import game_manager
 
 class AI():
     '''
@@ -17,15 +16,10 @@ class AI():
 
     def __init__(self, size):
         self.__size = size
-        print("Started AI opponent for size", self.__size)
-
-    def run(self):
-        print(self._size)
 
     def guess(self):
         sleep(1)
         while True:
-            print("generating")
             x = random.randint(0, self.__size-1)
             y = random.randint(0, self.__size-1)
             if (x, y) not in self.guessed:

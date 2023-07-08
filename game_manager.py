@@ -55,7 +55,6 @@ class GameManager:
     '''
     #called from play() in game.py
     def action(self, active_cell):
-        print(self.turn)
         #checks if it's the right persons turn then proceeds with action
         if(self.turn == Turn.PLAYER_ONE):
             self.accepted_action(active_cell)
