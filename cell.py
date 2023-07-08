@@ -32,7 +32,7 @@ class Cell:
     _width = 0
     _location = None
     _bigMarkingSize = 36
-    _smallMarkingSize = 10 
+    _smallMarkingSize = 24 
     '''
     width represents a number of pixels that is the side length
     of the cell when you draw it on the screen
