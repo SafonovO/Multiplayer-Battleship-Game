@@ -201,7 +201,7 @@ def setup():
 
 
 	# Continue to gameplay button
-	continue_button = Button(image=pygame.image.load("assets/Options Rect.png"), pos=(650, 550))
+	continue_button = Button(image=base_button_iamge, pos=(650, 550))
 	continue_button = TextButton(continue_button, text="CONTINUE", font=get_font(60))
 
 	while True:
