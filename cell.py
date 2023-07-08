@@ -31,6 +31,8 @@ class Cell:
     # for drawing purposes. the side length and location of the cell
     _width = 0
     _location = None
+    _bigMarkingSize = 36
+    _smallMarkingSize = 10 
     '''
     width represents a number of pixels that is the side length
     of the cell when you draw it on the screen
@@ -61,7 +63,7 @@ class Cell:
         print("Coords:", self.coordinates, "Hit?", self.is_hit, "Ship?", self.ship != None)
 
 
-    def draw_cell(self, screen, display):
+    def draw_cell(self, screen, display, isBig):
         '''
         x, y are the coordinate of the top left corner
         of the cell.
@@ -74,6 +76,7 @@ class Cell:
         ship cells differently. This would be done
         on my board only, not the opponenets board
         '''
+        markingSize = self._bigMarkingSize if isBig else self._smallMarkingSize
 
         x = self._location[0]
         y = self._location[1]
@@ -84,11 +87,11 @@ class Cell:
         cell_center = self.get_cell_center()
 
         # If cell is a hit ship, print an X on it
-        x_text = get_font(10).render("X", True, "White")
+        x_text = get_font(markingSize).render("X", True, "White")
         x_rect = x_text.get_rect(center=cell_center)
 
         # if cell missed, print a - on it
-        dash_text = get_font(10).render("-", True, "Black")
+        dash_text = get_font(markingSize).render("-", True, "Black")
         dash_rect = dash_text.get_rect(center=cell_center)
 
         # if display, draw unhit ships differently
@@ -124,7 +127,13 @@ class Cell:
         cell_center = self.get_cell_center()
 
         # Draw teh cell in green
-        pygame.draw.rect(screen, "Green", cell)        
+        pygame.draw.rect(screen, "Green", cell)
+
+        # Draw its marking
+        question_text = get_font(self._bigMarkingSize).render("?", True, "Black")
+        question_rect = question_text.get_rect(center=cell_center) 
+        screen.blit(question_text, question_rect)
+
     
     def get_cell_center(self):
         return (self._location[0] + (0.5*self._width), self._location[1] + (0.5*self._width))

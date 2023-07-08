@@ -104,7 +104,7 @@ class Board:
             
 
 
-    def draw_board(self, screen):
+    def draw_board(self, screen, isBig):
         '''
         location is the coordinates of the top left corner
 
@@ -145,7 +145,7 @@ class Board:
                 '''
                 cell = self._cells[i][j]
 
-                cell.draw_cell(screen, self._display)
+                cell.draw_cell(screen, self._display, isBig)
 
     def draw_labels(self, screen):
         '''
