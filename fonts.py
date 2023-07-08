@@ -1,4 +1,9 @@
 import pygame
 
-def get_font(size): # Returns Press-Start-2P in the desired size
-	return pygame.font.Font("assets/font.ttf", size)
+# Returns specified font in the desired size
+def get_font(size, font = "Georgia"): 
+    if font == "Georgia":
+        return pygame.font.Font("assets/fonts/Georgia.ttf", size)
+    elif font == "Helvetica":
+        return pygame.font.Font("assets/fonts/Helvetica.ttf", size)
+

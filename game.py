@@ -187,9 +187,9 @@ def setup():
 	text_rect = text.get_rect(center=(650, 100))
 
 	# Placeholder text for now
-	placeholder1_text = get_font(15).render("This function has not been implemented yet for this prototype.", True, "White")
-	placeholder2_text = get_font(15).render("Please continue to game.", True, "White")
-	placeholder3_text = get_font(15).render("All ships will be 1x1 and placed randomly", True, "White")
+	placeholder1_text = get_font(24).render("This function has not been implemented yet for this prototype.", True, "White")
+	placeholder2_text = get_font(24).render("Please continue to game.", True, "White")
+	placeholder3_text = get_font(24).render("All ships will be 1x1 and placed randomly", True, "White")
 
 
 	placeholder1_rect = placeholder1_text.get_rect(center=(650, 300))
