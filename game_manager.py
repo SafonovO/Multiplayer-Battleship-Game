@@ -75,11 +75,6 @@ class GameManager:
                 self.turn = Turn.PLAYER_ONE    
                 
             return
-        #if hit subtract from nships
-        if self.turn == Turn.PLAYER_ONE:
-            self.__player2.minus()
-        elif self.turn ==Turn.PLAYER_TWO:
-            self.__player1.minus()
         self.endgame()
     
     '''
