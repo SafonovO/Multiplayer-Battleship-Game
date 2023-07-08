@@ -63,7 +63,7 @@ class Cell:
         print("Coords:", self.coordinates, "Hit?", self.is_hit, "Ship?", self.ship != None)
 
 
-    def draw_cell(self, screen, display, isBig):
+    def draw_cell(self, screen, display):
         '''
         x, y are the coordinate of the top left corner
         of the cell.
@@ -76,7 +76,7 @@ class Cell:
         ship cells differently. This would be done
         on my board only, not the opponenets board
         '''
-        markingSize = self._bigMarkingSize if isBig else self._smallMarkingSize
+        markingSize = self._smallMarkingSize if display else self._bigMarkingSize
 
         x = self._location[0]
         y = self._location[1]

@@ -115,10 +115,10 @@ def play():
 		SCREEN.blit(select_text, select_text_rect)
 
 		# draw opponents board
-		opponent_board.draw_board(SCREEN, True)
+		opponent_board.draw_board(SCREEN)
 
 		# draw my board
-		my_board.draw_board(SCREEN, False)
+		my_board.draw_board(SCREEN)
 
 		# draw the confirm button
 		confirm_button.render(SCREEN, mouse)
