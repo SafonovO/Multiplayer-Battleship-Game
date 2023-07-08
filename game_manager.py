@@ -59,7 +59,7 @@ class GameManager:
         #checks if it's the right persons turn then proceeds with action
         if(self.turn == Turn.PLAYER_ONE):
             self.accepted_action(active_cell)
-        # elif(self.turn == Turn.PLAYER_TWO):
+        elif(self.turn == Turn.PLAYER_TWO):
             x, y = self.__aiplayer.guess()
             self.accepted_action(self.__player1.get_cell(x, y))
 

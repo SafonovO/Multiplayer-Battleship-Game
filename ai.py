@@ -3,7 +3,7 @@ Class for the AI opponent.
 '''
 
 import random
-import threading
+from time import sleep
 import game_manager
 
 class AI():
@@ -16,7 +16,6 @@ class AI():
     revealed, guessed = [], []
 
     def __init__(self, size):
-        # threading.Thread.__init__(self)
         self.__size = size
         print("Started AI opponent for size", self.__size)
 
@@ -24,9 +23,9 @@ class AI():
         print(self._size)
 
     def guess(self) -> bool:
+        sleep(1)
         x = random.randint(0, self.__size-1)
         y = random.randint(0, self.__size-1)
-        print(x, y)
         return x, y
 
     def place_ships(self) -> bool:

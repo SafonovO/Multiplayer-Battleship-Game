@@ -97,6 +97,7 @@ def play():
 	quit_button = Button(image=pygame.image.load("assets/quit.png"), pos=(1000, 25))
 	quit_button = TextButton(quit_button, text="QUIT", font=get_font(20))
 
+	update = False
 
 	while True:
 		mouse = pygame.mouse.get_pos()
@@ -132,6 +133,10 @@ def play():
 		if active_cell != None:
 			active_cell.draw_selected_cell(SCREEN)
 
+		if not update:
+			manager.action(None)
+		update = False
+
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				pygame.quit()
@@ -143,6 +148,7 @@ def play():
 				# if we hit confirm, fire with the manager
 				if confirm_button.is_hovered(mouse):
 					manager.action(active_cell)
+					update = True
 					active_cell = None
 
 					coord_text = None
