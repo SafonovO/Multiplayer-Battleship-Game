@@ -87,11 +87,11 @@ class Cell:
         cell_center = self.get_cell_center()
 
         # If cell is a hit ship, print an X on it
-        x_text = get_font(markingSize).render("X", True, "White")
+        x_text = get_font(markingSize, "Helvetica").render("X", True, "White")
         x_rect = x_text.get_rect(center=cell_center)
 
         # if cell missed, print a - on it
-        dash_text = get_font(markingSize).render("-", True, "Black")
+        dash_text = get_font(markingSize, "Helvetica").render("-", True, "Black")
         dash_rect = dash_text.get_rect(center=cell_center)
 
         # if display, draw unhit ships differently
@@ -130,7 +130,7 @@ class Cell:
         pygame.draw.rect(screen, "Green", cell)
 
         # Draw its marking
-        question_text = get_font(self._bigMarkingSize).render("?", True, "Black")
+        question_text = get_font(self._bigMarkingSize, "Helvetica").render("?", True, "Black")
         question_rect = question_text.get_rect(center=cell_center) 
         screen.blit(question_text, question_rect)
 
