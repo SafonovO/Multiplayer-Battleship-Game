@@ -94,7 +94,9 @@ class GameManager:
         run = False
         text=get_font(100).render(winner + " WINS!", True, '#b68f40')
         text_rect = text.get_rect(center=(650, 100))
-        quit_button = Button(image=pygame.image.load("assets/Quit Rect.png"), pos=(650, 550))
+        quit_button = Button(image=pygame.image.load("assets/navy_button.png"), pos=(650, 550))
+        quit_button = ReactiveButton(quit_button, hover_surface=pygame.image.load("assets/navy_button_hover.png"),
+                                    active_surface=pygame.image.load("assets/navy_button_hover.png"))
         quit_button = TextButton(quit_button, text="QUIT", font=get_font(75))
         while(True):
             mouse = pygame.mouse.get_pos()
