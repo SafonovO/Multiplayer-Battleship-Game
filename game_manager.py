@@ -68,9 +68,12 @@ class GameManager:
             later version will differentiate between
             '''          
             if self.turn == Turn.PLAYER_ONE:
-                self.turn = Turn.PLAYER_TWO
-            elif self.turn == Turn.PLAYER_TWO:       
-                self.turn = Turn.PLAYER_ONE
+                if(not self.__aigame):
+                    self.turn = Turn.PLAYER_TWO
+            elif self.turn == Turn.PLAYER_TWO: 
+                
+                self.turn = Turn.PLAYER_ONE    
+                
             return
         #if hit subtract from nships
         if self.turn == Turn.PLAYER_ONE:
