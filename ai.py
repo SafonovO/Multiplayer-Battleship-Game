@@ -3,7 +3,7 @@ Class for the AI opponent.
 '''
 
 import random
-import threading
+from time import sleep
 import game_manager
 
 class AI():
@@ -16,18 +16,24 @@ class AI():
     revealed, guessed = [], []
 
     def __init__(self, size):
-        # threading.Thread.__init__(self)
         self.__size = size
         print("Started AI opponent for size", self.__size)
 
     def run(self):
         print(self._size)
 
-    def guess(self) -> bool:
-        x = random.randint(0, self.__size-1)
-        y = random.randint(0, self.__size-1)
-        print(x, y)
-        return x, y
+    def guess(self):
+        sleep(1)
+        while True:
+            print("generating")
+            x = random.randint(0, self.__size-1)
+            y = random.randint(0, self.__size-1)
+            if (x, y) not in self.guessed:
+                self.guessed.append((x,y))
+                return x, y
+
+    def handleResult(self, isHit):
+        pass
 
     def place_ships(self) -> bool:
         pass
