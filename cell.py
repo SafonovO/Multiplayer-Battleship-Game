@@ -97,6 +97,10 @@ class Cell:
         # if display, draw unhit ships differently
         if display and self.ship != None and self.is_hit == False:
             pygame.draw.rect(screen, "Grey", cell)
+            ship = pygame.image.load("assets/ship.png")
+            ship = pygame.Surface.convert_alpha(ship)
+            ship = pygame.transform.scale(ship, (self._width, self._width))
+            screen.blit(ship, self.get_cell_corner())
 
         # draw a cell that has not been fired on
         elif not self.is_hit:
@@ -137,6 +141,9 @@ class Cell:
     
     def get_cell_center(self):
         return (self._location[0] + (0.5*self._width), self._location[1] + (0.5*self._width))
+
+    def get_cell_corner(self):
+        return (self._location[0], self._location[1])
 
     def get_width(self):
         return self._width
