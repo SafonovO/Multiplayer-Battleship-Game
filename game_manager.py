@@ -1,18 +1,20 @@
-# from ai import AI
+import ai
 import pygame
 import sys
 from board import Board
 from cell import Cell
-from enum import Enum
+from enum import Flag
 from typing import Union
 from button import Button, ReactiveButton, TextButton
 from fonts import get_font
+
+class Turn(Flag):
+     PLAYER_ONE = 0
+     PLAYER_TWO = 1
+
+
 SCREEN = pygame.display.set_mode((1300, 800))
 BG = pygame.image.load("assets/Background.png")
-#from Ai import Ai--
-class Turn(Enum):
-     PLAYER_ONE = 1
-     PLAYER_TWO = 2
 
 class GameManager:
     
@@ -30,9 +32,9 @@ class GameManager:
     turn = Turn.PLAYER_ONE
     __player1: Union[Board, None] = None
     __player2: Union[Board, None] = None
-    #__ai= Ai()---
     __aigame=True
-    # __aiplayer= AI()---
+    run = True
+
     #singleton class
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -42,6 +44,10 @@ class GameManager:
     def create_game(self, boards):
         self.__player1 = boards[0]
         self.__player2 = boards[1]
+        if(self.__aigame):
+            # the boards will always be the same size. but AI will always be player 1
+            self.__aiplayer= ai.AI(self.__player1.get_size())
+
     
     '''
     Tracks turn
@@ -49,34 +55,30 @@ class GameManager:
     '''
     #called from play() in game.py
     def action(self, active_cell):
+        print(self.turn)
         #checks if it's the right persons turn then proceeds with action
-        if(self.__aigame):
-                self.accepted_action(active_cell)
-                #maybe call ai here? depends on ai implementation---
-        elif(self.turn == Turn.PLAYER_ONE and self.__player1.contains(active_cell)):
+        if(self.turn == Turn.PLAYER_ONE):
             self.accepted_action(active_cell)
-        elif(self.turn == Turn.PLAYER_TWO and self.__player2.contains(active_cell)):
-            self.accepted_action(active_cell)
+        # elif(self.turn == Turn.PLAYER_TWO):
+            x, y = self.__aiplayer.guess()
+            self.accepted_action(self.__player1.get_cell(x, y))
 
-    #executes action
+
+    '''
+    Checks if active_cell was a hit. 
+    If hit, returns True, False otherwise.
+    '''
     def accepted_action(self, active_cell):
         if not isinstance(active_cell, Cell):
-            return
-        if (not active_cell.hit()):
-            '''
-            for phase two calling AI to make a move
-            later version will differentiate between
-            '''          
-            if self.turn == Turn.PLAYER_ONE:
-                if(not self.__aigame):
-                    self.turn = Turn.PLAYER_TWO
-            elif self.turn == Turn.PLAYER_TWO: 
-                
-                self.turn = Turn.PLAYER_ONE    
-                
-            return
-        self.endgame()
-    
+            return False
+        self.turn = self.turn ^ Turn.PLAYER_TWO
+        if (active_cell.hit()):
+            self.endgame()
+            return True
+        else:
+            return False
+
+
     '''
     checks if the game is over
     '''
@@ -86,9 +88,11 @@ class GameManager:
             self.endgamescreen("Player2")
         elif self.__player2.gameover():
             self.endgamescreen("Player1")
-        turn = self.turn
+    
+
     
     def endgamescreen(self, winner):
+        run = False
         text=get_font(100).render(winner + " WINS!", True, '#b68f40')
         text_rect = text.get_rect(center=(650, 100))
         quit_button = Button(image=pygame.image.load("assets/Quit Rect.png"), pos=(650, 550))

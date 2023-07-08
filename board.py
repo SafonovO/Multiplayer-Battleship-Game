@@ -194,7 +194,8 @@ class Board:
             screen.blit(col_labels[j], col_rects[j])
             
 
-
+    def get_cell(self, col, row):
+        return self._cells[col][row]
 
     def get_active_cell(self, mouse_pos):
         '''
