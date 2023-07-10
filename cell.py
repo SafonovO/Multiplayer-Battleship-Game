@@ -1,8 +1,9 @@
 import pygame
-#import pygame_gui
-#from menu_views.menu_options import MenuElement
-from ships.normal_ship import Ship
+
 from fonts import get_font
+# import pygame_gui
+# from menu_views.menu_options import MenuElement
+from ships.normal_ship import Ship
 
 '''
 
@@ -32,7 +33,7 @@ class Cell:
     _width = 0
     _location = None
     _bigMarkingSize = 36
-    _smallMarkingSize = 24 
+    _smallMarkingSize = 24
     '''
     width represents a number of pixels that is the side length
     of the cell when you draw it on the screen
@@ -54,7 +55,7 @@ class Cell:
 
         if self.ship == None:
             return False
-        
+
         self.ship.hit()
 
         return True
@@ -135,10 +136,10 @@ class Cell:
 
         # Draw its marking
         question_text = get_font(self._bigMarkingSize, "Helvetica").render("?", True, "Black")
-        question_rect = question_text.get_rect(center=cell_center) 
+        question_rect = question_text.get_rect(center=cell_center)
         screen.blit(question_text, question_rect)
 
-    
+
     def get_cell_center(self):
         return (self._location[0] + (0.5*self._width), self._location[1] + (0.5*self._width))
 

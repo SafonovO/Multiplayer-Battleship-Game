@@ -1,10 +1,9 @@
-from ships.ship import Ship
-from ships.normal_ship import NormalShip
-from cell import Cell
-from board_factory import BoardFactory
 import math
 import random
+
+from board_factory import BoardFactory
 from fonts import get_font
+
 
 class Board:
     # number of ships on the board
@@ -91,18 +90,15 @@ class Board:
             # Place a ship in a random spot
 
             while not occupied:
-                x = random.randint(0, self._size-1)
-                y = random.randint(0, self._size-1)
-                
+                x = random.randint(0, self._size - 1)
+                y = random.randint(0, self._size - 1)
+
                 # go to cell x, y and put a ship there
                 cell = self._cells[x][y]
 
                 if cell.ship == None:
                     cell.ship = current_ship
                     occupied = True
-        
-            
-
 
     def draw_board(self, screen):
         '''
@@ -132,7 +128,7 @@ class Board:
 
         # draw the board labels
         self.draw_labels(screen)
-        
+
         for i in range(self._size):
             for j in range(self._size):
                 '''
@@ -161,7 +157,7 @@ class Board:
         is determined by the cell center of the cell
         at self._cells[j][0]
         '''
-        
+
         row_labels = []
         row_rects = []
 
@@ -171,17 +167,16 @@ class Board:
         for i in range(self._size):
             location = list(self._cells[0][i].get_cell_center())
             # Translate it a little to the left
-            location[0] -= 0.7*self._cells[0][i].get_width()
+            location[0] -= 0.7 * self._cells[0][i].get_width()
 
-            text = get_font(15).render("{}".format(i+1), True, "White")
+            text = get_font(15).render("{}".format(i + 1), True, "White")
             rect = text.get_rect(center=location)
             row_labels.append(text)
             row_rects.append(rect)
 
-
             location2 = list(self._cells[i][0].get_cell_center())
             # Translate it a little to the left
-            location2[1] -= 0.7*self._cells[i][0].get_width()
+            location2[1] -= 0.7 * self._cells[i][0].get_width()
 
             text2 = get_font(15).render("{}".format(self.letters[i]), True, "White")
             rect2 = text.get_rect(center=location2)
@@ -192,7 +187,6 @@ class Board:
         for j in range(self._size):
             screen.blit(row_labels[j], row_rects[j])
             screen.blit(col_labels[j], col_rects[j])
-            
 
     def get_cell(self, col, row):
         return self._cells[col][row]
@@ -211,6 +205,6 @@ class Board:
             return None
 
         return self._cells[column][row]
-    
+
     def gameover(self):
         return all(ship.sunk() for ship in self._ships)

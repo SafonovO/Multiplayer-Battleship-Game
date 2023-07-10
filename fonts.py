@@ -1,9 +1,9 @@
 import pygame
 
+
 # Returns specified font in the desired size
-def get_font(size, font = "Georgia"): 
+def get_font(size, font="Georgia"):
     if font == "Georgia":
         return pygame.font.Font("assets/fonts/Georgia.ttf", size)
     elif font == "Helvetica":
         return pygame.font.Font("assets/fonts/Helvetica.ttf", size)
-
