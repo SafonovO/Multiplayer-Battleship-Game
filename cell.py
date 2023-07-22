@@ -28,6 +28,7 @@ class Cell:
     coordinates = (0, 0)
     ship: Ship = None
     is_hit: bool = False
+    __is_guessed: bool = False
 
     # for drawing purposes. the side length and location of the cell
     _width = 0
@@ -49,6 +50,12 @@ class Cell:
 
     def set_ship(self, ship: Ship):
         self.ship = ship
+
+    def set_is_guessed(self, bool):
+        self.__is_guessed = bool
+
+    def get_is_guessed(self):
+        return self.__is_guessed
 
     def hit(self) -> bool:
         self.is_hit = True
