@@ -3,20 +3,20 @@ from .ship import Ship
 
 class NormalShip(Ship):
     # track the size
-    _size = None
+    __size = None
 
     # track the HP
-    _hp = None
+    __hp = None
 
     def __init__(self, ship_size):
-        self._size = ship_size
-        self._hp = ship_size
+        self.__size = ship_size
+        self.__hp = ship_size
 
     def get_size(self):
-        return self._size
+        return self.__size
 
     def get_hp(self):
-        return self._hp
+        return self.__hp
 
     '''
     "Hits" this ship.
@@ -27,17 +27,17 @@ class NormalShip(Ship):
 
     def hit(self):
         # Do not hit a dead ship
-        if self._hp <= 0:
+        if self.__hp <= 0:
             return None
 
-        self._hp -= 1
+        self.__hp -= 1
 
         # return true if ship has sunk
-        return self._hp == 0
+        return self.__hp == 0
 
     # determine if this ship is sunk
     def sunk(self):
-        return self._hp <= 0
+        return self.__hp <= 0
 
 
 '''

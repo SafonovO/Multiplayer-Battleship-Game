@@ -8,29 +8,29 @@ from fonts import get_font
 
 class Board:
     # number of ships on the board
-    _nships = 0
+    __nships = 0
 
     # array of ships on this board
-    _ships = []
+    __ships = []
 
     # size of this board
-    _size = 0
+    __size = 0
 
     # array of cells on this board
-    _cells = []
+    __cells = []
 
     # factory for board setup
-    _board_factory = None
+    __board_factory = None
 
     # coordinates where this board should be drawn
-    _coordinates = None
+    __coordinates = None
 
     # track the size of the rectangle representing the board
-    _width = 0
+    __width = 0
 
     # On my board, I want to display the ships' locations.
     # On the opponent's board, I do not
-    _display = False
+    __display = False
 
     # For drawing the labels later on
     letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I',
@@ -45,29 +45,29 @@ class Board:
     '''
 
     def __init__(self, size, num_ships, coords, width, display):
-        self._nships = num_ships
-        self._size = size
+        self.__nships = num_ships
+        self.__size = size
 
-        self._coordinates = coords
-        self._width = width
-        self._display = display
+        self.__coordinates = coords
+        self.__width = width
+        self.__display = display
 
-        self._board_factory = BoardFactory(self._size, self._nships, self._coordinates, self._width)
+        self.__board_factory = BoardFactory(self.__size, self.__nships, self.__coordinates, self.__width)
 
     def build_board(self):
-        self._cells = self._board_factory.create_cells()
-        self._ships = self._board_factory.create_ships()
+        self.__cells = self.__board_factory.create_cells()
+        self.__ships = self.__board_factory.create_ships()
 
     def get_size(self):
-        return self._size
+        return self.__size
 
     def get_num_ships(self):
-        return self._nships
+        return self.__nships
 
     # For testing purposes. Print all the cells in the board
     def print_cells(self):
         col = 0
-        for column in self._cells:
+        for column in self.__cells:
             print("Column", col)
 
             for cell in column:
@@ -83,19 +83,19 @@ class Board:
         or None if no ship occupies it
         '''
 
-        for i in range(self._nships):
-            current_ship = self._ships[i]
+        for i in range(self.__nships):
+            current_ship = self.__ships[i]
 
             occupied = False
 
             # Place a ship in a random spot
 
             while not occupied:
-                x = random.randint(0, self._size - 1)
-                y = random.randint(0, self._size - 1)
+                x = random.randint(0, self.__size - 1)
+                y = random.randint(0, self.__size - 1)
 
                 # go to cell x, y and put a ship there
-                cell = self._cells[x][y]
+                cell = self.__cells[x][y]
 
                 if cell.ship == None:
                     cell.ship = current_ship
@@ -124,14 +124,14 @@ class Board:
         x_0 and y_0 are the coords of the top left corner
         of the board
         '''
-        x_0 = self._coordinates[0]
-        y_0 = self._coordinates[1]
+        x_0 = self.__coordinates[0]
+        y_0 = self.__coordinates[1]
 
         # draw the board labels
         self.draw_labels(screen)
 
-        for i in range(self._size):
-            for j in range(self._size):
+        for i in range(self.__size):
+            for j in range(self.__size):
                 '''
                 cell.draw_cell() takes the following arguments:
 
@@ -140,9 +140,9 @@ class Board:
                 display is the boolean toggle if we should draw
                 the unhit ships
                 '''
-                cell = self._cells[i][j]
+                cell = self.__cells[i][j]
 
-                cell.draw_cell(screen, self._display)
+                cell.draw_cell(screen, self.__display)
 
     def draw_labels(self, screen):
         '''
@@ -165,19 +165,19 @@ class Board:
         col_labels = []
         col_rects = []
 
-        for i in range(self._size):
-            location = list(self._cells[0][i].get_cell_center())
+        for i in range(self.__size):
+            location = list(self.__cells[0][i].get_cell_center())
             # Translate it a little to the left
-            location[0] -= 0.7 * self._cells[0][i].get_width()
+            location[0] -= 0.7 * self.__cells[0][i].get_width()
 
             text = get_font(15).render("{}".format(i + 1), True, "White")
             rect = text.get_rect(center=location)
             row_labels.append(text)
             row_rects.append(rect)
 
-            location2 = list(self._cells[i][0].get_cell_center())
+            location2 = list(self.__cells[i][0].get_cell_center())
             # Translate it a little to the left
-            location2[1] -= 0.7 * self._cells[i][0].get_width()
+            location2[1] -= 0.7 * self.__cells[i][0].get_width()
 
             text2 = get_font(15).render("{}".format(self.letters[i]), True, "White")
             rect2 = text.get_rect(center=location2)
@@ -185,12 +185,12 @@ class Board:
             col_rects.append(rect2)
 
         # Draw all teh texts and rects
-        for j in range(self._size):
+        for j in range(self.__size):
             screen.blit(row_labels[j], row_rects[j])
             screen.blit(col_labels[j], col_rects[j])
 
     def get_cell(self, col, row):
-        return self._cells[col][row]
+        return self.__cells[col][row]
 
     def get_active_cell(self, mouse_pos):
         '''
@@ -199,14 +199,14 @@ class Board:
 
         Returns None if the mouse does not collide with any cell
         '''
-        cell_size = self._width / self._size
-        row = math.floor((mouse_pos[1] - self._coordinates[1]) / cell_size)
-        column = math.floor((mouse_pos[0] - self._coordinates[0]) / cell_size)
-        if (row < 0 or column < 0 or row >= self._size or column >= self._size 
-            or self._cells[column][row].get_is_guessed()):
+        cell_size = self.__width / self.__size
+        row = math.floor((mouse_pos[1] - self.__coordinates[1]) / cell_size)
+        column = math.floor((mouse_pos[0] - self.__coordinates[0]) / cell_size)
+        if (row < 0 or column < 0 or row >= self.__size or column >= self.__size 
+            or self.__cells[column][row].get_is_guessed()):
             return None
 
-        return self._cells[column][row]
+        return self.__cells[column][row]
 
     def gameover(self):
-        return all(ship.sunk() for ship in self._ships)
+        return all(ship.sunk() for ship in self.__ships)
