@@ -4,22 +4,22 @@ from ships.normal_ship import NormalShip
 
 class BoardFactory:
     # size of board and number of ships
-    _size = 0
-    _nships = 0
-    _coords = None
-    _width = 0
+    __size = 0
+    __nships = 0
+    __coords = None
+    __width = 0
 
     def __init__(self, size, num_ships, coords, width):
-        self._size = size
-        self._nships = num_ships
-        self._coords = coords
-        self._width = width
+        self.__size = size
+        self.__nships = num_ships
+        self.__coords = coords
+        self.__width = width
 
     # Return a list of nships ships
     def create_ships(self):
         ships = []
 
-        for i in range(self._nships):
+        for i in range(self.__nships):
             ship = NormalShip(1)
             ships.append(ship)
 
@@ -33,14 +33,14 @@ class BoardFactory:
 
         x_0 and y_0 are the coordinates of teh baord
         '''
-        cell_size = self._width / self._size
-        x_0 = self._coords[0]
-        y_0 = self._coords[1]
+        cell_size = self.__width / self.__size
+        x_0 = self.__coords[0]
+        y_0 = self.__coords[1]
 
         cells = []
-        for x in range(self._size):
+        for x in range(self.__size):
             row = []
-            for y in range(self._size):
+            for y in range(self.__size):
                 '''
                 Cell contructor requires an (x, y), width, and
                 location.

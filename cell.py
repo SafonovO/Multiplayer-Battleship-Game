@@ -30,10 +30,10 @@ class Cell:
     is_hit: bool = False
 
     # for drawing purposes. the side length and location of the cell
-    _width = 0
-    _location = None
-    _bigMarkingSize = 36
-    _smallMarkingSize = 24
+    __width = 0
+    __location = None
+    __bigMarkingSize = 36
+    __smallMarkingSize = 24
     '''
     width represents a number of pixels that is the side length
     of the cell when you draw it on the screen
@@ -44,8 +44,8 @@ class Cell:
 
     def __init__(self, coords, width, location) -> None:
         self.coordinates = coords
-        self._width = width
-        self._location = location
+        self.__width = width
+        self.__location = location
 
     def set_ship(self, ship: Ship):
         self.ship = ship
@@ -77,12 +77,12 @@ class Cell:
         ship cells differently. This would be done
         on my board only, not the opponenets board
         '''
-        markingSize = self._smallMarkingSize if display else self._bigMarkingSize
+        markingSize = self.__smallMarkingSize if display else self.__bigMarkingSize
 
-        x = self._location[0]
-        y = self._location[1]
+        x = self.__location[0]
+        y = self.__location[1]
 
-        cell = pygame.Rect(x, y, self._width, self._width)
+        cell = pygame.Rect(x, y, self.__width, self.__width)
 
         # Get the center of the cell
         cell_center = self.get_cell_center()
@@ -100,7 +100,7 @@ class Cell:
             pygame.draw.rect(screen, "Grey", cell)
             ship = pygame.image.load("assets/ship.png")
             ship = pygame.Surface.convert_alpha(ship)
-            ship = pygame.transform.scale(ship, (self._width, self._width))
+            ship = pygame.transform.scale(ship, (self.__width, self.__width))
             screen.blit(ship, self.get_cell_corner())
 
         # draw a cell that has not been fired on
@@ -123,10 +123,10 @@ class Cell:
 
     def draw_selected_cell(self, screen):
         # Draw a special cell that has been selected
-        x = self._location[0]
-        y = self._location[1]
+        x = self.__location[0]
+        y = self.__location[1]
 
-        cell = pygame.Rect(x, y, self._width, self._width)
+        cell = pygame.Rect(x, y, self.__width, self.__width)
 
         # Get the center of the cell
         cell_center = self.get_cell_center()
@@ -135,19 +135,19 @@ class Cell:
         pygame.draw.rect(screen, "Green", cell)
 
         # Draw its marking
-        question_text = get_font(self._bigMarkingSize, "Helvetica").render("?", True, "Black")
+        question_text = get_font(self.__bigMarkingSize, "Helvetica").render("?", True, "Black")
         question_rect = question_text.get_rect(center=cell_center)
         screen.blit(question_text, question_rect)
 
 
     def get_cell_center(self):
-        return (self._location[0] + (0.5*self._width), self._location[1] + (0.5*self._width))
+        return (self.__location[0] + (0.5*self.__width), self.__location[1] + (0.5*self.__width))
 
     def get_cell_corner(self):
-        return (self._location[0], self._location[1])
+        return (self.__location[0], self.__location[1])
 
     def get_width(self):
-        return self._width
+        return self.__width
 
 
 '''

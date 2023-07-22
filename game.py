@@ -7,6 +7,9 @@ from button import Button, ReactiveButton, TextButton
 from fonts import get_font
 from game_manager import GameManager
 
+BOARD_SIZE = 8
+NUM_SHIPS = 1
+
 # Create a pygame window as a global constant
 pygame.init()
 
@@ -43,7 +46,7 @@ def play():
     update: im making my board smaller and shifting it downwards
     to make room for the text headings
     '''
-    opponent_board = Board(size=8, num_ships=8, coords=(150, 150), width=550, display=False)
+    opponent_board = Board(size=BOARD_SIZE, num_ships=NUM_SHIPS, coords=(150, 150), width=550, display=False)
     opponent_board.build_board()
 
     opponent_board.place_ships()
@@ -59,7 +62,7 @@ def play():
     My board should be much smaller than opponent's board
     since it is not the main focus
     '''
-    my_board = Board(size=8, num_ships=8, coords=(850, 375), width=300, display=True)
+    my_board = Board(size=BOARD_SIZE, num_ships=NUM_SHIPS, coords=(850, 375), width=300, display=True)
     my_board.build_board()
     my_board.place_ships()
 
