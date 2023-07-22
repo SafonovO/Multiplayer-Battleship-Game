@@ -85,7 +85,7 @@ def play():
     my_board_label_rect = my_board_label.get_rect(center=(1000, 325))
 
     # create a game using the manager
-    manager.create_game([my_board, opponent_board])
+    manager.create_game([my_board, opponent_board], ai_game=True)
 
     # Create a confirm button
     confirm_button = Button(image=pygame.image.load("assets/ConfirmButton.png"), pos=(1000, 250))

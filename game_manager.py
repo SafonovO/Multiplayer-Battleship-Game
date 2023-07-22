@@ -1,6 +1,8 @@
 import sys
 from enum import Flag
 from typing import Union
+from player import Player
+from ai import AI
 
 import pygame
 
@@ -32,11 +34,6 @@ class GameManager:
     1= player1 
     2=player2
     '''
-    turn = Turn.PLAYER_ONE
-    __player1: Union[Board, None] = None
-    __player2: Union[Board, None] = None
-    __aigame = True
-    run = True
 
     # singleton class
     def __new__(cls):
@@ -44,13 +41,14 @@ class GameManager:
             cls.instance = super(GameManager, cls).__new__(cls)
         return cls.instance
 
-    def create_game(self, boards):
-        self.__player1 = boards[0]
-        self.__player2 = boards[1]
-        if (self.__aigame):
-            # the boards will always be the same size. but AI will always be player 2.
-            # thus we need the size of player  1's board to make guesses.
-            self.__aiplayer = ai.AI(self.__player1.get_size())
+    def create_game(self, boards, ai_game):
+        self.turn = Turn.PLAYER_ONE
+        self.run = True
+        self.__player1 = Player(boards[0])
+        if ai_game:
+            self.__player2 = AI(boards[1])
+        else:
+            self.__player2 = Player(boards[1])
 
     '''
     Tracks turn
@@ -63,8 +61,12 @@ class GameManager:
         if (self.turn == Turn.PLAYER_ONE):
             self.accepted_action(active_cell)
         elif (self.turn == Turn.PLAYER_TWO):
-            x, y = self.__aiplayer.guess()
-            self.accepted_action(self.__player1.get_cell(x, y))
+            if isinstance(self.__player2, AI):
+                x, y = self.__player2.guess()
+                self.accepted_action(self.__player1.board.get_cell(x, y))
+            else:
+                pass
+                # wait for other opponent to make guess
 
     '''
     Checks if active_cell was a hit. 
@@ -87,9 +89,9 @@ class GameManager:
     '''
 
     def endgame(self):
-        if self.__player1.gameover():
+        if self.__player1.board.gameover():
             self.endgamescreen("Player2")
-        elif self.__player2.gameover():
+        elif self.__player2.board.gameover():
             self.endgamescreen("Player1")
 
     def endgamescreen(self, winner):

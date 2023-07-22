@@ -5,18 +5,22 @@ Class for the AI opponent.
 import random
 from time import sleep
 
+from player import Player
 
-class AI():
+
+class AI(Player):
     '''
     Guesses that reveal part of a ship will have those coordinates placed in revealed.
     Subsequent guesses will be to coordinates adjacent to revealed coordinates.
     Once an entire ship is revealed, those coordinates will be added to guessed and 
     removed from revealed.
     '''
-    revealed, guessed = [], []
 
-    def __init__(self, size):
-        self.__size = size
+    def __init__(self, board):
+        super().__init__(board) 
+        self.revealed = []
+        self.guessed = []
+        self.__size = board.get_size()
 
     def guess(self):
         sleep(1)
@@ -30,8 +34,3 @@ class AI():
     def handleResult(self, isHit):
         pass
 
-    def place_ships(self) -> bool:
-        pass
-
-    def use_ability(self) -> bool:
-        pass
