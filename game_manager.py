@@ -74,6 +74,7 @@ class GameManager:
     def accepted_action(self, active_cell):
         if not isinstance(active_cell, Cell):
             return False
+        active_cell.set_is_guessed(True)
         self.turn ^= Turn.PLAYER_TWO
         if (active_cell.hit()):
             self.endgame()
