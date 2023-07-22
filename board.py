@@ -2,6 +2,7 @@ import math
 import random
 
 from board_factory import BoardFactory
+from cell import Cell
 from fonts import get_font
 
 
@@ -201,7 +202,8 @@ class Board:
         cell_size = self.__width / self.__size
         row = math.floor((mouse_pos[1] - self.__coordinates[1]) / cell_size)
         column = math.floor((mouse_pos[0] - self.__coordinates[0]) / cell_size)
-        if row < 0 or column < 0 or row >= self.__size or column >= self.__size:
+        if (row < 0 or column < 0 or row >= self.__size or column >= self.__size 
+            or self.__cells[column][row].get_is_guessed()):
             return None
 
         return self.__cells[column][row]

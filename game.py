@@ -8,7 +8,7 @@ from fonts import get_font
 from game_manager import GameManager
 
 BOARD_SIZE = 8
-NUM_SHIPS = 1
+NUM_SHIPS = 3
 
 # Create a pygame window as a global constant
 pygame.init()
