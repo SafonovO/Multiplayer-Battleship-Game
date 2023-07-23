@@ -2,9 +2,8 @@
 
 from board.board import Board
 
-# BUG: adjusting the board size may cause the ships to be placed off-screen for the opponent
-BOARD_SIZE = 8
-NUM_SHIPS = 60
+BOARD_SIZE = 4
+NUM_SHIPS = 2
 
 class Player:
     def __init__(self, coords=(850, 375), width=300, display=True):

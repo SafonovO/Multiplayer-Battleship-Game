@@ -44,13 +44,13 @@ class GameManager:
         self.turn = Turn.PLAYER_ONE
         self.run = True
         self.__player1 = Player()
-        self.player2 = AI() if ai_game else Opponent()
+        self.__player2 = AI() if ai_game else Opponent()
         self.active_cell = None
 
     def update_boards(self):
         # draw my board
         self.__player1.board.draw_board(SCREEN)
-        self.player2.board.draw_board(SCREEN)
+        self.__player2.board.draw_board(SCREEN)
         # Draw active cell if it is not None
         if self.active_cell != None:
             self.active_cell.draw_selected_cell(SCREEN)
@@ -65,8 +65,8 @@ class GameManager:
         returns false if mouse click is not on cell, 
         returns true and sets the active cell otherwise
         '''
-        if self.player2.board.get_cell_mouse(mouse) != None:
-            self.active_cell = self.player2.board.get_cell_mouse(mouse)
+        if self.__player2.board.get_cell_mouse(mouse) != None:
+            self.active_cell = self.__player2.board.get_cell_mouse(mouse)
             return True
         return False
 
@@ -74,8 +74,8 @@ class GameManager:
     def change_turn(self):
         self.turn ^= Turn.PLAYER_TWO
         if self.turn == Turn.PLAYER_TWO:
-            if isinstance(self.player2, AI):
-                x, y = self.player2.guess()
+            if isinstance(self.__player2, AI):
+                x, y = self.__player2.guess()
                 self.validate_shot(self.__player1.board.get_cell(x, y))
                 self.change_turn()
             else:
@@ -114,7 +114,7 @@ class GameManager:
     def endgame(self):
         if self.__player1.board.gameover():
             self.endgamescreen("Player2")
-        elif self.player2.board.gameover():
+        elif self.__player2.board.gameover():
             self.endgamescreen("Player1")
 
     def endgamescreen(self, winner):
