@@ -1,6 +1,6 @@
 import sys
 from enum import Flag
-from typing import Union
+from opponent import Opponent
 from player import Player
 from ai import AI
 
@@ -41,43 +41,67 @@ class GameManager:
             cls.instance = super(GameManager, cls).__new__(cls)
         return cls.instance
 
-    def create_game(self, boards, ai_game):
+    def create_game(self, ai_game):
         self.turn = Turn.PLAYER_ONE
         self.run = True
-        self.__player1 = Player(boards[0])
-        if ai_game:
-            self.__player2 = AI(boards[1])
-        else:
-            self.__player2 = Player(boards[1])
+        self.__player1 = Player()
+        self.player2 = AI() if ai_game else Opponent()
+        self.active_cell = None
 
-    '''
-    Tracks turn
-    needs to know if the cell hit contains a ship
-    '''
+    def update_boards(self):
+        # draw my board
+        self.__player1.board.draw_board(SCREEN)
+        self.player2.board.draw_board(SCREEN)
+        # Draw active cell if it is not None
+        if self.active_cell != None:
+            self.active_cell.draw_selected_cell(SCREEN)
 
-    # called from play() in game.py
-    def action(self, active_cell):
-        # checks if it's the right persons turn then proceeds with action
-        if (self.turn == Turn.PLAYER_ONE):
-            self.accepted_action(active_cell)
-        elif (self.turn == Turn.PLAYER_TWO):
-            if isinstance(self.__player2, AI):
-                x, y = self.__player2.guess()
-                self.accepted_action(self.__player1.board.get_cell(x, y))
+
+    def get_active_cell(self):
+        return self.active_cell
+
+
+    def set_active_cell(self, mouse):
+        '''
+        returns false if mouse click is not on cell, 
+        returns true and sets the active cell otherwise
+        '''
+        if self.player2.board.get_cell_mouse(mouse) != None:
+            self.active_cell = self.player2.board.get_cell_mouse(mouse)
+            return True
+        return False
+
+
+    def change_turn(self):
+        self.turn ^= Turn.PLAYER_TWO
+        if self.turn == Turn.PLAYER_TWO:
+            if isinstance(self.player2, AI):
+                x, y = self.player2.guess()
+                self.validate_shot(self.__player1.board.get_cell(x, y))
+                self.change_turn()
             else:
                 pass
                 # wait for other opponent to make guess
 
-    '''
-    Checks if active_cell was a hit. 
-    If hit, returns True, False otherwise.
-    '''
 
-    def accepted_action(self, active_cell):
-        if not isinstance(active_cell, Cell):
-            return False
+    def fire_shot(self):
+        '''
+        Returns true if the shot was fired successfully
+        '''
+        # checks if it's the right persons turn then proceeds with action
+        if self.active_cell and self.turn == Turn.PLAYER_ONE:
+            self.validate_shot(self.active_cell)
+            self.active_cell = None
+            return True
+        return False
+
+
+    def validate_shot(self, active_cell):
+        '''
+        Checks if active_cell was a hit. 
+        If hit, returns True, False otherwise.
+        '''
         active_cell.set_is_guessed(True)
-        self.turn ^= Turn.PLAYER_TWO
         if (active_cell.hit()):
             self.endgame()
             return True
@@ -91,7 +115,7 @@ class GameManager:
     def endgame(self):
         if self.__player1.board.gameover():
             self.endgamescreen("Player2")
-        elif self.__player2.board.gameover():
+        elif self.player2.board.gameover():
             self.endgamescreen("Player1")
 
     def endgamescreen(self, winner):

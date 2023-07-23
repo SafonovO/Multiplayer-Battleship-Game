@@ -7,8 +7,7 @@ from button import Button, ReactiveButton, TextButton
 from fonts import get_font
 from game_manager import GameManager
 
-BOARD_SIZE = 8
-NUM_SHIPS = 3
+
 
 # Create a pygame window as a global constant
 pygame.init()
@@ -25,46 +24,6 @@ manager = GameManager()
 
 
 def play():
-    '''
-    Opponents board
-
-    constructor takes location, rectangle size, and screen
-
-    location will be (150, 100) (for now, might change)
-
-    rectangle size will be 600 (for now)
-
-    These parameters are all subject to change and
-    their true values can be found below
-
-    New addition: boards take a boolean parameter
-    "display" which tells the draw function if it
-    should display the true locations of the ships.
-
-    Opponent's board should display, my board should not
-
-    update: im making my board smaller and shifting it downwards
-    to make room for the text headings
-    '''
-    opponent_board = Board(size=BOARD_SIZE, num_ships=NUM_SHIPS, coords=(150, 150), width=550, display=False)
-    opponent_board.build_board()
-
-    opponent_board.place_ships()
-    # opponent_board.print_cells()
-
-    '''
-    Build a board for my own pieces
-
-    My board will be 600 wide
-
-    location will be at 150 + 700, 100
-
-    My board should be much smaller than opponent's board
-    since it is not the main focus
-    '''
-    my_board = Board(size=BOARD_SIZE, num_ships=NUM_SHIPS, coords=(850, 375), width=300, display=True)
-    my_board.build_board()
-    my_board.place_ships()
 
     '''
     the screen is 1700 wide and 800 tall.
@@ -85,7 +44,7 @@ def play():
     my_board_label_rect = my_board_label.get_rect(center=(1000, 325))
 
     # create a game using the manager
-    manager.create_game([my_board, opponent_board], ai_game=True)
+    manager.create_game(ai_game=True)
 
     # Create a confirm button
     confirm_button = Button(image=pygame.image.load("assets/ConfirmButton.png"), pos=(1000, 250))
@@ -99,14 +58,12 @@ def play():
     coord_text = None
     coord_text_rect = None
 
-    # track the selected cell
-    active_cell = None
 
     # Make a quit button
     quit_button = Button(image=pygame.image.load("assets/quit.png"), pos=(1000, 25))
     quit_button = TextButton(quit_button, text="QUIT", font=get_font(20))
 
-    update = False
+    change_turn = False
 
     while True:
         mouse = pygame.mouse.get_pos()
@@ -123,11 +80,7 @@ def play():
 
         SCREEN.blit(select_text, select_text_rect)
 
-        # draw opponents board
-        opponent_board.draw_board(SCREEN)
-
-        # draw my board
-        my_board.draw_board(SCREEN)
+        manager.update_boards()
 
         # draw the confirm button
         confirm_button.render(SCREEN, mouse)
@@ -138,54 +91,49 @@ def play():
         if coord_text != None and coord_text_rect != None:
             SCREEN.blit(coord_text, coord_text_rect)
 
-        # Draw active cell if it is not None
-        if active_cell != None:
-            active_cell.draw_selected_cell(SCREEN)
+        # active cell is teh cell we are clicking on
+        if manager.get_active_cell() != None:
+            '''
+            We have selected a cell.
 
-        if not update:
-            manager.action(None)
-        update = False
+            First, display the cell as text on screen.
+
+            If the user then clicks FIRE, we call the game
+            manager to execute the fire
+            '''
+            cell_coords = manager.get_active_cell().coordinates
+            letter = Board.letters[cell_coords[0]]
+            num = cell_coords[1] + 1
+
+            coord_text = get_font(15).render("({}, {})".format(letter, num), True, "White")
+            coord_text_rect = coord_text.get_rect(center=(1000, 200))
+
+        pygame.display.flip()
+
+        if change_turn:
+            change_turn = False
+            manager.change_turn()
+            continue
 
         for event in pygame.event.get():
+            # BUG: quit button is not responsive while waiting for AI to make move
+            # probably due to sleep(1)
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if opponent_board.get_active_cell(mouse) != None:
-                    active_cell = opponent_board.get_active_cell(mouse)
+                # check if we clicked a cell or something else
+                if not manager.set_active_cell(mouse):
+                    if quit_button.is_hovered(mouse):
+                        # return to main menu
+                        main_menu()
 
-                # if we hit confirm, fire with the manager
-                if confirm_button.is_hovered(mouse):
-                    manager.action(active_cell)
-                    update = True
-                    active_cell = None
-
-                    coord_text = None
-                    coord_text_rect = None
-
-                # active cell is teh cell we are clicking on
-                if active_cell != None:
-                    '''
-                    We have selected a cell.
-
-                    First, display the cell as text on screen.
-
-                    If the user then clicks FIRE, we call the game
-                    manager to execute the fire
-                    '''
-                    cell_coords = active_cell.coordinates
-                    letter = Board.letters[cell_coords[0]]
-                    num = cell_coords[1] + 1
-
-                    coord_text = get_font(15).render("({}, {})".format(letter, num), True, "White")
-                    coord_text_rect = coord_text.get_rect(center=(1000, 200))
-
-                # the active cell will be drawn on the next loop
-                if quit_button.is_hovered(mouse):
-                    # return to main menu
-                    main_menu()
-        # pygame.display.update()
-        pygame.display.flip()
+                    # if we hit confirm, fire with the manager
+                    if confirm_button.is_hovered(mouse):
+                        change_turn = manager.fire_shot()
+                        # update = True
+                        coord_text = None
+                        coord_text_rect = None
 
 
 def setup():
