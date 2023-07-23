@@ -2,9 +2,9 @@ import sys
 
 import pygame
 
-from board import Board
-from button import Button, ReactiveButton, TextButton
-from fonts import get_font
+from board.board import Board
+from utilities.button import Button, ReactiveButton, TextButton
+from utilities.fonts import get_font
 from game_manager import GameManager
 
 

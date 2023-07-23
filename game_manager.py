@@ -1,16 +1,15 @@
 import sys
 from enum import Flag
-from opponent import Opponent
-from player import Player
-from ai import AI
+from players.opponent import Opponent
+from players.player import Player
+from players.ai import AI
 
 import pygame
 
-import ai
-from board import Board
-from button import Button, ReactiveButton, TextButton
-from cell import Cell
-from fonts import get_font
+from board.board import Board
+from utilities.button import Button, ReactiveButton, TextButton
+from board.cell import Cell
+from utilities.fonts import get_font
 
 
 class Turn(Flag):

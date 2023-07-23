@@ -1,9 +1,9 @@
 import math
 import random
 
-from board_factory import BoardFactory
-from cell import Cell
-from fonts import get_font
+from board.board_factory import BoardFactory
+from board.cell import Cell
+from utilities.fonts import get_font
 
 
 class Board:

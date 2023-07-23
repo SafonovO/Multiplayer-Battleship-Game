@@ -1,6 +1,6 @@
 import pygame
 
-from fonts import get_font
+from utilities.fonts import get_font
 # import pygame_gui
 # from menu_views.menu_options import MenuElement
 from ships.normal_ship import Ship

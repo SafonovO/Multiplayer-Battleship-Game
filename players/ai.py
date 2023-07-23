@@ -4,7 +4,7 @@ Class for the AI opponent.
 
 import random
 from time import sleep
-from opponent import Opponent
+from players.opponent import Opponent
 
 
 class AI(Opponent):

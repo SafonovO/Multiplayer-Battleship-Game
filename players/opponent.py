@@ -1,6 +1,6 @@
 
 
-from player import Player
+from players.player import Player
 
 
 class Opponent(Player):
