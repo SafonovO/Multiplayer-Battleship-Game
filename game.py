@@ -1,7 +1,9 @@
 import sys
+import time
+from client import Client
 
 import pygame
-
+from server import Server
 from board.board import Board
 from utilities.button import Button, ReactiveButton, TextButton
 from utilities.fonts import get_font
@@ -220,6 +222,17 @@ def main_menu():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+            
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_h:
+                    # hosting: start the server
+                    Server().start()
+                    time.sleep(0.5)
+                    
+                # whether hosting or joining, start client and server
+                if event.key == pygame.K_h or event.key == pygame.K_j:
+                    client = Client()
+                    client.start()
 
             # if we clicked, find out if we clicked on a button and execute that buttons action
             if event.type == pygame.MOUSEBUTTONDOWN:
