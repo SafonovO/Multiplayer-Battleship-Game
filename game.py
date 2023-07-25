@@ -7,23 +7,19 @@ from server import Server
 from board.board import Board
 from utilities.button import Button, ReactiveButton, TextButton
 from utilities.fonts import get_font
-from game_manager import GameManager
+from game_manager import BG, SCREEN, GameManager
 
 
 
-# Create a pygame window as a global constant
 pygame.init()
-
-SCREEN = pygame.display.set_mode((1300, 800))
 pygame.display.set_caption("Menu")
-
-BG = pygame.image.load("assets/Background.png")
-
 base_button_image = pygame.image.load("assets/navy_button.png")
 hovered_button_image = pygame.image.load("assets/navy_button_hover.png")
 
 manager = GameManager()
-
+ai_game = True
+# run = False
+server = None
 
 def play():
 
@@ -46,7 +42,7 @@ def play():
     my_board_label_rect = my_board_label.get_rect(center=(1000, 325))
 
     # create a game using the manager
-    manager.create_game(ai_game=True)
+    manager.create_game(ai_game=ai_game)
 
     # Create a confirm button
     confirm_button = Button(image=pygame.image.load("assets/ConfirmButton.png"), pos=(1000, 250))
@@ -121,8 +117,7 @@ def play():
             # BUG: quit button is not responsive while waiting for AI to make move
             # probably due to sleep(1)
             if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
+                quit_game()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 # check if we clicked a cell or something else
                 if not manager.set_active_cell(mouse):
@@ -177,8 +172,7 @@ def setup():
         # get events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
+                quit_game()
 
             # if we clicked, find out if we clicked on a button and execute that buttons action
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -220,19 +214,23 @@ def main_menu():
         # get events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
+                quit_game()
             
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_h:
                     # hosting: start the server
-                    Server().start()
+                    global server
+                    server = Server()
+                    server.start()
                     time.sleep(0.5)
-                    
-                # whether hosting or joining, start client and server
+
+                # whether hosting or joining, start client and join server
                 if event.key == pygame.K_h or event.key == pygame.K_j:
-                    client = Client()
-                    client.start()
+                    global ai_game
+                    ai_game = False
+                    manager.start_client()
+                    # time.sleep(0.5)
+
 
             # if we clicked, find out if we clicked on a button and execute that buttons action
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -240,11 +238,20 @@ def main_menu():
                     setup()
 
                 if quit_button.is_hovered(mouse):
-                    pygame.quit()
-                    # run = False
-                    sys.exit()
+                    quit_game()
 
         pygame.display.update()
 
+
+def quit_game():
+    global server
+    pygame.quit()
+    manager.shut_down()
+    print("is there a server?", True if server else False)
+    if server:
+        print("shutting down server")
+        server.shut_down()
+        print("finished server shutdown")
+    sys.exit()
 
 main_menu()

@@ -1,5 +1,6 @@
 import sys
 from enum import Flag
+from client import Client
 from players.opponent import Opponent
 from players.player import Player
 from players.ai import AI
@@ -39,12 +40,27 @@ class GameManager:
         if not hasattr(cls, 'instance'):
             cls.instance = super(GameManager, cls).__new__(cls)
         return cls.instance
+    
+    def start_client(self):
+        self.client = Client()
+        self.client.start()
+    
+    def shut_down(self):
+        if self.client:
+            self.client.send("close")
+            self.client.join()
+            print("joined client thread")
 
     def create_game(self, ai_game):
+        print("is this an ai game?", ai_game)
         self.turn = Turn.PLAYER_ONE
         self.run = True
         self.__player1 = Player()
-        self.__player2 = AI() if ai_game else Opponent()
+        if ai_game:
+            self.__player2 = AI()
+        else:
+            self.__player2 = Opponent()
+            self.__player2.set_client(self.client)
         self.active_cell = None
 
     def update_boards(self):
