@@ -15,8 +15,8 @@ class AI(Opponent):
     removed from revealed.
     '''
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self,ship_count,game_size):
+        super().__init__(ship_count,game_size)
         self.init_ships()
         self.revealed = []
         self.guessed = []

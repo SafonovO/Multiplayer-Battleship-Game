@@ -45,41 +45,48 @@ class GameManager:
     def start_client(self):
         self.client = Client()
         self.client.start()
-    
+
+    def get_player(self, player_ID):
+        if player_ID == 1:
+            return self.__player1
+        if player_ID == 2:
+            return self.__player2
+        else: return None
+
     def shut_down(self):
         if self.client:
             self.client.send("close")
             self.client.join()
             print("joined client thread")
 
-    def create_game(self, ai_game):
+    def create_game(self, ai_game,ship_count,game_size):
         print("is this an ai game?", ai_game)
         self.turn = Turn.PLAYER_ONE
         self.run = True
-        self.player1 = Player()
+        self.__player1 = Player(ship_count,game_size)
         if ai_game:
-            self.__player2 = AI()
+            self.__player2 = AI(ship_count,game_size)
         else:
-            self.__player2 = Opponent()
+            self.__player2 = Opponent(ship_count,game_size)
             self.__player2.set_client(self.client)
         self.active_cell = None
 
     def update_boards(self):
         # draw my board
-        self.player1.board.draw_board(SCREEN)
+        self.__player1.board.draw_board(SCREEN)
         self.__player2.board.draw_board(SCREEN)
         # Draw active cell if it is not None
         if self.active_cell != None:
             self.active_cell.draw_selected_cell(SCREEN)
 
     def update_placement(self):
-        self.player1.board.draw_board(SCREEN)
+        self.__player1.board.draw_board(SCREEN)
         if self.active_cell != None:
             self.active_cell.draw_selected_cell(SCREEN)
 
-    def place_ship(self,num_left):
+    def place_ship(self, num_left):
         if self.active_cell:
-            self.active_cell.ship = self.player1.board.ships[-(num_left-1)]
+            self.active_cell.ship = self.__player1.board.get_ship(-num_left)
             self.active_cell = None
             return True
         return False
@@ -99,8 +106,8 @@ class GameManager:
         return False
 
     def set_active_cell_placement(self,mouse):
-        if self.player1.board.get_cell_mouse(mouse) != None:
-            self.active_cell = self.player1.board.get_cell_mouse(mouse)
+        if self.__player1.board.get_cell_mouse(mouse) != None:
+            self.active_cell = self.__player1.board.get_cell_mouse(mouse)
             return True
         return False
 
@@ -109,7 +116,7 @@ class GameManager:
         if self.turn == Turn.PLAYER_TWO:
             if isinstance(self.__player2, AI):
                 x, y = self.__player2.guess()
-                self.validate_shot(self.player1.board.get_cell(x, y))
+                self.validate_shot(self.__player1.board.get_cell(x, y))
                 self.change_turn()
             else:
                 pass

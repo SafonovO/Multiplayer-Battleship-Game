@@ -11,7 +11,7 @@ class Board:
     __nships = 0
 
     # array of ships on this board
-    ships = []
+    __ships = []
 
     # size of this board
     __size = 0
@@ -56,13 +56,17 @@ class Board:
 
     def build_board(self):
         self.__cells = self.__board_factory.create_cells()
-        self.ships = self.__board_factory.create_ships()
+        self.__ships = self.__board_factory.create_ships()
 
     def get_size(self):
         return self.__size
 
     def get_num_ships(self):
         return self.__nships
+
+    def get_ship(self, ID):
+        if self.__ships is not None:
+            return self.__ships[ID]
 
     # For testing purposes. Print all the cells in the board
     def print_cells(self):
@@ -84,7 +88,7 @@ class Board:
         '''
 
         for i in range(self.__nships):
-            current_ship = self.ships[i]
+            current_ship = self.__ships[i]
 
             occupied = False
 

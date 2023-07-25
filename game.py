@@ -22,7 +22,7 @@ ai_game = True
 server = None
 
 
-def placement(ship_count):
+def placement(ship_count, game_size):
     playing_surface = pygame.Rect(100, 50, 1100, 700)
 
     # setup labels for the boards
@@ -30,7 +30,7 @@ def placement(ship_count):
     opponent_board_label_rect = opponent_board_label.get_rect(center=(425, 100))
 
     # create a game using the manager
-    manager.create_game(ai_game=ai_game)
+    manager.create_game(ai_game=ai_game,ship_count=ship_count,game_size= game_size)
 
     # Create a confirm button
     confirm_button = Button(image=pygame.image.load("assets/ConfirmButton.png"), pos=(1000, 250))
@@ -108,7 +108,7 @@ def placement(ship_count):
                         main_menu()
 
                     # if we hit confirm, fire with the manager
-                    if confirm_button.is_hovered(mouse):
+                    if   manager.active_cell is not None and confirm_button.is_hovered(mouse) and manager.active_cell.ship is None:
                         manager.place_ship(ships_left)
                         ships_left -= 1
                         # update = True
@@ -270,7 +270,7 @@ def setup():
             # if we clicked, find out if we clicked on a button and execute that buttons action
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if continue_button.is_hovered(mouse):
-                    placement(5)
+                    placement(ship_count=5, game_size = 10)
 
         pygame.display.update()
 
