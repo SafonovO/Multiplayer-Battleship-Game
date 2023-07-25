@@ -11,7 +11,7 @@ class Board:
     __nships = 0
 
     # array of ships on this board
-    __ships = []
+    ships = []
 
     # size of this board
     __size = 0
@@ -56,7 +56,7 @@ class Board:
 
     def build_board(self):
         self.__cells = self.__board_factory.create_cells()
-        self.__ships = self.__board_factory.create_ships()
+        self.ships = self.__board_factory.create_ships()
 
     def get_size(self):
         return self.__size
@@ -84,7 +84,7 @@ class Board:
         '''
 
         for i in range(self.__nships):
-            current_ship = self.__ships[i]
+            current_ship = self.ships[i]
 
             occupied = False
 
@@ -209,4 +209,4 @@ class Board:
         return self.__cells[column][row]
 
     def gameover(self):
-        return all(ship.sunk() for ship in self.__ships)
+        return all(ship.sunk() for ship in self.ships)

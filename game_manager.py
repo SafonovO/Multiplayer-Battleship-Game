@@ -8,6 +8,7 @@ from players.ai import AI
 import pygame
 
 from board.board import Board
+from ships.normal_ship import NormalShip
 from utilities.button import Button, ReactiveButton, TextButton
 from board.cell import Cell
 from utilities.fonts import get_font
@@ -55,7 +56,7 @@ class GameManager:
         print("is this an ai game?", ai_game)
         self.turn = Turn.PLAYER_ONE
         self.run = True
-        self.__player1 = Player()
+        self.player1 = Player()
         if ai_game:
             self.__player2 = AI()
         else:
@@ -65,12 +66,23 @@ class GameManager:
 
     def update_boards(self):
         # draw my board
-        self.__player1.board.draw_board(SCREEN)
+        self.player1.board.draw_board(SCREEN)
         self.__player2.board.draw_board(SCREEN)
         # Draw active cell if it is not None
         if self.active_cell != None:
             self.active_cell.draw_selected_cell(SCREEN)
 
+    def update_placement(self):
+        self.player1.board.draw_board(SCREEN)
+        if self.active_cell != None:
+            self.active_cell.draw_selected_cell(SCREEN)
+
+    def place_ship(self,num_left):
+        if self.active_cell:
+            self.active_cell.ship = self.player1.board.ships[-(num_left-1)]
+            self.active_cell = None
+            return True
+        return False
 
     def get_active_cell(self):
         return self.active_cell
@@ -86,13 +98,18 @@ class GameManager:
             return True
         return False
 
+    def set_active_cell_placement(self,mouse):
+        if self.player1.board.get_cell_mouse(mouse) != None:
+            self.active_cell = self.player1.board.get_cell_mouse(mouse)
+            return True
+        return False
 
     def change_turn(self):
         self.turn ^= Turn.PLAYER_TWO
         if self.turn == Turn.PLAYER_TWO:
             if isinstance(self.__player2, AI):
                 x, y = self.__player2.guess()
-                self.validate_shot(self.__player1.board.get_cell(x, y))
+                self.validate_shot(self.player1.board.get_cell(x, y))
                 self.change_turn()
             else:
                 pass
@@ -128,7 +145,7 @@ class GameManager:
     '''
 
     def endgame(self):
-        if self.__player1.board.gameover():
+        if self.player1.board.gameover():
             self.endgamescreen("Player2")
         elif self.__player2.board.gameover():
             self.endgamescreen("Player1")

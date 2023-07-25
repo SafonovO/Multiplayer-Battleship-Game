@@ -21,6 +21,102 @@ ai_game = True
 # run = False
 server = None
 
+
+def placement(ship_count):
+    playing_surface = pygame.Rect(100, 50, 1100, 700)
+
+    # setup labels for the boards
+    opponent_board_label = get_font(30).render("Board Setup", True, "White")
+    opponent_board_label_rect = opponent_board_label.get_rect(center=(425, 100))
+
+    # create a game using the manager
+    manager.create_game(ai_game=ai_game)
+
+    # Create a confirm button
+    confirm_button = Button(image=pygame.image.load("assets/ConfirmButton.png"), pos=(1000, 250))
+    confirm_button = TextButton(confirm_button, text="Place", font=get_font(20))
+
+    # Create text
+    select_text = get_font(15).render("YOU HAVE SELECTED:", True, "White")
+    select_text_rect = select_text.get_rect(center=(1000, 150))
+
+    # Coord text
+    coord_text = None
+    coord_text_rect = None
+
+    # Make a quit button
+    quit_button = Button(image=pygame.image.load("assets/quit.png"), pos=(1000, 25))
+    quit_button = TextButton(quit_button, text="QUIT", font=get_font(20))
+
+    ships_left = ship_count
+
+    while ships_left > 0:
+        mouse = pygame.mouse.get_pos()
+
+        # Draw the backgroudn
+        SCREEN.blit(BG, (0, 0))
+
+        # Draw the playing surface as described above
+        pygame.draw.rect(SCREEN, "#042574", playing_surface)
+
+        # Draw the labels
+        SCREEN.blit(opponent_board_label, opponent_board_label_rect)
+
+        SCREEN.blit(select_text, select_text_rect)
+
+        manager.update_placement()
+
+        # draw the confirm button
+        confirm_button.render(SCREEN, mouse)
+
+        quit_button.render(SCREEN, mouse)
+
+        # draw the coord text if it is not None
+        if coord_text != None and coord_text_rect != None:
+            SCREEN.blit(coord_text, coord_text_rect)
+
+        # active cell is teh cell we are clicking on
+        if manager.get_active_cell() != None:
+            '''
+            We have selected a cell.
+
+            First, display the cell as text on screen.
+
+            If the user then clicks FIRE, we call the game
+            manager to execute the fire
+            '''
+            cell_coords = manager.get_active_cell().coordinates
+            letter = Board.letters[cell_coords[0]]
+            num = cell_coords[1] + 1
+
+            coord_text = get_font(15).render("({}, {})".format(letter, num), True, "White")
+            coord_text_rect = coord_text.get_rect(center=(1000, 200))
+
+        pygame.display.flip()
+
+
+        for event in pygame.event.get():
+            # BUG: quit button is not responsive while waiting for AI to make move
+            # probably due to sleep(1)
+            if event.type == pygame.QUIT:
+                quit_game()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                # check if we clicked a cell or something else
+                if not manager.set_active_cell_placement(mouse):
+                    if quit_button.is_hovered(mouse):
+                        # return to main menu
+                        main_menu()
+
+                    # if we hit confirm, fire with the manager
+                    if confirm_button.is_hovered(mouse):
+                        manager.place_ship(ships_left)
+                        ships_left -= 1
+                        # update = True
+                        coord_text = None
+                        coord_text_rect = None
+    play()
+
+
 def play():
 
     '''
@@ -40,9 +136,6 @@ def play():
 
     my_board_label = get_font(30).render("MY BOARD", True, "White")
     my_board_label_rect = my_board_label.get_rect(center=(1000, 325))
-
-    # create a game using the manager
-    manager.create_game(ai_game=ai_game)
 
     # Create a confirm button
     confirm_button = Button(image=pygame.image.load("assets/ConfirmButton.png"), pos=(1000, 250))
@@ -177,7 +270,7 @@ def setup():
             # if we clicked, find out if we clicked on a button and execute that buttons action
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if continue_button.is_hovered(mouse):
-                    play()
+                    placement(5)
 
         pygame.display.update()
 
