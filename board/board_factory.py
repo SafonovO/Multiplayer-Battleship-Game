@@ -1,4 +1,4 @@
-from cell import Cell
+from board.cell import Cell
 from ships.normal_ship import NormalShip
 
 

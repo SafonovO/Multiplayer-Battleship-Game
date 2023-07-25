@@ -1,9 +1,9 @@
 import math
 import random
 
-from board_factory import BoardFactory
-from cell import Cell
-from fonts import get_font
+from board.board_factory import BoardFactory
+from board.cell import Cell
+from utilities.fonts import get_font
 
 
 class Board:
@@ -192,7 +192,7 @@ class Board:
     def get_cell(self, col, row):
         return self.__cells[col][row]
 
-    def get_active_cell(self, mouse_pos):
+    def get_cell_mouse(self, mouse_pos):
         '''
         Given the position of a mouse, find a cell in self._cells
         such that the mouse collides with the cell.
