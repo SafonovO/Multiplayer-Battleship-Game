@@ -8,7 +8,6 @@ from players.ai import AI
 import pygame
 
 from board.board import Board
-from ships.normal_ship import NormalShip
 from utilities.button import Button, ReactiveButton, TextButton
 from board.cell import Cell
 from utilities.fonts import get_font
@@ -152,7 +151,7 @@ class GameManager:
     '''
 
     def endgame(self):
-        if self.player1.board.gameover():
+        if self.__player1.board.gameover():
             self.endgamescreen("Player2")
         elif self.__player2.board.gameover():
             self.endgamescreen("Player1")

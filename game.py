@@ -270,7 +270,7 @@ def setup():
             # if we clicked, find out if we clicked on a button and execute that buttons action
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if continue_button.is_hovered(mouse):
-                    placement(ship_count=5, game_size = 10)
+                    placement(ship_count=5, game_size = 5)
 
         pygame.display.update()
 

@@ -213,4 +213,4 @@ class Board:
         return self.__cells[column][row]
 
     def gameover(self):
-        return all(ship.sunk() for ship in self.ships)
+        return all(ship.sunk() for ship in self.__ships)
