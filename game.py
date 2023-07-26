@@ -1,9 +1,9 @@
+import asyncio
 import sys
 import time
 from client import Client
 
 import pygame
-from server import Server
 from board.board import Board
 from utilities.button import Button, ReactiveButton, TextButton
 from utilities.fonts import get_font
@@ -19,7 +19,6 @@ hovered_button_image = pygame.image.load("assets/navy_button_hover.png")
 manager = GameManager()
 ai_game = True
 # run = False
-server = None
 
 def play():
 
@@ -182,7 +181,7 @@ def setup():
         pygame.display.update()
 
 
-def main_menu():
+async def main_menu():
     # The loop for the main menu
     # render menu text, buttons
     text = get_font(100).render("BATTLESHIP", True, "#b68f40")
@@ -217,20 +216,10 @@ def main_menu():
                 quit_game()
             
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_h:
-                    # hosting: start the server
-                    global server
-                    server = Server()
-                    server.start()
-                    time.sleep(0.5)
-
-                # whether hosting or joining, start client and join server
-                if event.key == pygame.K_h or event.key == pygame.K_j:
+                if event.key == pygame.K_j:
                     global ai_game
                     ai_game = False
-                    manager.start_client()
-                    # time.sleep(0.5)
-
+                    await Client.send("hello")
 
             # if we clicked, find out if we clicked on a button and execute that buttons action
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -244,14 +233,7 @@ def main_menu():
 
 
 def quit_game():
-    global server
     pygame.quit()
-    manager.shut_down()
-    print("is there a server?", True if server else False)
-    if server:
-        print("shutting down server")
-        server.shut_down()
-        print("finished server shutdown")
     sys.exit()
 
-main_menu()
+asyncio.run(main_menu())

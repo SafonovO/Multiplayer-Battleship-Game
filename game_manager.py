@@ -41,15 +41,15 @@ class GameManager:
             cls.instance = super(GameManager, cls).__new__(cls)
         return cls.instance
     
-    def start_client(self):
-        self.client = Client()
-        self.client.start()
+    # def start_client(self):
+    #     self.client = Client()
+    #     self.client.start()
     
-    def shut_down(self):
-        if self.client:
-            self.client.send("close")
-            self.client.join()
-            print("joined client thread")
+    # def shut_down(self):
+    #     if self.client:
+    #         self.client.send("close")
+    #         self.client.join()
+    #         print("joined client thread")
 
     def create_game(self, ai_game):
         print("is this an ai game?", ai_game)
