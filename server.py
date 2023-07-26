@@ -3,7 +3,9 @@
 import asyncio
 import websockets
 
-URI = "ws://localhost:8765"
+ADDRESS = "127.0.0.1"
+PORT = "8765"
+URI = "ws://" + ADDRESS + ':' + PORT
 
 class Server:
     async def handle_request(websocket):
@@ -14,7 +16,7 @@ class Server:
 
 
 async def main():
-    async with websockets.serve(Server.handle_request, "localhost", 8765):
+    async with websockets.serve(Server.handle_request, ADDRESS, PORT):
         await asyncio.Future()  # run forever
 
 if __name__ == "__main__":
