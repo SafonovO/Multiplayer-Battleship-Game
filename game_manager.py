@@ -75,17 +75,20 @@ class GameManager:
         self.__player1.board.draw_board(SCREEN)
         self.__player2.board.draw_board(SCREEN)
         # Draw active cell if it is not None
-        if self.active_cell != None:
+        if self.active_cell is not None:
             self.active_cell.draw_selected_cell(SCREEN)
 
     def update_placement(self):
-        self.__player1.board.draw_board(SCREEN)
-        if self.active_cell != None:
+        # Draw a larger board for the placement stage
+        self.__player1.draw_large_board(SCREEN)
+        if self.active_cell is not None:
             self.active_cell.draw_selected_cell(SCREEN)
 
     def place_ship(self, num_left):
         if self.active_cell:
             self.active_cell.ship = self.__player1.board.get_ship(-num_left)
+            # place the ships onto the large board and then copy the ship to the small board
+            self.__player1.board.get_cell(self.active_cell.coordinates[0],self.active_cell.coordinates[1]).ship = self.active_cell.ship
             self.active_cell = None
             return True
         return False
@@ -99,14 +102,14 @@ class GameManager:
         returns false if mouse click is not on cell, 
         returns true and sets the active cell otherwise
         '''
-        if self.__player2.board.get_cell_mouse(mouse) != None:
+        if self.__player2.board.get_cell_mouse(mouse) is not None:
             self.active_cell = self.__player2.board.get_cell_mouse(mouse)
             return True
         return False
 
     def set_active_cell_placement(self,mouse):
-        if self.__player1.board.get_cell_mouse(mouse) != None:
-            self.active_cell = self.__player1.board.get_cell_mouse(mouse)
+        if self.__player1.large_board.get_cell_mouse(mouse) is not None:
+            self.active_cell = self.__player1.large_board.get_cell_mouse(mouse)
             return True
         return False
 

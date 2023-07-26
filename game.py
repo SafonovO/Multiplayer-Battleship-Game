@@ -23,11 +23,12 @@ server = None
 
 
 def placement(ship_count, game_size):
+    ships_left = ship_count
     playing_surface = pygame.Rect(100, 50, 1100, 700)
 
     # setup labels for the boards
-    opponent_board_label = get_font(30).render("Board Setup", True, "White")
-    opponent_board_label_rect = opponent_board_label.get_rect(center=(425, 100))
+    placement_board_label = get_font(30).render("Board Setup", True, "White")
+    placement_board_label_rect = placement_board_label.get_rect(center=(425, 100))
 
     # create a game using the manager
     manager.create_game(ai_game=ai_game,ship_count=ship_count,game_size= game_size)
@@ -48,7 +49,8 @@ def placement(ship_count, game_size):
     quit_button = Button(image=pygame.image.load("assets/quit.png"), pos=(1000, 25))
     quit_button = TextButton(quit_button, text="QUIT", font=get_font(20))
 
-    ships_left = ship_count
+    ships_left_label = get_font(30).render("Ships Left: " + str(ships_left), True, "White")
+    ships_left_label_rect = ships_left_label.get_rect(center=(1000, 100))
 
     while ships_left > 0:
         mouse = pygame.mouse.get_pos()
@@ -60,7 +62,11 @@ def placement(ship_count, game_size):
         pygame.draw.rect(SCREEN, "#042574", playing_surface)
 
         # Draw the labels
-        SCREEN.blit(opponent_board_label, opponent_board_label_rect)
+        SCREEN.blit(placement_board_label, placement_board_label_rect)
+
+        # Draw the amount of ships left
+
+        SCREEN.blit(ships_left_label,ships_left_label_rect)
 
         SCREEN.blit(select_text, select_text_rect)
 
@@ -108,12 +114,14 @@ def placement(ship_count, game_size):
                         main_menu()
 
                     # if we hit confirm, fire with the manager
-                    if   manager.active_cell is not None and confirm_button.is_hovered(mouse) and manager.active_cell.ship is None:
+                    if manager.active_cell is not None and confirm_button.is_hovered(mouse) and manager.active_cell.ship is None:
                         manager.place_ship(ships_left)
                         ships_left -= 1
                         # update = True
                         coord_text = None
                         coord_text_rect = None
+                        # update the count label
+                        ships_left_label = get_font(30).render("Ships Left: " + str(ships_left), True, "White")
     play()
 
 
