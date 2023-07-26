@@ -203,7 +203,7 @@ class Board:
         row = math.floor((mouse_pos[1] - self.__coordinates[1]) / cell_size)
         column = math.floor((mouse_pos[0] - self.__coordinates[0]) / cell_size)
         if (row < 0 or column < 0 or row >= self.__size or column >= self.__size 
-            or self.__cells[column][row].get_is_guessed()):
+            or self.__cells[column][row].is_hit):
             return None
 
         return self.__cells[column][row]

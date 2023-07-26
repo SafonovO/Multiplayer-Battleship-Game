@@ -11,9 +11,5 @@ class Opponent(Player):
         self.client = client
 
 
-    # def init_ships(self) -> bool:
-    #     self.get_ships()
-
-    def get_ships(self):
-        # ask opponent to send coords of ships
+    def init_ships(self) -> bool:
         pass

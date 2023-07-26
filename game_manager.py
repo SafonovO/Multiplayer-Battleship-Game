@@ -40,18 +40,8 @@ class GameManager:
         if not hasattr(cls, 'instance'):
             cls.instance = super(GameManager, cls).__new__(cls)
         return cls.instance
-    
-    # def start_client(self):
-    #     self.client = Client()
-    #     self.client.start()
-    
-    # def shut_down(self):
-    #     if self.client:
-    #         self.client.send("close")
-    #         self.client.join()
-    #         print("joined client thread")
 
-    def create_game(self, ai_game):
+    async def create_game(self, ai_game, create, join):
         print("is this an ai game?", ai_game)
         self.turn = Turn.PLAYER_ONE
         self.run = True
@@ -59,8 +49,12 @@ class GameManager:
         if ai_game:
             self.__player2 = AI()
         else:
+            self.client = Client()
             self.__player2 = Opponent()
-            self.__player2.set_client(self.client)
+            if create:
+                await self.client.create_game()
+            elif join:
+                await self.client.join_game()
         self.active_cell = None
 
     def update_boards(self):
@@ -87,25 +81,34 @@ class GameManager:
         return False
 
 
-    def change_turn(self):
+    async def change_turn(self):
         self.turn ^= Turn.PLAYER_TWO
         if self.turn == Turn.PLAYER_TWO:
             if isinstance(self.__player2, AI):
                 x, y = self.__player2.guess()
                 self.validate_shot(self.__player1.board.get_cell(x, y))
-                self.change_turn()
+                await self.change_turn()
             else:
-                pass
+                coords = (await self.client.get_guess()).split(',')
+                # should prob check if coords is valid, ie not of size 0
+                result = self.validate_shot(self.__player1.board.get_cell(int(coords[0]), int(coords[1])))
+                await self.client.send_result(result)
+                await self.change_turn()
                 # wait for other opponent to make guess
 
 
-    def fire_shot(self):
+    async def fire_shot(self):
         '''
         Returns true if the shot was fired successfully
         '''
         # checks if it's the right persons turn then proceeds with action
         if self.active_cell and self.turn == Turn.PLAYER_ONE:
-            self.validate_shot(self.active_cell)
+            if isinstance(self.__player2, AI):
+                self.validate_shot(self.active_cell)
+            elif isinstance(self.__player2, Opponent):
+                coords = self.active_cell.coordinates
+                await self.client.send_guess(coords[0], coords[1])
+                # self.validate_shot
             self.active_cell = None
             return True
         return False
@@ -113,10 +116,10 @@ class GameManager:
 
     def validate_shot(self, active_cell):
         '''
-        Checks if active_cell was a hit. 
-        If hit, returns True, False otherwise.
+        Marks the active cell as hit.
+        Checks if there was a ship in the active cell. 
+        If ship, returns True, False otherwise.
         '''
-        active_cell.set_is_guessed(True)
         if (active_cell.hit()):
             self.endgame()
             return True

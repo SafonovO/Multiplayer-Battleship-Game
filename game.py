@@ -18,9 +18,11 @@ hovered_button_image = pygame.image.load("assets/navy_button_hover.png")
 
 manager = GameManager()
 ai_game = True
+join = False
+create = False
 # run = False
 
-def play():
+async def play():
 
     '''
     the screen is 1700 wide and 800 tall.
@@ -41,7 +43,7 @@ def play():
     my_board_label_rect = my_board_label.get_rect(center=(1000, 325))
 
     # create a game using the manager
-    manager.create_game(ai_game=ai_game)
+    await manager.create_game(ai_game=ai_game, create=create, join=join)
 
     # Create a confirm button
     confirm_button = Button(image=pygame.image.load("assets/ConfirmButton.png"), pos=(1000, 250))
@@ -109,7 +111,7 @@ def play():
 
         if change_turn:
             change_turn = False
-            manager.change_turn()
+            await manager.change_turn()
             continue
 
         for event in pygame.event.get():
@@ -122,17 +124,17 @@ def play():
                 if not manager.set_active_cell(mouse):
                     if quit_button.is_hovered(mouse):
                         # return to main menu
-                        main_menu()
+                        await main_menu()
 
                     # if we hit confirm, fire with the manager
                     if confirm_button.is_hovered(mouse):
-                        change_turn = manager.fire_shot()
+                        change_turn = await manager.fire_shot()
                         # update = True
                         coord_text = None
                         coord_text_rect = None
 
 
-def setup():
+async def setup():
     # Ship setup screen
 
     # Render text
@@ -176,7 +178,7 @@ def setup():
             # if we clicked, find out if we clicked on a button and execute that buttons action
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if continue_button.is_hovered(mouse):
-                    play()
+                    await play()
 
         pygame.display.update()
 
@@ -216,15 +218,20 @@ async def main_menu():
                 quit_game()
             
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_j:
-                    global ai_game
+                global ai_game
+                if event.key == pygame.K_c:
+                    global create
                     ai_game = False
-                    await Client.send("hello")
+                    create = True
+                if event.key == pygame.K_j:
+                    global join
+                    ai_game = False
+                    join = True
 
             # if we clicked, find out if we clicked on a button and execute that buttons action
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if play_button.is_hovered(mouse):
-                    setup()
+                    await setup()
 
                 if quit_button.is_hovered(mouse):
                     quit_game()
@@ -237,3 +244,4 @@ def quit_game():
     sys.exit()
 
 asyncio.run(main_menu())
+# main_menu()
