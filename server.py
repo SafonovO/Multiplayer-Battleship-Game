@@ -1,4 +1,5 @@
 import asyncio
+import json
 from time import sleep
 import websockets
 import random
@@ -13,6 +14,7 @@ class Player:
         self.ships = []
         self.next_guess = None
         self.result = None
+        self.socket = None
 
 class Game:
     def __init__(self):
@@ -24,45 +26,58 @@ class Game:
         return ''.join(random.choice(chars) for i in range(16))
 
 class Server:
+    '''
+    {
+        "request": request,
+        "game": game,
+        "player": player,
+        "details": details
+    }
+    '''
     def __init__(self) -> None:
         self.games = []
 
-    def unpack(self, packet):
-        '''
-        [.|.|........|.... ...]
-        first 1 chars: game id (up to 10 games)
-        next 1 char: player number (0 or 1)
-        next 8 chars: request
-        rest: details
-        '''
-        game_id = packet[:1]
-        player = packet[1]
-        request = packet[2:10]
-        details = packet[10:]
-        return int(game_id), int(player), request, details
-
     async def handle_request(self, websocket):
         packet = await websocket.recv()
-        game_id, player_id, request, details = self.unpack(packet)
+        msg = json.loads(packet)
+        game_id = int(msg["game"]) if msg["game"] else None
+        player_id = int(msg["player"]) if msg["player"] else None
+        request = msg["request"]
+        details = msg["details"]
+        
         match request:
-            case "testing-":
+            # for testing purposes
+            case "testing":
                 await websocket.send(f'{game_id}, {player_id}, {request}, {details}')
-            case "newgame-":
+            # create a new game
+            case "newgame":
                 new_game_id = self.new_game()
+                self.games[new_game_id].players[0].socket = websocket
                 await websocket.send(str(new_game_id))
-            case "invite--":
+            # get a code to share so your friend can join your game
+            case "invite":
                 await websocket.send(str(self.get_password(game_id)))
+            # join a game 
+            # we're going to want to pass in a game password later
             case "joingame":
                 # temp hard coding: fix later
+                self.games[0].players[1].socket = websocket
                 await websocket.send("0")
+            # join first empty game
+            # might need to return error if no empty games, then create game instead
+            case "joinrandom":
+                pass
             case "getguess":
                 guess = await self.get_guess(game_id, player_id ^ 1)
                 await websocket.send(str(guess))
-            case "txresult":
+            case "setresult":
                 self.set_result(game_id, player_id ^ 1, details)
                 await websocket.send("ok")
-            case "txguess-":
+            case "setguess":
                 self.set_guess(game_id, player_id, details)
+                await websocket.send("ok")
+            case "gameover":
+                self.end_game(game_id, player_id, details)
                 await websocket.send("ok")
             case other:
                 print("invalid request")
@@ -70,6 +85,13 @@ class Server:
     def new_game(self):
         '''
         game id is the game's index in the games list
+        we can only have max 10 games: 0-9
+        thus, check if len(games) < 10
+            if true, simply append new game to self.games
+            if false, go thru list and check if any games[id] == None
+                that would mean that game has ended and we can overwrite the spot
+            if we are full, then send an error saying we are at max capacity.
+        can prob make a server.capacity attribute to speed things up.
         '''
         self.games.append(Game())
         return len(self.games) - 1
@@ -88,6 +110,11 @@ class Server:
 
     def set_guess(self, game_id, player_id, guess):
         self.games[game_id].players[player_id].next_guess = guess
+
+    def end_game(self, game_id, player_id, details):
+        # tell player_id ^ 1 that they lost
+        # games[game_id] = None
+        pass
 
 
 async def main():

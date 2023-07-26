@@ -1,4 +1,5 @@
 import asyncio
+import json
 from time import sleep
 import websockets
 
@@ -7,6 +8,13 @@ URI = "ws://127.0.0.1:8765"
 
 
 class Client:
+    def create_message(self, request, game="", player="", details=""):
+        return {
+            "request": request,
+            "game": game,
+            "player": player,
+            "details": details
+        }
 
     async def send(self, request):
         async with websockets.connect(URI) as websocket:
@@ -16,23 +24,28 @@ class Client:
             return response
 
     async def create_game(self):
-        self.game_id = await self.send("00newgame-")
+        message = self.create_message("newgame")
+        self.game_id = await self.send(json.dumps(message))
         self.player_id = '0'
         print("successfully created game")
 
     async def join_game(self):
-        self.game_id = await self.send("00joingame")
+        message = self.create_message("joingame")
+        self.game_id = await self.send(json.dumps(message))
         self.player_id = '1'
         print("successfully joined game")
 
     async def get_guess(self):
-        return await self.send(f'{self.game_id}{self.player_id}getguess')
+        message = self.create_message("getguess", self.game_id, self.player_id)
+        return await self.send(json.dumps(message))
     
     async def send_result(self, result):
-        await self.send(f'{self.game_id}{self.player_id}txresult{result}')
+        message = self.create_message("setresult", self.game_id, self.player_id)
+        await self.send(json.dumps(message))
 
     async def send_guess(self, x, y):
-        await self.send(f'{self.game_id}{self.player_id}txguess-{x},{y}')
+        message = self.create_message("setguess", self.game_id, self.player_id, f'{x},{y}')
+        await self.send(json.dumps(message))
 
 
 
