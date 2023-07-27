@@ -41,22 +41,18 @@ class BoardFactory:
         for i in range(self.__nships):
             if i < 3:
                 # append a 1x1 ship
-                print("adding a 1x1 ship")
                 ship = NormalShip(1)
                 ships.append(ship)
 
             elif i >= 3 and i < 5:
-                print("adding a 2x1 ship")
                 ship = NormalShip(2)
                 ships.append(ship)
 
             elif i >= 5 and i < 7:
-                print("adding a 3x1 ship")
                 ship = NormalShip(3)
                 ships.append(ship)
 
             elif i >=7 and i < 9:
-                print("adding a 4x1 ship")
                 ship = NormalShip(4)
                 ships.append(ship)
 

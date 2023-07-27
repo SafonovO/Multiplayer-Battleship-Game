@@ -85,13 +85,71 @@ class GameManager:
             self.active_cell.draw_selected_cell(SCREEN)
 
     def place_ship(self, num_left):
+        '''
+        Create a list of cells that this ship would occupy
+
+        let n = __player1. board.get_ship(-num_left)
+
+        the list should be of length n.get_size()
+
+        The first cell in the list will be active_cell
+        then, proceed to add cells to the list in ascending
+        order of column
+
+        Maintain an array of cells which this ship will occupy.
+
+        We can validate each cell before the ship is placed.
+        A cell is invlid if:
+            - another ship is placed there
+            - its coordinates are out of bounds
+
+        Then, place the ship into each of the cells iff all are valid
+        '''
+        s = self.__player1.board.get_ship(-num_left)
+
+        cells = []
+
+        for i in range(s.get_size()):
+            newcell = (self.active_cell.coordinates[0], self.active_cell.coordinates[1] + i)
+            cells.append(newcell)
+
+        # validate each cell
+        # if any cell is invalid, return False
+        for c in cells:
+            # is c out of bounds?
+            # c[0] is the column. if c[0] >= the board size, we are out of bounds
+            # c[1] is the row. if c[1] >= the board size, we are out of bounds
+            if c[0] >= self.__player1.board.get_size():
+                self.active_cell = None
+                return False
+
+            if c[1] >= self.__player1.board.get_size():
+                self.active_cell = None
+                return False
+            # does c already contain a ship?
+            if self.__player1.large_board.get_cell(c[0], c[1]).ship != None:
+                self.active_cell = None
+                return False
+
+        # set the ship in each cell
+        for c in cells:
+            self.__player1.board.get_cell(c[0], c[1]).ship = s
+            self.__player1.large_board.get_cell(c[0], c[1]).ship = s
+
+        self.active_cell = None
+
+        '''
+
         if self.active_cell:
-            self.active_cell.ship = self.__player1.board.get_ship(-num_left)
+            self.active_cell.ship = s
             # place the ships onto the large board and then copy the ship to the small board
+
+
             self.__player1.board.get_cell(self.active_cell.coordinates[0],self.active_cell.coordinates[1]).ship = self.active_cell.ship
             self.active_cell = None
             return True
-        return False
+        '''
+        return True
 
     def get_active_cell(self):
         return self.active_cell

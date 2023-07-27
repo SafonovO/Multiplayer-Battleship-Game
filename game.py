@@ -114,9 +114,13 @@ def placement(ship_count, game_size):
                         main_menu()
 
                     # if we hit confirm, fire with the manager
-                    if manager.active_cell is not None and confirm_button.is_hovered(mouse) and manager.active_cell.ship is None:
-                        manager.place_ship(ships_left)
-                        ships_left -= 1
+                    if manager.active_cell is not None and confirm_button.is_hovered(mouse):
+                        successful_placement = manager.place_ship(ships_left)
+
+                        # if the placement is successful, subtract the number of ships remaining.
+                        if successful_placement:
+                        	ships_left -= 1
+
                         # update = True
                         coord_text = None
                         coord_text_rect = None
