@@ -84,7 +84,7 @@ class GameManager:
         if self.active_cell is not None:
             self.active_cell.draw_selected_cell(SCREEN)
 
-    def place_ship(self, num_left):
+    def place_ship(self, num_left, vertical):
         '''
         Create a list of cells that this ship would occupy
 
@@ -104,13 +104,19 @@ class GameManager:
             - its coordinates are out of bounds
 
         Then, place the ship into each of the cells iff all are valid
+
+        NEW PARAMETER: vertical=True indiccates that this
+        ship should be placed vertically. Set the cells as such
         '''
         s = self.__player1.board.get_ship(-num_left)
 
         cells = []
 
         for i in range(s.get_size()):
-            newcell = (self.active_cell.coordinates[0], self.active_cell.coordinates[1] + i)
+            if vertical:
+                newcell = (self.active_cell.coordinates[0], self.active_cell.coordinates[1] + i)
+            else:
+                newcell = (self.active_cell.coordinates[0] + i, self.active_cell.coordinates[1])
             cells.append(newcell)
 
         # validate each cell

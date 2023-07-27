@@ -34,7 +34,7 @@ def placement(ship_count, game_size):
     manager.create_game(ai_game=ai_game,ship_count=ship_count,game_size= game_size)
 
     # Create a confirm button
-    confirm_button = Button(image=pygame.image.load("assets/ConfirmButton.png"), pos=(1000, 250))
+    confirm_button = Button(image=pygame.image.load("assets/ConfirmButton.png"), pos=(1000, 350))
     confirm_button = TextButton(confirm_button, text="Place", font=get_font(20))
 
     # Create text
@@ -51,6 +51,12 @@ def placement(ship_count, game_size):
 
     ships_left_label = get_font(30).render("Ships Left: " + str(ships_left), True, "White")
     ships_left_label_rect = ships_left_label.get_rect(center=(1000, 100))
+
+    # make a rotate button
+    vertical_orientation = True
+    rotate_button = Button(image=pygame.image.load("assets/ConfirmButton.png"), pos=(1000, 275))
+    rotate_button = TextButton(rotate_button, text="Rotate", font=get_font(20))
+
 
     while ships_left > 0:
         mouse = pygame.mouse.get_pos()
@@ -74,7 +80,7 @@ def placement(ship_count, game_size):
 
         # draw the confirm button
         confirm_button.render(SCREEN, mouse)
-
+        rotate_button.render(SCREEN, mouse)
         quit_button.render(SCREEN, mouse)
 
         # draw the coord text if it is not None
@@ -115,7 +121,7 @@ def placement(ship_count, game_size):
 
                     # if we hit confirm, fire with the manager
                     if manager.active_cell is not None and confirm_button.is_hovered(mouse):
-                        successful_placement = manager.place_ship(ships_left)
+                        successful_placement = manager.place_ship(ships_left, vertical=False)
 
                         # if the placement is successful, subtract the number of ships remaining.
                         if successful_placement:
