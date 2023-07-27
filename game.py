@@ -233,7 +233,7 @@ def play():
                         coord_text = None
                         coord_text_rect = None
 
-
+'''
 def setup():
     # Ship setup screen
 
@@ -282,6 +282,7 @@ def setup():
 
         pygame.display.update()
 
+'''
 
 def main_menu():
     # The loop for the main menu
@@ -336,7 +337,7 @@ def main_menu():
             # if we clicked, find out if we clicked on a button and execute that buttons action
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if play_button.is_hovered(mouse):
-                    setup()
+                    placement(8, 8)
 
                 if quit_button.is_hovered(mouse):
                     quit_game()
