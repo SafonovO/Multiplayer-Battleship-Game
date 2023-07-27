@@ -87,16 +87,6 @@ class Server:
                 print("invalid request")
 
     def new_game(self):
-        '''
-        game id is the game's index in the games list
-        we can only have max 10 games: 0-9
-        thus, check if len(games) < 10
-            if true, simply append new game to self.games
-            if false, go thru list and check if any games[id] == None
-                that would mean that game has ended and we can overwrite the spot
-            if we are full, then send an error saying we are at max capacity.
-        can prob make a server.capacity attribute to speed things up.
-        '''
         self.games.append(Game())
         return len(self.games) - 1
 
