@@ -84,6 +84,72 @@ class GameManager:
         if self.active_cell is not None:
             self.active_cell.draw_selected_cell(SCREEN)
 
+    def preview_ship(self, num_left, vertical):
+        '''
+        This function previews the ship that is about to be placed.
+
+        A ship will be drawn as a collection of contiguous green cells
+        if the selected location is a valid place to put the ship
+
+        If there is a conflict, the ship cells will be drawn in red
+
+        The parameter num_left tells us which ship in the array we
+        should consider
+
+        The parameter vertical tells us the orientation of the ship
+        '''
+        s = self.__player1.board.get_ship(-num_left)
+
+        cells = []
+
+        for i in range(s.get_size()):
+            if vertical:
+                newcell = (self.active_cell.coordinates[0], self.active_cell.coordinates[1] + i)
+            else:
+                newcell = (self.active_cell.coordinates[0] + i, self.active_cell.coordinates[1])
+            cells.append(newcell)
+
+        '''
+        Check for conflicts.
+
+        If there is a conflict,
+            - set conflicts = True
+            - remove the conflicting cell from the list
+        '''   
+        conflicts = False
+
+        for c in cells:
+            # is c out of bounds?
+            # c[0] is the column. if c[0] >= the board size, we are out of bounds
+            # c[1] is the row. if c[1] >= the board size, we are out of bounds
+            if c[0] >= self.__player1.board.get_size():
+                conflicts = True
+                cells.remove(c)
+
+            elif c[1] >= self.__player1.board.get_size():
+                conflicts = True
+                cells.remove(c)
+
+            # does c already contain a ship?
+            elif self.__player1.large_board.get_cell(c[0], c[1]).ship != None:
+                conflicts = True
+
+        '''
+        Now, draw the cells in the list 'cells'
+
+        If conflicts = True, draw said cells in red
+
+        Draw them in green otherwise.
+        '''
+
+        for c in cells:
+            color = "Red"
+            if conflicts == False:
+                color = "Green"
+
+            self.__player1.large_board.get_cell(c[0], c[1]).draw_cell_color(SCREEN, color)
+
+
     def place_ship(self, num_left, vertical):
         '''
         Create a list of cells that this ship would occupy

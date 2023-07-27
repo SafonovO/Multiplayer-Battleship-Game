@@ -147,6 +147,21 @@ class Cell:
         screen.blit(question_text, question_rect)
 
 
+    def draw_cell_color(self, screen, color):
+        # Draw this cell on the specified screen in the specifed color
+        # Draw a special cell that has been selected
+        x = self.__location[0]
+        y = self.__location[1]
+
+        cell = pygame.Rect(x, y, self.__width, self.__width)
+
+        # Get the center of the cell
+        cell_center = self.get_cell_center()
+
+        # Draw teh cell in green
+        pygame.draw.rect(screen, color, cell)
+
+
     def get_cell_center(self):
         return (self.__location[0] + (0.5*self.__width), self.__location[1] + (0.5*self.__width))
 

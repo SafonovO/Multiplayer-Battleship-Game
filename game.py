@@ -23,6 +23,10 @@ server = None
 
 
 def placement(ship_count, game_size):
+    # Track the orientation of the ship we are about to place
+    # vertical = True by default
+    vertical = True
+
     ships_left = ship_count
     playing_surface = pygame.Rect(100, 50, 1100, 700)
 
@@ -34,16 +38,8 @@ def placement(ship_count, game_size):
     manager.create_game(ai_game=ai_game,ship_count=ship_count,game_size= game_size)
 
     # Create a confirm button
-    confirm_button = Button(image=pygame.image.load("assets/ConfirmButton.png"), pos=(1000, 350))
+    confirm_button = Button(image=pygame.image.load("assets/ConfirmButton.png"), pos=(1000, 225))
     confirm_button = TextButton(confirm_button, text="Place", font=get_font(20))
-
-    # Create text
-    select_text = get_font(15).render("YOU HAVE SELECTED:", True, "White")
-    select_text_rect = select_text.get_rect(center=(1000, 150))
-
-    # Coord text
-    coord_text = None
-    coord_text_rect = None
 
     # Make a quit button
     quit_button = Button(image=pygame.image.load("assets/quit.png"), pos=(1000, 25))
@@ -54,7 +50,7 @@ def placement(ship_count, game_size):
 
     # make a rotate button
     vertical_orientation = True
-    rotate_button = Button(image=pygame.image.load("assets/ConfirmButton.png"), pos=(1000, 275))
+    rotate_button = Button(image=pygame.image.load("assets/ConfirmButton.png"), pos=(1000, 150))
     rotate_button = TextButton(rotate_button, text="Rotate", font=get_font(20))
 
 
@@ -74,8 +70,6 @@ def placement(ship_count, game_size):
 
         SCREEN.blit(ships_left_label,ships_left_label_rect)
 
-        SCREEN.blit(select_text, select_text_rect)
-
         manager.update_placement()
 
         # draw the confirm button
@@ -83,9 +77,6 @@ def placement(ship_count, game_size):
         rotate_button.render(SCREEN, mouse)
         quit_button.render(SCREEN, mouse)
 
-        # draw the coord text if it is not None
-        if coord_text != None and coord_text_rect != None:
-            SCREEN.blit(coord_text, coord_text_rect)
 
         # active cell is teh cell we are clicking on
         if manager.get_active_cell() != None:
@@ -96,13 +87,24 @@ def placement(ship_count, game_size):
 
             If the user then clicks FIRE, we call the game
             manager to execute the fire
-            '''
-            cell_coords = manager.get_active_cell().coordinates
-            letter = Board.letters[cell_coords[0]]
-            num = cell_coords[1] + 1
 
-            coord_text = get_font(15).render("({}, {})".format(letter, num), True, "White")
-            coord_text_rect = coord_text.get_rect(center=(1000, 200))
+            Here, I want to draw all the cells that will be occupied
+            by the ship i'm about to place.
+
+            IF there is a conflict, i will draw  the ship's cells in red
+            if there is no conflict, the ship will be drawn in green
+
+            there is a conflict IF:
+                - one or more cells that this ship will occupy is already
+                occupied by some ship
+                - one or more cells that this ship will occupy exceeds the
+                boundaries of the board
+
+            If the user attempts to place a ship in an invlaid position,
+            simply do nothing
+            '''
+            manager.preview_ship(ships_left, vertical)
+
 
         pygame.display.flip()
 
@@ -121,17 +123,20 @@ def placement(ship_count, game_size):
 
                     # if we hit confirm, fire with the manager
                     if manager.active_cell is not None and confirm_button.is_hovered(mouse):
-                        successful_placement = manager.place_ship(ships_left, vertical=False)
+                        successful_placement = manager.place_ship(ships_left, vertical)
 
                         # if the placement is successful, subtract the number of ships remaining.
                         if successful_placement:
-                        	ships_left -= 1
+                            ships_left -= 1
 
                         # update = True
                         coord_text = None
                         coord_text_rect = None
                         # update the count label
                         ships_left_label = get_font(30).render("Ships Left: " + str(ships_left), True, "White")
+
+                    if rotate_button.is_hovered(mouse):
+                        vertical = not vertical
     play()
 
 
