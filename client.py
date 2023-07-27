@@ -39,8 +39,12 @@ class Client:
         message = self.create_message("getguess", self.game_id, self.player_id)
         return await self.send(json.dumps(message))
     
+    async def get_result(self):
+        message = self.create_message("getresult", self.game_id, self.player_id)
+        return await self.send(json.dumps(message))
+    
     async def send_result(self, result):
-        message = self.create_message("setresult", self.game_id, self.player_id)
+        message = self.create_message("setresult", self.game_id, self.player_id, result)
         await self.send(json.dumps(message))
 
     async def send_guess(self, x, y):

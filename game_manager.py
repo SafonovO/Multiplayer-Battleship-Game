@@ -8,6 +8,8 @@ from players.ai import AI
 import pygame
 
 from board.board import Board
+from ships.normal_ship import NormalShip
+from ships.ship import Ship
 from utilities.button import Button, ReactiveButton, TextButton
 from board.cell import Cell
 from utilities.fonts import get_font
@@ -48,6 +50,7 @@ class GameManager:
         self.__player1 = Player()
         if ai_game:
             self.__player2 = AI()
+            self.client = None
         else:
             self.client = Client()
             self.__player2 = Opponent()
@@ -55,6 +58,14 @@ class GameManager:
                 await self.client.create_game()
             elif join:
                 await self.client.join_game()
+                # self.turn = Turn.PLAYER_TWO
+                # coords = (await self.client.get_guess()).split(',')
+                # # should prob check if coords is valid, ie not of size 0
+                # result = self.validate_shot(
+                #     self.__player1.board.get_cell(int(coords[0]), int(coords[1])))
+                # await self.client.send_result(result)
+                # await self.change_turn()
+                
         self.active_cell = None
 
     def update_boards(self):
@@ -65,10 +76,8 @@ class GameManager:
         if self.active_cell != None:
             self.active_cell.draw_selected_cell(SCREEN)
 
-
     def get_active_cell(self):
         return self.active_cell
-
 
     def set_active_cell(self, mouse):
         '''
@@ -80,22 +89,19 @@ class GameManager:
             return True
         return False
 
-
     async def change_turn(self):
         self.turn ^= Turn.PLAYER_TWO
         if self.turn == Turn.PLAYER_TWO:
             if isinstance(self.__player2, AI):
                 x, y = self.__player2.guess()
                 self.validate_shot(self.__player1.board.get_cell(x, y))
-                await self.change_turn()
             else:
                 coords = (await self.client.get_guess()).split(',')
                 # should prob check if coords is valid, ie not of size 0
-                result = self.validate_shot(self.__player1.board.get_cell(int(coords[0]), int(coords[1])))
+                result = self.validate_shot(
+                    self.__player1.board.get_cell(int(coords[0]), int(coords[1])))
                 await self.client.send_result(result)
-                await self.change_turn()
-                # wait for other opponent to make guess
-
+            self.turn ^= Turn.PLAYER_TWO
 
     async def fire_shot(self):
         '''
@@ -103,16 +109,18 @@ class GameManager:
         '''
         # checks if it's the right persons turn then proceeds with action
         if self.active_cell and self.turn == Turn.PLAYER_ONE:
-            if isinstance(self.__player2, AI):
-                self.validate_shot(self.active_cell)
-            elif isinstance(self.__player2, Opponent):
+            if isinstance(self.__player2, Opponent) and self.client:
                 coords = self.active_cell.coordinates
                 await self.client.send_guess(coords[0], coords[1])
-                # self.validate_shot
+                result = await self.client.get_result()
+                print("result is", result)
+                if result == "True":
+                    self.active_cell.set_ship(NormalShip(1))
+            self.validate_shot(self.active_cell)
+            self.active_cell.print_cell()
             self.active_cell = None
             return True
         return False
-
 
     def validate_shot(self, active_cell):
         '''
@@ -132,15 +140,16 @@ class GameManager:
 
     def endgame(self):
         if self.__player1.board.gameover():
-            self.endgamescreen("Player2")
+            self.endgamescreen(False)
         elif self.__player2.board.gameover():
-            self.endgamescreen("Player1")
+            self.endgamescreen(True)
 
-    def endgamescreen(self, winner):
+    def endgamescreen(self, won):
         run = False
-        text = get_font(100).render(winner + " WINS!", True, '#b68f40')
+        text = get_font(100).render("Congratulations, you won!" if won else "You lost, try again...", True, '#b68f40')
         text_rect = text.get_rect(center=(650, 100))
-        quit_button = Button(image=pygame.image.load("assets/navy_button.png"), pos=(650, 550))
+        quit_button = Button(image=pygame.image.load(
+            "assets/navy_button.png"), pos=(650, 550))
         quit_button = ReactiveButton(quit_button, hover_surface=pygame.image.load("assets/navy_button_hover.png"),
                                      active_surface=pygame.image.load("assets/navy_button_hover.png"))
         quit_button = TextButton(quit_button, text="QUIT", font=get_font(75))

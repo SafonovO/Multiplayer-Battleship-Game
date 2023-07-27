@@ -62,8 +62,10 @@ async def play():
     quit_button = Button(image=pygame.image.load("assets/quit.png"), pos=(1000, 25))
     quit_button = TextButton(quit_button, text="QUIT", font=get_font(20))
 
-    change_turn = False
-
+    change_turn = True if join else False
+# BUG: game freezes after first move until next turn for multiplayer
+# BUG: type of cell does not match opponent's board after guess for multiplayer
+# BUG: game does not notify winner after winning. need to end game.
     while True:
         mouse = pygame.mouse.get_pos()
 

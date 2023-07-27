@@ -16,7 +16,8 @@ class AI(Opponent):
     '''
 
     def __init__(self):
-        super().__init__() 
+        super().__init__()
+        self.board.place_ships()
         self.revealed = []
         self.guessed = []
         self.__size = self.board.get_size()

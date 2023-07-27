@@ -70,6 +70,10 @@ class Server:
             case "getguess":
                 guess = await self.get_guess(game_id, player_id ^ 1)
                 await websocket.send(str(guess))
+            case "getresult":
+                result = await self.get_result(game_id, player_id)
+                await websocket.send(str(result))
+                self.games[game_id].players[player_id].result = None
             case "setresult":
                 self.set_result(game_id, player_id ^ 1, details)
                 await websocket.send("ok")
@@ -105,6 +109,13 @@ class Server:
             await asyncio.sleep(0.1)
         return self.games[game_id].players[player_id].next_guess
     
+    async def get_result(self, game_id, player_id):
+        while self.games[game_id].players[player_id].result == None:
+            # wait for the opponent to validate the guess
+            await asyncio.sleep(0.1)
+        return self.games[game_id].players[player_id].result
+
+
     def set_result(self, game_id, player_id, result):
         self.games[game_id].players[player_id].result = result
 
