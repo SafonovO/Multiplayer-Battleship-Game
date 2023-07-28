@@ -118,10 +118,19 @@ class GameManager:
         If there is a conflict,
             - set conflicts = True
             - remove the conflicting cell from the list
+
+        I will need to iterate over a copy of the cells lsit.
+        This is because we are potentially changing it as we loop,
+        so the array will become messed up if we iterate 
+        over the array while removing stuff from it
         '''   
+        cellscopy = []
+        for cell in cells:
+            cellscopy.append(cell)
+
         conflicts = False
 
-        for c in cells:
+        for c in cellscopy:
             # is c out of bounds?
             # c[0] is the column. if c[0] >= the board size, we are out of bounds
             # c[1] is the row. if c[1] >= the board size, we are out of bounds
