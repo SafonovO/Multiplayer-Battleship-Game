@@ -21,6 +21,126 @@ ai_game = True
 join = False
 create = False
 # run = False
+server = None
+
+
+async def placement(ship_count, game_size):
+    # Track the orientation of the ship we are about to place
+    # vertical = True by default
+    vertical = True
+
+    ships_left = ship_count
+    playing_surface = pygame.Rect(100, 50, 1100, 700)
+
+    # setup labels for the boards
+    placement_board_label = get_font(30).render("Board Setup", True, "White")
+    placement_board_label_rect = placement_board_label.get_rect(center=(425, 100))
+
+    # create a game using the manager
+    await manager.create_game(ai_game=ai_game,ship_count=ship_count,game_size= game_size, create=create, join=join)
+
+    # Create a confirm button
+    confirm_button = Button(image=pygame.image.load("assets/ConfirmButton.png"), pos=(1000, 225))
+    confirm_button = TextButton(confirm_button, text="Place", font=get_font(20))
+
+    # Make a quit button
+    quit_button = Button(image=pygame.image.load("assets/quit.png"), pos=(1000, 25))
+    quit_button = TextButton(quit_button, text="QUIT", font=get_font(20))
+
+    ships_left_label = get_font(30).render("Ships Left: " + str(ships_left), True, "White")
+    ships_left_label_rect = ships_left_label.get_rect(center=(1000, 100))
+
+    # make a rotate button
+    vertical_orientation = True
+    rotate_button = Button(image=pygame.image.load("assets/ConfirmButton.png"), pos=(1000, 150))
+    rotate_button = TextButton(rotate_button, text="Rotate", font=get_font(20))
+
+
+    while ships_left > 0:
+        mouse = pygame.mouse.get_pos()
+
+        # Draw the backgroudn
+        SCREEN.blit(BG, (0, 0))
+
+        # Draw the playing surface as described above
+        pygame.draw.rect(SCREEN, "#042574", playing_surface)
+
+        # Draw the labels
+        SCREEN.blit(placement_board_label, placement_board_label_rect)
+
+        # Draw the amount of ships left
+
+        SCREEN.blit(ships_left_label,ships_left_label_rect)
+
+        manager.update_placement()
+
+        # draw the confirm button
+        confirm_button.render(SCREEN, mouse)
+        rotate_button.render(SCREEN, mouse)
+        quit_button.render(SCREEN, mouse)
+
+
+        # active cell is teh cell we are clicking on
+        if manager.get_active_cell() != None:
+            '''
+            We have selected a cell.
+
+            First, display the cell as text on screen.
+
+            If the user then clicks FIRE, we call the game
+            manager to execute the fire
+
+            Here, I want to draw all the cells that will be occupied
+            by the ship i'm about to place.
+
+            IF there is a conflict, i will draw  the ship's cells in red
+            if there is no conflict, the ship will be drawn in green
+
+            there is a conflict IF:
+                - one or more cells that this ship will occupy is already
+                occupied by some ship
+                - one or more cells that this ship will occupy exceeds the
+                boundaries of the board
+
+            If the user attempts to place a ship in an invlaid position,
+            simply do nothing
+            '''
+            manager.preview_ship(ships_left, vertical)
+
+
+        pygame.display.flip()
+
+
+        for event in pygame.event.get():
+            # BUG: quit button is not responsive while waiting for AI to make move
+            # probably due to sleep(1)
+            if event.type == pygame.QUIT:
+                quit_game()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                # check if we clicked a cell or something else
+                if not manager.set_active_cell_placement(mouse):
+                    if quit_button.is_hovered(mouse):
+                        # return to main menu
+                        main_menu()
+
+                    # if we hit confirm, fire with the manager
+                    if manager.active_cell is not None and confirm_button.is_hovered(mouse):
+                        successful_placement = manager.place_ship(ships_left, vertical)
+
+                        # if the placement is successful, subtract the number of ships remaining.
+                        if successful_placement:
+                            ships_left -= 1
+
+                        # update = True
+                        coord_text = None
+                        coord_text_rect = None
+                        # update the count label
+                        ships_left_label = get_font(30).render("Ships Left: " + str(ships_left), True, "White")
+
+                    if rotate_button.is_hovered(mouse):
+                        vertical = not vertical
+    await play()
+
 
 async def play():
 
@@ -41,9 +161,6 @@ async def play():
 
     my_board_label = get_font(30).render("MY BOARD", True, "White")
     my_board_label_rect = my_board_label.get_rect(center=(1000, 325))
-
-    # create a game using the manager
-    await manager.create_game(ai_game=ai_game, create=create, join=join)
 
     # Create a confirm button
     confirm_button = Button(image=pygame.image.load("assets/ConfirmButton.png"), pos=(1000, 250))
@@ -138,8 +255,8 @@ async def play():
                         coord_text = None
                         coord_text_rect = None
 
-
-async def setup():
+'''
+def setup():
     # Ship setup screen
 
     # Render text
@@ -183,10 +300,11 @@ async def setup():
             # if we clicked, find out if we clicked on a button and execute that buttons action
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if continue_button.is_hovered(mouse):
-                    await play()
+                    placement(ship_count=5, game_size = 5)
 
         pygame.display.update()
 
+'''
 
 async def main_menu():
     # The loop for the main menu
@@ -236,7 +354,7 @@ async def main_menu():
             # if we clicked, find out if we clicked on a button and execute that buttons action
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if play_button.is_hovered(mouse):
-                    await setup()
+                    await placement(8, 8)
 
                 if quit_button.is_hovered(mouse):
                     quit_game()

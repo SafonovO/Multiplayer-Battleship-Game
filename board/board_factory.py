@@ -19,9 +19,45 @@ class BoardFactory:
     def create_ships(self):
         ships = []
 
+        '''
+        I am going to create ships in the following way:
+
+        The first 3 ships are going to be 1x1.
+
+        The next 2 ships are going to be 1x2
+
+        The next 2 ships are going to be 1x3
+
+        The next 2 ships are going to be 1x4
+
+        This gives a max of 9 ships
+
+        Ex. if we have 6 ships, we would have
+        3 1x1
+        2 1x2
+        1 1x3
+        '''
+
         for i in range(self.__nships):
-            ship = NormalShip(1)
-            ships.append(ship)
+            if i < 3:
+                # append a 1x1 ship
+                ship = NormalShip(1)
+                ships.append(ship)
+
+            elif i >= 3 and i < 5:
+                ship = NormalShip(2)
+                ships.append(ship)
+
+            elif i >= 5 and i < 7:
+                ship = NormalShip(3)
+                ships.append(ship)
+
+            elif i >=7 and i < 9:
+                ship = NormalShip(4)
+                ships.append(ship)
+
+            else:
+                print("attempting to add an invalid ship")
 
         return ships
 

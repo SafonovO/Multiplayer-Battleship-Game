@@ -96,7 +96,7 @@ class Cell:
         dash_rect = dash_text.get_rect(center=cell_center)
 
         # if display, draw unhit ships differently
-        if display and self.ship != None and self.is_hit == False:
+        if display and self.ship is not None and self.is_hit == False:
             pygame.draw.rect(screen, "Grey", cell)
             ship = pygame.image.load("assets/ship.png")
             ship = pygame.Surface.convert_alpha(ship)
@@ -138,6 +138,21 @@ class Cell:
         question_text = get_font(self.__bigMarkingSize, "Helvetica").render("?", True, "Black")
         question_rect = question_text.get_rect(center=cell_center)
         screen.blit(question_text, question_rect)
+
+
+    def draw_cell_color(self, screen, color):
+        # Draw this cell on the specified screen in the specifed color
+        # Draw a special cell that has been selected
+        x = self.__location[0]
+        y = self.__location[1]
+
+        cell = pygame.Rect(x, y, self.__width, self.__width)
+
+        # Get the center of the cell
+        cell_center = self.get_cell_center()
+
+        # Draw teh cell in green
+        pygame.draw.rect(screen, color, cell)
 
 
     def get_cell_center(self):

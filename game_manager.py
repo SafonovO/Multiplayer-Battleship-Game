@@ -43,19 +43,36 @@ class GameManager:
         if not hasattr(cls, 'instance'):
             cls.instance = super(GameManager, cls).__new__(cls)
         return cls.instance
+    
+    def start_client(self):
+        self.client = Client()
+        self.client.start()
 
-    async def create_game(self, ai_game, create, join):
+    def get_player(self, player_ID):
+        if player_ID == 1:
+            return self.__player1
+        if player_ID == 2:
+            return self.__player2
+        else: return None
+
+    def shut_down(self):
+        if self.client:
+            self.client.send("close")
+            self.client.join()
+            print("joined client thread")
+
+    async def create_game(self, ai_game,ship_count,game_size, create, join):
         print("is this an ai game?", ai_game)
         self.turn = Turn.PLAYER_ONE
         self.run = True
-        self.__player1 = Player()
+        self.__player1 = Player(ship_count,game_size)
         if ai_game:
-            self.__player2 = AI()
+            self.__player2 = AI(ship_count,game_size)
             self.client = None
         else:
             self.client = Client()
             task = asyncio.ensure_future(self.client.start())
-            self.__player2 = Opponent()
+            self.__player2 = Opponent(ship_count,game_size)
             if create:
                 self.client.create_game()
             elif join:
@@ -67,8 +84,153 @@ class GameManager:
         self.__player1.board.draw_board(SCREEN)
         self.__player2.board.draw_board(SCREEN)
         # Draw active cell if it is not None
-        if self.active_cell != None:
+        if self.active_cell is not None:
             self.active_cell.draw_selected_cell(SCREEN)
+
+    def update_placement(self):
+        # Draw a larger board for the placement stage
+        self.__player1.draw_large_board(SCREEN)
+        if self.active_cell is not None:
+            self.active_cell.draw_selected_cell(SCREEN)
+
+    def preview_ship(self, num_left, vertical):
+        '''
+        This function previews the ship that is about to be placed.
+
+        A ship will be drawn as a collection of contiguous green cells
+        if the selected location is a valid place to put the ship
+
+        If there is a conflict, the ship cells will be drawn in red
+
+        The parameter num_left tells us which ship in the array we
+        should consider
+
+        The parameter vertical tells us the orientation of the ship
+        '''
+        s = self.__player1.board.get_ship(-num_left)
+
+        cells = []
+
+        for i in range(s.get_size()):
+            if vertical:
+                newcell = (self.active_cell.coordinates[0], self.active_cell.coordinates[1] + i)
+            else:
+                newcell = (self.active_cell.coordinates[0] + i, self.active_cell.coordinates[1])
+            cells.append(newcell)
+
+        '''
+        Check for conflicts.
+
+        If there is a conflict,
+            - set conflicts = True
+            - remove the conflicting cell from the list
+        '''   
+        conflicts = False
+
+        for c in cells:
+            # is c out of bounds?
+            # c[0] is the column. if c[0] >= the board size, we are out of bounds
+            # c[1] is the row. if c[1] >= the board size, we are out of bounds
+            if c[0] >= self.__player1.board.get_size():
+                conflicts = True
+                cells.remove(c)
+
+            elif c[1] >= self.__player1.board.get_size():
+                conflicts = True
+                cells.remove(c)
+
+            # does c already contain a ship?
+            elif self.__player1.large_board.get_cell(c[0], c[1]).ship != None:
+                conflicts = True
+
+        '''
+        Now, draw the cells in the list 'cells'
+
+        If conflicts = True, draw said cells in red
+
+        Draw them in green otherwise.
+        '''
+
+        for c in cells:
+            color = "Red"
+            if conflicts == False:
+                color = "Green"
+
+            self.__player1.large_board.get_cell(c[0], c[1]).draw_cell_color(SCREEN, color)
+
+
+    def place_ship(self, num_left, vertical):
+        '''
+        Create a list of cells that this ship would occupy
+
+        let n = __player1. board.get_ship(-num_left)
+
+        the list should be of length n.get_size()
+
+        The first cell in the list will be active_cell
+        then, proceed to add cells to the list in ascending
+        order of column
+
+        Maintain an array of cells which this ship will occupy.
+
+        We can validate each cell before the ship is placed.
+        A cell is invlid if:
+            - another ship is placed there
+            - its coordinates are out of bounds
+
+        Then, place the ship into each of the cells iff all are valid
+
+        NEW PARAMETER: vertical=True indiccates that this
+        ship should be placed vertically. Set the cells as such
+        '''
+        s = self.__player1.board.get_ship(-num_left)
+
+        cells = []
+
+        for i in range(s.get_size()):
+            if vertical:
+                newcell = (self.active_cell.coordinates[0], self.active_cell.coordinates[1] + i)
+            else:
+                newcell = (self.active_cell.coordinates[0] + i, self.active_cell.coordinates[1])
+            cells.append(newcell)
+
+        # validate each cell
+        # if any cell is invalid, return False
+        for c in cells:
+            # is c out of bounds?
+            # c[0] is the column. if c[0] >= the board size, we are out of bounds
+            # c[1] is the row. if c[1] >= the board size, we are out of bounds
+            if c[0] >= self.__player1.board.get_size():
+                self.active_cell = None
+                return False
+
+            if c[1] >= self.__player1.board.get_size():
+                self.active_cell = None
+                return False
+            # does c already contain a ship?
+            if self.__player1.large_board.get_cell(c[0], c[1]).ship != None:
+                self.active_cell = None
+                return False
+
+        # set the ship in each cell
+        for c in cells:
+            self.__player1.board.get_cell(c[0], c[1]).ship = s
+            self.__player1.large_board.get_cell(c[0], c[1]).ship = s
+
+        self.active_cell = None
+
+        '''
+
+        if self.active_cell:
+            self.active_cell.ship = s
+            # place the ships onto the large board and then copy the ship to the small board
+
+
+            self.__player1.board.get_cell(self.active_cell.coordinates[0],self.active_cell.coordinates[1]).ship = self.active_cell.ship
+            self.active_cell = None
+            return True
+        '''
+        return True
 
     def get_active_cell(self):
         return self.active_cell
@@ -78,8 +240,14 @@ class GameManager:
         returns false if mouse click is not on cell, 
         returns true and sets the active cell otherwise
         '''
-        if self.__player2.board.get_cell_mouse(mouse) != None:
+        if self.__player2.board.get_cell_mouse(mouse) is not None:
             self.active_cell = self.__player2.board.get_cell_mouse(mouse)
+            return True
+        return False
+
+    def set_active_cell_placement(self,mouse):
+        if self.__player1.large_board.get_cell_mouse(mouse) is not None:
+            self.active_cell = self.__player1.large_board.get_cell_mouse(mouse)
             return True
         return False
 
