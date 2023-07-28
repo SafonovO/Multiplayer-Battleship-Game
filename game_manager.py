@@ -10,38 +10,40 @@ import pygame
 
 from board.board import Board
 from ships.normal_ship import NormalShip
+from ships.ship import Ship
 from utilities.button import Button, ReactiveButton, TextButton
 from board.cell import Cell
 from utilities.fonts import get_font
-from drawer import Drawer
 
 
 class Turn(Flag):
     PLAYER_ONE = 0
     PLAYER_TWO = 1
 
+
 SCREEN = pygame.display.set_mode((1300, 800))
 BG = pygame.image.load("assets/Background.png")
-draw= Drawer()
+
+
 class GameManager:
-    pygame.init()
-    __player1=None
-    __player2=None
     '''
     create two instances of board
     sends coords between boards
     passes turn
-    '''    
     '''
-    Drawing assets
     '''
-    
+    manager will check if a miss is returned and flip boolean if no ships are hit
+    0=game over 
+    1= player1 
+    2=player2
+    '''
+
     # singleton class
     def __new__(cls):
         if not hasattr(cls, 'instance'):
             cls.instance = super(GameManager, cls).__new__(cls)
         return cls.instance
-
+    
     def start_client(self):
         self.client = Client()
         self.client.start()
@@ -53,16 +55,9 @@ class GameManager:
             return self.__player2
         else: return None
 
-    def shut_down(self):
-        if self.client:
-            self.client.send("close")
-            self.client.join()
-            print("joined client thread")
-
     async def create_game(self, ai_game,ship_count,game_size, create, join):
         print("is this an ai game?", ai_game)
         self.turn = Turn.PLAYER_ONE
-        draw.ships_left=ship_count
         self.run = True
         self.__player1 = Player(ship_count,game_size)
         if ai_game:
@@ -83,23 +78,27 @@ class GameManager:
         self.__player1.board.draw_board(SCREEN)
         self.__player2.board.draw_board(SCREEN)
         # Draw active cell if it is not None
-        if draw.active_cell is not None:
-            draw.active_cell.draw_selected_cell(SCREEN)
+        if self.active_cell is not None:
+            self.active_cell.draw_selected_cell(SCREEN)
 
     def update_placement(self):
         # Draw a larger board for the placement stage
         self.__player1.draw_large_board(SCREEN)
-        if draw.active_cell is not None:
-            draw.active_cell.draw_selected_cell(SCREEN)
+        if self.active_cell is not None:
+            self.active_cell.draw_selected_cell(SCREEN)
 
-    def preview_ship(self, num_left):
+    def preview_ship(self, num_left, vertical):
         '''
         This function previews the ship that is about to be placed.
+
         A ship will be drawn as a collection of contiguous green cells
         if the selected location is a valid place to put the ship
+
         If there is a conflict, the ship cells will be drawn in red
+
         The parameter num_left tells us which ship in the array we
         should consider
+
         The parameter vertical tells us the orientation of the ship
         '''
         s = self.__player1.board.get_ship(-num_left)
@@ -107,14 +106,15 @@ class GameManager:
         cells = []
 
         for i in range(s.get_size()):
-            if draw.vertical:
-                newcell = (draw.active_cell.coordinates[0], draw.active_cell.coordinates[1] + i)
+            if vertical:
+                newcell = (self.active_cell.coordinates[0], self.active_cell.coordinates[1] + i)
             else:
-                newcell = (draw.active_cell.coordinates[0] + i, draw.active_cell.coordinates[1])
+                newcell = (self.active_cell.coordinates[0] + i, self.active_cell.coordinates[1])
             cells.append(newcell)
 
         '''
         Check for conflicts.
+
         If there is a conflict,
             - set conflicts = True
             - remove the conflicting cell from the list
@@ -139,7 +139,9 @@ class GameManager:
 
         '''
         Now, draw the cells in the list 'cells'
+
         If conflicts = True, draw said cells in red
+
         Draw them in green otherwise.
         '''
 
@@ -151,20 +153,27 @@ class GameManager:
             self.__player1.large_board.get_cell(c[0], c[1]).draw_cell_color(SCREEN, color)
 
 
-    def place_ship(self, num_left, vertical, active_cell):
+    def place_ship(self, num_left, vertical):
         '''
         Create a list of cells that this ship would occupy
+
         let n = __player1. board.get_ship(-num_left)
+
         the list should be of length n.get_size()
+
         The first cell in the list will be active_cell
         then, proceed to add cells to the list in ascending
         order of column
+
         Maintain an array of cells which this ship will occupy.
+
         We can validate each cell before the ship is placed.
         A cell is invlid if:
             - another ship is placed there
             - its coordinates are out of bounds
+
         Then, place the ship into each of the cells iff all are valid
+
         NEW PARAMETER: vertical=True indiccates that this
         ship should be placed vertically. Set the cells as such
         '''
@@ -174,9 +183,9 @@ class GameManager:
 
         for i in range(s.get_size()):
             if vertical:
-                newcell = (active_cell.coordinates[0], active_cell.coordinates[1] + i)
+                newcell = (self.active_cell.coordinates[0], self.active_cell.coordinates[1] + i)
             else:
-                newcell = (active_cell.coordinates[0] + i, active_cell.coordinates[1])
+                newcell = (self.active_cell.coordinates[0] + i, self.active_cell.coordinates[1])
             cells.append(newcell)
 
         # validate each cell
@@ -186,15 +195,15 @@ class GameManager:
             # c[0] is the column. if c[0] >= the board size, we are out of bounds
             # c[1] is the row. if c[1] >= the board size, we are out of bounds
             if c[0] >= self.__player1.board.get_size():
-                draw.active_cell = None
+                self.active_cell = None
                 return False
 
             if c[1] >= self.__player1.board.get_size():
-                draw.active_cell = None
+                self.active_cell = None
                 return False
             # does c already contain a ship?
             if self.__player1.large_board.get_cell(c[0], c[1]).ship != None:
-                draw.active_cell = None
+                self.active_cell = None
                 return False
 
         # set the ship in each cell
@@ -202,24 +211,37 @@ class GameManager:
             self.__player1.board.get_cell(c[0], c[1]).ship = s
             self.__player1.large_board.get_cell(c[0], c[1]).ship = s
 
-        draw.active_cell = None
+        self.active_cell = None
 
         '''
-        if draw.active_cell:
-            draw.active_cell.ship = s
+
+        if self.active_cell:
+            self.active_cell.ship = s
             # place the ships onto the large board and then copy the ship to the small board
-            self.__player1.board.get_cell(draw.active_cell.coordinates[0],draw.active_cell.coordinates[1]).ship = draw.active_cell.ship
-            draw.active_cell = None
+
+
+            self.__player1.board.get_cell(self.active_cell.coordinates[0],self.active_cell.coordinates[1]).ship = self.active_cell.ship
+            self.active_cell = None
             return True
         '''
         return True
 
     def get_active_cell(self):
-        return draw.active_cell
+        return self.active_cell
+
+    def set_active_cell(self, mouse):
+        '''
+        returns false if mouse click is not on cell, 
+        returns true and sets the active cell otherwise
+        '''
+        if self.__player2.board.get_cell_mouse(mouse) is not None:
+            self.active_cell = self.__player2.board.get_cell_mouse(mouse)
+            return True
+        return False
 
     def set_active_cell_placement(self,mouse):
         if self.__player1.large_board.get_cell_mouse(mouse) is not None:
-            draw.active_cell = self.__player1.large_board.get_cell_mouse(mouse)
+            self.active_cell = self.__player1.large_board.get_cell_mouse(mouse)
             return True
         return False
 
@@ -237,19 +259,19 @@ class GameManager:
                 coords = (self.client.opp_guess).split(',')
                 self.client.opp_guess = None
                 # should prob check if coords is valid, ie not of size 0
-                result = self.validate_shot(self.__player1.board.get_cell(int(coords[0]), int(coords[1])))
+                result = self.validate_shot(
+                    self.__player1.board.get_cell(int(coords[0]), int(coords[1])))
                 self.client.send_result(result)
             self.turn ^= Turn.PLAYER_TWO
 
-
-    async def fire_shot(self,active_cell):
+    async def fire_shot(self):
         '''
         Returns true if the shot was fired successfully
         '''
         # checks if it's the right persons turn then proceeds with action
-        if active_cell and self.turn == Turn.PLAYER_ONE:
+        if self.active_cell and self.turn == Turn.PLAYER_ONE:
             if isinstance(self.__player2, Opponent) and self.client:
-                coords = active_cell.coordinates
+                coords = self.active_cell.coordinates
                 self.client.send_guess(coords[0], coords[1])
                 self.client.get_result()
                 while self.client.my_result is None:
@@ -257,19 +279,19 @@ class GameManager:
                     await asyncio.sleep(0.1)
                 # print("result is", self.client.my_result)
                 if self.client.my_result == "True":
-                    active_cell.set_ship(NormalShip(1))
+                    self.active_cell.set_ship(NormalShip(1))
                 self.client.my_result = None
-            self.validate_shot(active_cell)
+            self.validate_shot(self.active_cell)
             # self.active_cell.print_cell()
-            active_cell = None
+            self.active_cell = None
             return True
         return False
 
-
     def validate_shot(self, active_cell):
         '''
-        Checks if active_cell was a hit. 
-        If hit, returns True, False otherwise.
+        Marks the active cell as hit.
+        Checks if there was a ship in the active cell. 
+        If ship, returns True, False otherwise.
         '''
         if (active_cell.hit()):
             self.endgame()
@@ -280,27 +302,37 @@ class GameManager:
     '''
     checks if the game is over
     '''
-    
-    #checks if the game is over
+
     def endgame(self):
         if self.__player1.board.gameover():
-            draw.endgamescreen("Player2")
+                self.endgamescreen(False)
         elif self.__player2.board.gameover():
-            draw.endgamescreen("Player1")
-    
-    def render(self, bool, place):
-        draw.render_elements(bool, self.__player1, self.__player2, place)
-    
-    async def event(self, type):
-        if(type=='placement'):
-            ret=await draw.event_check(type, self.__player2,self.set_active_cell_placement,self.place_ship)
-        elif(type=='play'):
-            ret=await draw.event_check(type, self.__player2, self.fire_shot,None)
-        else:
-            ret=await draw.event_check(type, self.__player2, None, None)
-        
-        return ret
+                self.endgamescreen(True)
 
-    def draw(self,type):
-        draw.draw_elements(type)
-    
+    def endgamescreen(self, won):
+        run = False
+        # TO DO: end the damn game for multiplayer
+        # if self.client:
+        #     self.client.end_game()
+        text = get_font(100).render("Congratulations, you won!" if won else "You lost, try again...", True, '#b68f40')
+        text_rect = text.get_rect(center=(650, 100))
+        quit_button = Button(image=pygame.image.load(
+            "assets/navy_button.png"), pos=(650, 550))
+        quit_button = ReactiveButton(quit_button, hover_surface=pygame.image.load("assets/navy_button_hover.png"),
+                                     active_surface=pygame.image.load("assets/navy_button_hover.png"))
+        quit_button = TextButton(quit_button, text="QUIT", font=get_font(75))
+        while (True):
+            mouse = pygame.mouse.get_pos()
+            SCREEN.blit(BG, (0, 0))
+            SCREEN.blit(text, text_rect)
+            for button in [quit_button]:
+                button.render(SCREEN, mouse)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if quit_button.is_hovered(mouse):
+                        pygame.quit()
+                        sys.exit()
+            pygame.display.update()
