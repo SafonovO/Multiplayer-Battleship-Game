@@ -1,3 +1,4 @@
+import asyncio
 import sys
 from enum import Flag
 from client import Client
@@ -8,6 +9,8 @@ from players.ai import AI
 import pygame
 
 from board.board import Board
+from ships.normal_ship import NormalShip
+from ships.ship import Ship
 from utilities.button import Button, ReactiveButton, TextButton
 from board.cell import Cell
 from utilities.fonts import get_font
@@ -52,22 +55,22 @@ class GameManager:
             return self.__player2
         else: return None
 
-    def shut_down(self):
-        if self.client:
-            self.client.send("close")
-            self.client.join()
-            print("joined client thread")
-
-    def create_game(self, ai_game,ship_count,game_size):
+    async def create_game(self, ai_game,ship_count,game_size, create, join):
         print("is this an ai game?", ai_game)
         self.turn = Turn.PLAYER_ONE
         self.run = True
         self.__player1 = Player(ship_count,game_size)
         if ai_game:
             self.__player2 = AI(ship_count,game_size)
+            self.client = None
         else:
+            self.client = Client()
+            task = asyncio.ensure_future(self.client.start())
             self.__player2 = Opponent(ship_count,game_size)
-            self.__player2.set_client(self.client)
+            if create:
+                self.client.create_game()
+            elif join:
+                self.client.join_game()
         self.active_cell = None
 
     def update_boards(self):
@@ -226,7 +229,6 @@ class GameManager:
     def get_active_cell(self):
         return self.active_cell
 
-
     def set_active_cell(self, mouse):
         '''
         returns false if mouse click is not on cell, 
@@ -243,36 +245,54 @@ class GameManager:
             return True
         return False
 
-    def change_turn(self):
+    async def change_turn(self):
         self.turn ^= Turn.PLAYER_TWO
         if self.turn == Turn.PLAYER_TWO:
             if isinstance(self.__player2, AI):
                 x, y = self.__player2.guess()
                 self.validate_shot(self.__player1.board.get_cell(x, y))
-                self.change_turn()
-            else:
-                pass
-                # wait for other opponent to make guess
+            elif self.client:
+                self.client.get_guess()
+                while self.client.opp_guess is None:
+                    # wait for opponent to guess
+                    await asyncio.sleep(0.1)
+                coords = (self.client.opp_guess).split(',')
+                self.client.opp_guess = None
+                # should prob check if coords is valid, ie not of size 0
+                result = self.validate_shot(
+                    self.__player1.board.get_cell(int(coords[0]), int(coords[1])))
+                self.client.send_result(result)
+            self.turn ^= Turn.PLAYER_TWO
 
-
-    def fire_shot(self):
+    async def fire_shot(self):
         '''
         Returns true if the shot was fired successfully
         '''
         # checks if it's the right persons turn then proceeds with action
         if self.active_cell and self.turn == Turn.PLAYER_ONE:
+            if isinstance(self.__player2, Opponent) and self.client:
+                coords = self.active_cell.coordinates
+                self.client.send_guess(coords[0], coords[1])
+                self.client.get_result()
+                while self.client.my_result is None:
+                    # wait for response
+                    await asyncio.sleep(0.1)
+                # print("result is", self.client.my_result)
+                if self.client.my_result == "True":
+                    self.active_cell.set_ship(NormalShip(1))
+                self.client.my_result = None
             self.validate_shot(self.active_cell)
+            # self.active_cell.print_cell()
             self.active_cell = None
             return True
         return False
 
-
     def validate_shot(self, active_cell):
         '''
-        Checks if active_cell was a hit. 
-        If hit, returns True, False otherwise.
+        Marks the active cell as hit.
+        Checks if there was a ship in the active cell. 
+        If ship, returns True, False otherwise.
         '''
-        active_cell.set_is_guessed(True)
         if (active_cell.hit()):
             self.endgame()
             return True
@@ -285,15 +305,19 @@ class GameManager:
 
     def endgame(self):
         if self.__player1.board.gameover():
-            self.endgamescreen("Player2")
+                self.endgamescreen(False)
         elif self.__player2.board.gameover():
-            self.endgamescreen("Player1")
+                self.endgamescreen(True)
 
-    def endgamescreen(self, winner):
+    def endgamescreen(self, won):
         run = False
-        text = get_font(100).render(winner + " WINS!", True, '#b68f40')
+        # TO DO: end the damn game for multiplayer
+        # if self.client:
+        #     self.client.end_game()
+        text = get_font(100).render("Congratulations, you won!" if won else "You lost, try again...", True, '#b68f40')
         text_rect = text.get_rect(center=(650, 100))
-        quit_button = Button(image=pygame.image.load("assets/navy_button.png"), pos=(650, 550))
+        quit_button = Button(image=pygame.image.load(
+            "assets/navy_button.png"), pos=(650, 550))
         quit_button = ReactiveButton(quit_button, hover_surface=pygame.image.load("assets/navy_button_hover.png"),
                                      active_surface=pygame.image.load("assets/navy_button_hover.png"))
         quit_button = TextButton(quit_button, text="QUIT", font=get_font(75))

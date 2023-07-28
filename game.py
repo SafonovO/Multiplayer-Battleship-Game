@@ -1,9 +1,9 @@
+import asyncio
 import sys
 import time
 from client import Client
 
 import pygame
-from server import Server
 from board.board import Board
 from utilities.button import Button, ReactiveButton, TextButton
 from utilities.fonts import get_font
@@ -18,11 +18,13 @@ hovered_button_image = pygame.image.load("assets/navy_button_hover.png")
 
 manager = GameManager()
 ai_game = True
+join = False
+create = False
 # run = False
 server = None
 
 
-def placement(ship_count, game_size):
+async def placement(ship_count, game_size):
     # Track the orientation of the ship we are about to place
     # vertical = True by default
     vertical = True
@@ -35,7 +37,7 @@ def placement(ship_count, game_size):
     placement_board_label_rect = placement_board_label.get_rect(center=(425, 100))
 
     # create a game using the manager
-    manager.create_game(ai_game=ai_game,ship_count=ship_count,game_size= game_size)
+    await manager.create_game(ai_game=ai_game,ship_count=ship_count,game_size= game_size, create=create, join=join)
 
     # Create a confirm button
     confirm_button = Button(image=pygame.image.load("assets/ConfirmButton.png"), pos=(1000, 225))
@@ -137,10 +139,10 @@ def placement(ship_count, game_size):
 
                     if rotate_button.is_hovered(mouse):
                         vertical = not vertical
-    play()
+    await play()
 
 
-def play():
+async def play():
 
     '''
     the screen is 1700 wide and 800 tall.
@@ -177,8 +179,10 @@ def play():
     quit_button = Button(image=pygame.image.load("assets/quit.png"), pos=(1000, 25))
     quit_button = TextButton(quit_button, text="QUIT", font=get_font(20))
 
-    change_turn = False
-
+    change_turn = True if join else False
+# BUG: game freezes after first move until next turn for multiplayer
+# BUG: type of cell does not match opponent's board after guess for multiplayer
+# BUG: game does not notify winner after winning. need to end game.
     while True:
         mouse = pygame.mouse.get_pos()
 
@@ -224,9 +228,12 @@ def play():
 
         pygame.display.flip()
 
+        if manager.client:
+            await asyncio.sleep(0.1)
+
         if change_turn:
             change_turn = False
-            manager.change_turn()
+            await manager.change_turn()
             continue
 
         for event in pygame.event.get():
@@ -239,11 +246,11 @@ def play():
                 if not manager.set_active_cell(mouse):
                     if quit_button.is_hovered(mouse):
                         # return to main menu
-                        main_menu()
+                        await main_menu()
 
                     # if we hit confirm, fire with the manager
                     if confirm_button.is_hovered(mouse):
-                        change_turn = manager.fire_shot()
+                        change_turn = await manager.fire_shot()
                         # update = True
                         coord_text = None
                         coord_text_rect = None
@@ -299,7 +306,7 @@ def setup():
 
 '''
 
-def main_menu():
+async def main_menu():
     # The loop for the main menu
     # render menu text, buttons
     text = get_font(100).render("BATTLESHIP", True, "#b68f40")
@@ -334,25 +341,20 @@ def main_menu():
                 quit_game()
             
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_h:
-                    # hosting: start the server
-                    global server
-                    server = Server()
-                    server.start()
-                    time.sleep(0.5)
-
-                # whether hosting or joining, start client and join server
-                if event.key == pygame.K_h or event.key == pygame.K_j:
-                    global ai_game
+                global ai_game, create, join
+                if event.key == pygame.K_c:
                     ai_game = False
-                    manager.start_client()
-                    # time.sleep(0.5)
-
+                    create = True
+                    join = False
+                if event.key == pygame.K_j:
+                    ai_game = False
+                    join = True
+                    create = False
 
             # if we clicked, find out if we clicked on a button and execute that buttons action
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if play_button.is_hovered(mouse):
-                    placement(8, 8)
+                    await placement(8, 8)
 
                 if quit_button.is_hovered(mouse):
                     quit_game()
@@ -361,14 +363,8 @@ def main_menu():
 
 
 def quit_game():
-    global server
     pygame.quit()
-    manager.shut_down()
-    print("is there a server?", True if server else False)
-    if server:
-        print("shutting down server")
-        server.shut_down()
-        print("finished server shutdown")
     sys.exit()
 
-main_menu()
+asyncio.run(main_menu())
+# main_menu()

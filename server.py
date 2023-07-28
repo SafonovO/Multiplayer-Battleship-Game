@@ -1,76 +1,140 @@
-import socket
-import sys
-import threading
-import time
+import asyncio
+import json
+from time import sleep
+import websockets
+import random
+import string
 
-SERVER = "127.0.0.1"
-PORT = 1234
-BUFFER_SIZE = 1024
+ADDRESS = "127.0.0.1"
+PORT = "8765"
+
+class Player:
+    def __init__(self):
+        self.guessed = []
+        self.ships = []
+        self.next_guess = None
+        self.result = None
+        self.socket = None
+
+class Game:
+    def __init__(self):
+        self.players = (Player(), Player())
+        self.password = Game.generate_pw()
+
+    def generate_pw():
+        chars = string.ascii_letters + string.digits + string.punctuation
+        return ''.join(random.choice(chars) for i in range(16))
+
+class Server:
+    '''
+    {
+        "request": request,
+        "game": game,
+        "player": player,
+        "details": details
+    }
+    '''
+    def __init__(self) -> None:
+        self.games = []
+
+    def create_message(self, request="ok", response="ok"):
+        return {
+            "request": request,
+            "response": response
+        }
+
+    async def handle_request(self, websocket):
+        while True:
+            packet = await websocket.recv()
+            print(packet)
+            msg = json.loads(packet)
+            game_id = int(msg["game"]) if msg["game"] else None
+            player_id = int(msg["player"]) if msg["player"] else None
+            request = msg["request"]
+            details = msg["details"]
+            match request:
+                # create a new game
+                case "newgame":
+                    self.games.append(Game())
+                    new_game_id = len(self.games) - 1
+                    self.games[new_game_id].players[0].socket = websocket
+                    response = self.create_message("newgame", str(new_game_id))
+                    print(response)
+                    await websocket.send(json.dumps(response))
+
+                # get a code to share so your friend can join your game
+                case "invite":
+                    response = self.create_message("invite", self.games[game_id].password)
+                    await websocket.send(json.dumps(response))
+
+                # join a game 
+                # we're going to want to pass in a game password later
+                case "joingame":
+                    # BUG: temp hard coding: fix later
+                    self.games[0].players[1].socket = websocket
+                    response = self.create_message("newgame", "0")
+                    await websocket.send(json.dumps(response))
+
+                # join first empty game
+                # might need to return error if no empty games, then create game instead
+                case "joinrandom":
+                    pass
+
+                case "getguess":
+                    guess = await self.get_guess(game_id, player_id ^ 1)
+                    response = self.create_message("getguess", guess)
+                    await websocket.send(json.dumps(response))
+
+                case "getresult":
+                    result = await self.get_result(game_id, player_id)
+                    response = self.create_message("getresult", result)
+                    await websocket.send(json.dumps(response))
+                    self.games[game_id].players[player_id].result = None
+
+                case "setresult":
+                    self.games[game_id].players[player_id ^ 1].result = details
+                    response = self.create_message()
+                    await websocket.send(json.dumps(response))
+
+                case "setguess":
+                    self.games[game_id].players[player_id].next_guess = details
+                    print("set guess as", details)
+                    response = self.create_message()
+                    await websocket.send(json.dumps(response))
+
+                case "broadcast":
+                    broadcast = self.create_message("broadcast")
+                    for player in self.games[game_id].players:
+                        await player.socket.send(json.dumps(broadcast))
+
+                case "endgame":
+                    # tell player_id ^ 1 that they lost
+                    # games[game_id] = None
+                    broadcast = self.create_message("endgame")
+                    for player in self.games[game_id].players:
+                        await player.socket.send(json.dumps(broadcast))
+
+                case other:
+                    print("invalid request")
 
 
-class Server(threading.Thread):
-
-    def run(self):
-        threading.Thread.__init__(self)
-        self.player_count = 0
-        self.rx_threads = [None, None]
-        # self.sockets = [None, None]
-        # self.returned = []
-        self.listen = True
-
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        print("starting server")
-        try:
-            self.sock.bind((SERVER, PORT))
-        except socket.error as exc:
-            print(exc)
-        # listen on the socket
-        self.sock.listen(2)
-
-        while self.player_count < 2:
-            conn, addr = self.sock.accept()
-            print("Connected: ", addr)
-            # self.sockets[self.player_count] = conn
-            # 1 receiver per player to respond to that player's requests
-            self.rx_threads[self.player_count] = threading.Thread(
-                target=self.receiver, args=(conn, self.player_count))
-            self.rx_threads[self.player_count].start()
-            self.player_count += 1
-
-        print("got all players!!")
-        return None
-
-    def shut_down(self):
-        self.listen = False
-        # self.sock.shutdown(socket.SHUT_RDWR)
-
-        for thread in self.rx_threads:
-            if thread:
-                print("closing receiver")
-                thread.join()
-                print("closed receiver")
-        self.sock.close()
+    async def get_guess(self, game_id, player_id):
+        while not self.games[game_id].players[player_id].next_guess:
+            # wait for the player to guess
+            await asyncio.sleep(0.1)
+        return self.games[game_id].players[player_id].next_guess
+    
+    async def get_result(self, game_id, player_id):
+        while self.games[game_id].players[player_id].result == None:
+            # wait for the opponent to validate the guess
+            await asyncio.sleep(0.1)
+        return self.games[game_id].players[player_id].result
 
 
-    def receiver(self, conn, rx_id):
-        conn.send(str.encode("Connection established"))
+async def main():
+    server = Server()
+    async with websockets.serve(server.handle_request, ADDRESS, PORT):
+        await asyncio.Future()  # run forever
 
-        while self.listen:
-            data = conn.recv(BUFFER_SIZE)
-            msg = data.decode()
-            # recv returns empty string if connection was interrupted
-            if not data:
-                print("Disconnecting...")
-                self.listen = False
-            else:
-                # protocols for client info
-                if msg == "testing":
-                    conn.send(str.encode(str("hello")))
-                elif msg == "close":
-                    self.listen = False
-
-        print("Connection lost...")
-        conn.close()
-        # self.sockets.pop(rx_id)
-        # self.returned.append(rx_id)
-        print("closed connection")
+if __name__ == "__main__":
+    asyncio.run(main())
