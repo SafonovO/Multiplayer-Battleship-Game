@@ -55,7 +55,6 @@ async def placement(ship_count, game_size):
     rotate_button = Button(image=pygame.image.load("assets/ConfirmButton.png"), pos=(1000, 150))
     rotate_button = TextButton(rotate_button, text="Rotate", font=get_font(20))
 
-
     while ships_left > 0:
         mouse = pygame.mouse.get_pos()
 
@@ -78,7 +77,6 @@ async def placement(ship_count, game_size):
         confirm_button.render(SCREEN, mouse)
         rotate_button.render(SCREEN, mouse)
         quit_button.render(SCREEN, mouse)
-
 
         # active cell is teh cell we are clicking on
         if manager.get_active_cell() != None:

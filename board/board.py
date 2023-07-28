@@ -81,10 +81,7 @@ class Board:
 
     def place_ships(self):
         '''
-        For the prototype: place the ships in random positions
-
-        Recall: each cell references a ship that occupies it,
-        or None if no ship occupies it
+        Place each ship in a random, legal position
         '''
 
         for i in range(self.__nships):
@@ -93,17 +90,51 @@ class Board:
             occupied = False
 
             # Place a ship in a random spot
-
             while not occupied:
                 x = random.randint(0, self.__size - 1)
                 y = random.randint(0, self.__size - 1)
 
-                # go to cell x, y and put a ship there
-                cell = self.__cells[x][y]
+                '''
+                We begin at cell (x, y) and explore in either the horizontal
+                or vertical direction for the size of the ship
 
-                if cell.ship == None:
-                    cell.ship = current_ship
-                    occupied = True
+                We obtain a list of all cells that would be occupied by the
+                ship, starting with its head at cell (x, y).
+
+                If all such cells are legal (no conflicts), we place the ship
+                there
+
+                A cell is NOT legal if:
+                    - it exceeds the boundaries of the board
+                    - the cell already contains a ship
+                '''
+                conflicts = True
+
+                cells = []
+                for j in range(current_ship.get_size()):
+                    cells.append((x, y+j))
+
+                for c in cells:
+                    if c[0] < self.__size and c[1] < self.__size:
+                        cell = self.__cells[c[0]][c[1]]
+                        if cell.ship == None:
+                            cell.ship = current_ship
+                            occupied = True
+                            conflicts = False
+
+                # If there are conflicts, explore in the other direction
+                cells = []
+                for j in range(current_ship.get_size()):
+                    cells.append((x+j, y))
+
+                for c in cells:
+                    if c[0] < self.__size and c[1] < self.__size:
+                        cell = self.__cells[c[0]][c[1]]
+                        if cell.ship == None:
+                            cell.ship = current_ship
+                            occupied = True
+                            conflicts = False
+
 
     def draw_board(self, screen):
         '''

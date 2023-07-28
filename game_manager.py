@@ -223,7 +223,6 @@ class GameManager:
         self.active_cell = None
 
         '''
-
         if self.active_cell:
             self.active_cell.ship = s
             # place the ships onto the large board and then copy the ship to the small board
@@ -234,6 +233,10 @@ class GameManager:
             return True
         '''
         return True
+
+    def randomize_ships(self):
+        # place player1's ships randomly
+        self.__player1.board.place_ships()
 
     def get_active_cell(self):
         return self.active_cell
