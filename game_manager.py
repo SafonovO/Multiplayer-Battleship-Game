@@ -55,12 +55,6 @@ class GameManager:
             return self.__player2
         else: return None
 
-    def shut_down(self):
-        if self.client:
-            self.client.send("close")
-            self.client.join()
-            print("joined client thread")
-
     async def create_game(self, ai_game,ship_count,game_size, create, join):
         print("is this an ai game?", ai_game)
         self.turn = Turn.PLAYER_ONE
@@ -283,12 +277,12 @@ class GameManager:
                 while self.client.my_result is None:
                     # wait for response
                     await asyncio.sleep(0.1)
-                print("result is", self.client.my_result)
+                # print("result is", self.client.my_result)
                 if self.client.my_result == "True":
                     self.active_cell.set_ship(NormalShip(1))
                 self.client.my_result = None
             self.validate_shot(self.active_cell)
-            self.active_cell.print_cell()
+            # self.active_cell.print_cell()
             self.active_cell = None
             return True
         return False

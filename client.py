@@ -62,13 +62,13 @@ class Client:
         match msg["request"]:
             case "newgame":
                 self.game_id = str(msg["response"])
-                print("set game id to", self.game_id)
+                # print("set game id to", self.game_id)
             case "getguess":
                 self.opp_guess = msg["response"]
-                print("set opponents guess to", self.opp_guess)
+                # print("set opponents guess to", self.opp_guess)
             case "getresult":
                 self.my_result = msg["response"]
-                print("set my result to", self.my_result)
+                # print("set my result to", self.my_result)
             case "broadcast":
                 print("broadcasting...")
             case "endgame":

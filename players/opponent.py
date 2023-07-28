@@ -11,5 +11,5 @@ class Opponent(Player):
         self.client = client
 
 
-    def init_ships(self) -> bool:
-        pass
+    # def init_ships(self) -> bool:
+    #     pass
