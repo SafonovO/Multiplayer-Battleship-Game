@@ -121,7 +121,7 @@ async def placement(ship_count, game_size):
                 if not manager.set_active_cell_placement(mouse):
                     if quit_button.is_hovered(mouse):
                         # return to main menu
-                        main_menu()
+                        await main_menu()
 
                     # if we hit confirm, fire with the manager
                     if manager.active_cell is not None and confirm_button.is_hovered(mouse):
