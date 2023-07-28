@@ -111,6 +111,9 @@ async def play():
 
         pygame.display.flip()
 
+        if manager.client:
+            await asyncio.sleep(0.1)
+
         if change_turn:
             change_turn = False
             await manager.change_turn()
@@ -220,15 +223,15 @@ async def main_menu():
                 quit_game()
             
             if event.type == pygame.KEYDOWN:
-                global ai_game
+                global ai_game, create, join
                 if event.key == pygame.K_c:
-                    global create
                     ai_game = False
                     create = True
+                    join = False
                 if event.key == pygame.K_j:
-                    global join
                     ai_game = False
                     join = True
+                    create = False
 
             # if we clicked, find out if we clicked on a button and execute that buttons action
             if event.type == pygame.MOUSEBUTTONDOWN:

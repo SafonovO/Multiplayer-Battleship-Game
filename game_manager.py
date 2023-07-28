@@ -1,3 +1,4 @@
+import asyncio
 import sys
 from enum import Flag
 from client import Client
@@ -53,19 +54,12 @@ class GameManager:
             self.client = None
         else:
             self.client = Client()
+            task = asyncio.ensure_future(self.client.start())
             self.__player2 = Opponent()
             if create:
-                await self.client.create_game()
+                self.client.create_game()
             elif join:
-                await self.client.join_game()
-                # self.turn = Turn.PLAYER_TWO
-                # coords = (await self.client.get_guess()).split(',')
-                # # should prob check if coords is valid, ie not of size 0
-                # result = self.validate_shot(
-                #     self.__player1.board.get_cell(int(coords[0]), int(coords[1])))
-                # await self.client.send_result(result)
-                # await self.change_turn()
-                
+                self.client.join_game()
         self.active_cell = None
 
     def update_boards(self):
@@ -95,12 +89,17 @@ class GameManager:
             if isinstance(self.__player2, AI):
                 x, y = self.__player2.guess()
                 self.validate_shot(self.__player1.board.get_cell(x, y))
-            else:
-                coords = (await self.client.get_guess()).split(',')
+            elif self.client:
+                self.client.get_guess()
+                while self.client.opp_guess is None:
+                    # wait for opponent to guess
+                    await asyncio.sleep(0.1)
+                coords = (self.client.opp_guess).split(',')
+                self.client.opp_guess = None
                 # should prob check if coords is valid, ie not of size 0
                 result = self.validate_shot(
                     self.__player1.board.get_cell(int(coords[0]), int(coords[1])))
-                await self.client.send_result(result)
+                self.client.send_result(result)
             self.turn ^= Turn.PLAYER_TWO
 
     async def fire_shot(self):
@@ -111,11 +110,15 @@ class GameManager:
         if self.active_cell and self.turn == Turn.PLAYER_ONE:
             if isinstance(self.__player2, Opponent) and self.client:
                 coords = self.active_cell.coordinates
-                await self.client.send_guess(coords[0], coords[1])
-                result = await self.client.get_result()
-                print("result is", result)
-                if result == "True":
+                self.client.send_guess(coords[0], coords[1])
+                self.client.get_result()
+                while self.client.my_result is None:
+                    # wait for response
+                    await asyncio.sleep(0.1)
+                print("result is", self.client.my_result)
+                if self.client.my_result == "True":
                     self.active_cell.set_ship(NormalShip(1))
+                self.client.my_result = None
             self.validate_shot(self.active_cell)
             self.active_cell.print_cell()
             self.active_cell = None
@@ -140,12 +143,15 @@ class GameManager:
 
     def endgame(self):
         if self.__player1.board.gameover():
-            self.endgamescreen(False)
+                self.endgamescreen(False)
         elif self.__player2.board.gameover():
-            self.endgamescreen(True)
+                self.endgamescreen(True)
 
     def endgamescreen(self, won):
         run = False
+        # TO DO: end the damn game for multiplayer
+        # if self.client:
+        #     self.client.end_game()
         text = get_font(100).render("Congratulations, you won!" if won else "You lost, try again...", True, '#b68f40')
         text_rect = text.get_rect(center=(650, 100))
         quit_button = Button(image=pygame.image.load(
