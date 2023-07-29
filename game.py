@@ -38,6 +38,7 @@ async def placement(ship_count, game_size):
 
     # create a game using the manager
     await manager.create_game(ai_game=ai_game,ship_count=ship_count,game_size= game_size, create=create, join=join)
+    await asyncio.sleep(0.1)
 
     # Create a confirm button
     confirm_button = Button(image=pygame.image.load("assets/ConfirmButton.png"), pos=(1000, 225))
