@@ -321,7 +321,7 @@ class GameManager:
         """
         if active_cell.hit():
             self.endgame()
-
+            
             return True
         else:
             return False

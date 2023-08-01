@@ -8,13 +8,6 @@ from players.opponent import Opponent
 
 
 class AI(Opponent):
-    '''
-    Guesses that reveal part of a ship will have those coordinates placed in revealed.
-    Subsequent guesses will be to coordinates adjacent to revealed coordinates.
-    Once an entire ship is revealed, those coordinates will be added to guessed and 
-    removed from revealed.
-    '''
-
     def __init__(self,ship_count,game_size):
         super().__init__(ship_count,game_size)
         self.init_ships()
@@ -29,18 +22,29 @@ class AI(Opponent):
         pass
 
 
-class EasyAI(AI):
+class EasyAI(Opponent):
     '''
     Easy AI is just a random number generator
 
     It will simply fire on random cells each time
     '''
+    def __init__(self,ship_count,game_size):
+        super().__init__(ship_count,game_size)
+        self.init_ships()
+        self.revealed = []
+        self.guessed = []
+        self.__size = self.board.get_size()
+
     def guess(self):
         sleep(1)
-        while True:
+        success = False
+
+        while not success:
             x = random.randint(0, self.__size - 1)
             y = random.randint(0, self.__size - 1)
             if (x, y) not in self.guessed:
+                success = True
+
                 self.guessed.append((x, y))
                 return x, y
 
@@ -54,7 +58,25 @@ class MediumAI(AI):
 
     If the cell is a miss, guess some other random cell.
     '''
-    pass
+    def guess(self):
+        '''
+        Guesses that reveal part of a ship will have those
+        coordinates placed in revealed.
+        Subsequent guesses will be to coordinates adjacent
+        to revealed coordinates.
+        Once an entire ship is revealed, those coordinates
+        will be added to guessed and removed from revealed.
+        '''
+        def guess(self):
+            sleep(1)
+            while True:
+                x = random.randint(0, self.__size - 1)
+                y = random.randint(0, self.__size - 1)
+                if (x, y) not in self.guessed:
+                    self.guessed.append((x, y))
+                    return x, y
+
+
 
 class HardAI(Opponent):
     '''
