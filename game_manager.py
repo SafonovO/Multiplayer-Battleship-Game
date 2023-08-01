@@ -4,7 +4,7 @@ from enum import Flag
 from client import Client
 from players.opponent import Opponent
 from players.player import Player
-from players.ai import AI
+from players.ai import AI, EasyAI
 
 import pygame
 
@@ -61,7 +61,7 @@ class GameManager:
         self.run = True
         self.__player1 = Player(ship_count,game_size)
         if ai_game:
-            self.__player2 = AI(ship_count,game_size)
+            self.__player2 = EasyAI(ship_count,game_size)
             self.client = None
         else:
             self.client = Client()
@@ -307,6 +307,7 @@ class GameManager:
         '''
         if (active_cell.hit()):
             self.endgame()
+
             return True
         else:
             return False

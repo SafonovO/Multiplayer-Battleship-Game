@@ -23,6 +23,19 @@ class AI(Opponent):
         self.__size = self.board.get_size()
 
     def guess(self):
+        pass
+
+    def handleResult(self, isHit):
+        pass
+
+
+class EasyAI(AI):
+    '''
+    Easy AI is just a random number generator
+
+    It will simply fire on random cells each time
+    '''
+    def guess(self):
         sleep(1)
         while True:
             x = random.randint(0, self.__size - 1)
@@ -31,6 +44,19 @@ class AI(Opponent):
                 self.guessed.append((x, y))
                 return x, y
 
-    def handleResult(self, isHit):
-        pass
 
+class MediumAI(AI):
+    '''
+    Medium AI will randomly guess a cell.
+
+    If that cell is a hit, it will explore adjacent cells
+    that have not been explored yet
+
+    If the cell is a miss, guess some other random cell.
+    '''
+    pass
+
+class HardAI(Opponent):
+    '''
+    '''
+    pass
