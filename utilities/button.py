@@ -2,14 +2,14 @@ from typing import Tuple
 
 import pygame
 
-'''
+"""
 CITATION: This button class is based on code from https://github.com/baraltech/Menu-System-PyGame
 
 as introduced in this YouTube video: https://www.youtube.com/watch?v=GMBqjxcKogA
-'''
+"""
 
 
-class Button():
+class Button:
     def __init__(self, pos: Tuple[int, int], image: pygame.Surface) -> None:
         self.pos = pos
         self.x_pos = pos[0]
@@ -22,15 +22,15 @@ class Button():
             screen.blit(self.image, self.rect)
 
     def is_hovered(self, position) -> bool:
-        return position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top,
-                                                                                              self.rect.bottom)
+        return position[0] in range(self.rect.left, self.rect.right) and position[1] in range(
+            self.rect.top, self.rect.bottom
+        )
 
     def on_click(self, position):
         pass
 
 
 class ButtonDecorator(Button):
-
     def __init__(self, button: Button) -> None:
         super().__init__(button.pos, button.image)
         self._button = button
@@ -44,7 +44,7 @@ class ButtonDecorator(Button):
 
 
 class TextButton(ButtonDecorator):
-    __text = ''
+    __text = ""
     __font = None
 
     def __init__(self, button: Button, text: str, font: pygame.font.Font) -> None:
@@ -76,7 +76,12 @@ class TextButton(ButtonDecorator):
 
 
 class ReactiveButton(ButtonDecorator):
-    def __init__(self, button: Button, hover_surface: pygame.Surface, active_surface: pygame.Surface) -> None:
+    def __init__(
+        self,
+        button: Button,
+        hover_surface: pygame.Surface,
+        active_surface: pygame.Surface,
+    ) -> None:
         super().__init__(button)
         self.hover_surface = hover_surface
         self.active_surface = active_surface

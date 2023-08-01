@@ -22,7 +22,7 @@ class Client:
             "request": request,
             "game": self.game_id if self.game_id is not None else "-1",
             "player": self.player_id if self.player_id is not None else "-1",
-            "details": details
+            "details": details,
         }
 
     async def start(self):
@@ -33,7 +33,6 @@ class Client:
                 self.consumer_handler(websocket),
                 self.producer_handler(websocket),
             )
-
 
     async def consumer_handler(self, websocket):
         async for message in websocket:
@@ -53,10 +52,10 @@ class Client:
         return request
 
     def handle_response(self, response):
-        '''{
+        """{
             request:
             response:
-        }'''
+        }"""
         print(response)
         msg = json.loads(response)
         match msg["request"]:
@@ -81,29 +80,29 @@ class Client:
     def create_game(self):
         message = self.create_message("newgame")
         self.requests.append(json.dumps(message))
-        self.player_id = '0'
+        self.player_id = "0"
         print("creating game")
 
     def join_game(self):
         message = self.create_message("joingame")
         self.requests.append(json.dumps(message))
-        self.player_id = '1'
+        self.player_id = "1"
         print("joining game")
 
     def get_guess(self):
         message = self.create_message("getguess")
         self.requests.append(json.dumps(message))
-    
+
     def get_result(self):
         message = self.create_message("getresult")
         self.requests.append(json.dumps(message))
-    
+
     def send_result(self, result):
         message = self.create_message("setresult", result)
         self.requests.append(json.dumps(message))
 
     def send_guess(self, x, y):
-        message = self.create_message("setguess", f'{x},{y}')
+        message = self.create_message("setguess", f"{x},{y}")
         self.requests.append(json.dumps(message))
 
     def end_game(self):
@@ -115,8 +114,3 @@ class Client:
     def broadcast(self):
         message = self.create_message("broadcast")
         self.requests.append(json.dumps(message))
-
-
-
-
-

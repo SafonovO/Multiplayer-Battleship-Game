@@ -10,7 +10,6 @@ from utilities.fonts import get_font
 from game_manager import BG, SCREEN, GameManager
 
 
-
 pygame.init()
 pygame.display.set_caption("Menu")
 base_button_image = pygame.image.load("assets/navy_button.png")
@@ -37,7 +36,13 @@ async def placement(ship_count, game_size):
     placement_board_label_rect = placement_board_label.get_rect(center=(425, 100))
 
     # create a game using the manager
-    await manager.create_game(ai_game=ai_game,ship_count=ship_count,game_size= game_size, create=create, join=join)
+    await manager.create_game(
+        ai_game=ai_game,
+        ship_count=ship_count,
+        game_size=game_size,
+        create=create,
+        join=join,
+    )
     await asyncio.sleep(0.1)
 
     # Create a confirm button
@@ -70,7 +75,7 @@ async def placement(ship_count, game_size):
 
         # Draw the amount of ships left
 
-        SCREEN.blit(ships_left_label,ships_left_label_rect)
+        SCREEN.blit(ships_left_label, ships_left_label_rect)
 
         manager.update_placement()
 
@@ -81,7 +86,7 @@ async def placement(ship_count, game_size):
 
         # active cell is teh cell we are clicking on
         if manager.get_active_cell() != None:
-            '''
+            """
             We have selected a cell.
 
             First, display the cell as text on screen.
@@ -103,12 +108,10 @@ async def placement(ship_count, game_size):
 
             If the user attempts to place a ship in an invlaid position,
             simply do nothing
-            '''
+            """
             manager.preview_ship(ships_left, vertical)
 
-
         pygame.display.flip()
-
 
         for event in pygame.event.get():
             # BUG: quit button is not responsive while waiting for AI to make move
@@ -134,7 +137,9 @@ async def placement(ship_count, game_size):
                         coord_text = None
                         coord_text_rect = None
                         # update the count label
-                        ships_left_label = get_font(30).render("Ships Left: " + str(ships_left), True, "White")
+                        ships_left_label = get_font(30).render(
+                            "Ships Left: " + str(ships_left), True, "White"
+                        )
 
                     if rotate_button.is_hovered(mouse):
                         vertical = not vertical
@@ -142,15 +147,14 @@ async def placement(ship_count, game_size):
 
 
 async def play():
-
-    '''
+    """
     the screen is 1700 wide and 800 tall.
 
     First, draw a gigantic rectangle to represent the playing surface.
     This rectangle should be 1500 wide and 700 tall. The background
     should be symmetrical around it, so its position should be at
     (100, 50)
-    '''
+    """
 
     playing_surface = pygame.Rect(100, 50, 1100, 700)
 
@@ -173,15 +177,14 @@ async def play():
     coord_text = None
     coord_text_rect = None
 
-
     # Make a quit button
     quit_button = Button(image=pygame.image.load("assets/quit.png"), pos=(1000, 25))
     quit_button = TextButton(quit_button, text="QUIT", font=get_font(20))
 
     change_turn = True if join else False
-# BUG: game freezes after first move until next turn for multiplayer
-# BUG: type of cell does not match opponent's board after guess for multiplayer
-# BUG: game does not notify winner after winning. need to end game.
+    # BUG: game freezes after first move until next turn for multiplayer
+    # BUG: type of cell does not match opponent's board after guess for multiplayer
+    # BUG: game does not notify winner after winning. need to end game.
     while True:
         mouse = pygame.mouse.get_pos()
 
@@ -210,14 +213,14 @@ async def play():
 
         # active cell is teh cell we are clicking on
         if manager.get_active_cell() != None:
-            '''
+            """
             We have selected a cell.
 
             First, display the cell as text on screen.
 
             If the user then clicks FIRE, we call the game
             manager to execute the fire
-            '''
+            """
             cell_coords = manager.get_active_cell().coordinates
             letter = Board.letters[cell_coords[0]]
             num = cell_coords[1] + 1
@@ -254,7 +257,8 @@ async def play():
                         coord_text = None
                         coord_text_rect = None
 
-'''
+
+"""
 def setup():
     # Ship setup screen
 
@@ -303,7 +307,8 @@ def setup():
 
         pygame.display.update()
 
-'''
+"""
+
 
 async def main_menu():
     # The loop for the main menu
@@ -312,13 +317,19 @@ async def main_menu():
     text_rect = text.get_rect(center=(650, 100))
 
     play_button = Button(image=base_button_image, pos=(650, 250))
-    play_button = ReactiveButton(play_button, hover_surface=hovered_button_image,
-                                 active_surface=hovered_button_image)
+    play_button = ReactiveButton(
+        play_button,
+        hover_surface=hovered_button_image,
+        active_surface=hovered_button_image,
+    )
     play_button = TextButton(play_button, text="PLAY", font=get_font(75))
 
     quit_button = Button(image=base_button_image, pos=(650, 550))
-    quit_button = ReactiveButton(quit_button, hover_surface=hovered_button_image,
-                                 active_surface=hovered_button_image)
+    quit_button = ReactiveButton(
+        quit_button,
+        hover_surface=hovered_button_image,
+        active_surface=hovered_button_image,
+    )
     quit_button = TextButton(quit_button, text="QUIT", font=get_font(75))
 
     while True:
@@ -338,7 +349,7 @@ async def main_menu():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 quit_game()
-            
+
             if event.type == pygame.KEYDOWN:
                 global ai_game, create, join
                 if event.key == pygame.K_c:
@@ -364,6 +375,7 @@ async def main_menu():
 def quit_game():
     pygame.quit()
     sys.exit()
+
 
 asyncio.run(main_menu())
 # main_menu()

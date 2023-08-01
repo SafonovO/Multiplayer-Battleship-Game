@@ -33,16 +33,15 @@ class Board:
     __display = False
 
     # For drawing the labels later on
-    letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I',
-               'J', 'K', 'L']
+    letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"]
 
-    '''
+    """
     coordinates is a tuple (x, y) that represents the location
     of the board's top left corner when you draw it on the screen
 
     width is a number that represents the number of pixels in one
     side length of the board
-    '''
+    """
 
     def __init__(self, size, num_ships, coords, width, display):
         self.__nships = num_ships
@@ -52,7 +51,9 @@ class Board:
         self.__width = width
         self.__display = display
 
-        self.__board_factory = BoardFactory(self.__size, self.__nships, self.__coordinates, self.__width)
+        self.__board_factory = BoardFactory(
+            self.__size, self.__nships, self.__coordinates, self.__width
+        )
 
     def build_board(self):
         self.__cells = self.__board_factory.create_cells()
@@ -80,9 +81,9 @@ class Board:
             col += 1
 
     def place_ships(self):
-        '''
+        """
         Place each ship in a random, legal position
-        '''
+        """
 
         for i in range(self.__nships):
             current_ship = self.__ships[i]
@@ -94,7 +95,7 @@ class Board:
                 x = random.randint(0, self.__size - 1)
                 y = random.randint(0, self.__size - 1)
 
-                '''
+                """
                 We begin at cell (x, y) and explore in either the horizontal
                 or vertical direction for the size of the ship
 
@@ -107,12 +108,12 @@ class Board:
                 A cell is NOT legal if:
                     - it exceeds the boundaries of the board
                     - the cell already contains a ship
-                '''
+                """
                 conflicts = True
 
                 cells = []
                 for j in range(current_ship.get_size()):
-                    cells.append((x, y+j))
+                    cells.append((x, y + j))
 
                 for c in cells:
                     if c[0] < self.__size and c[1] < self.__size:
@@ -125,7 +126,7 @@ class Board:
                 # If there are conflicts, explore in the other direction
                 cells = []
                 for j in range(current_ship.get_size()):
-                    cells.append((x+j, y))
+                    cells.append((x + j, y))
 
                 for c in cells:
                     if c[0] < self.__size and c[1] < self.__size:
@@ -135,9 +136,8 @@ class Board:
                             occupied = True
                             conflicts = False
 
-
     def draw_board(self, screen):
-        '''
+        """
         location is the coordinates of the top left corner
 
         rect_size is the size of the total square
@@ -149,16 +149,16 @@ class Board:
 
 
         UPDATE: i am storing this all in a data member so no need
-        '''
+        """
         # square_size = rect_size / self._size
 
-        '''
+        """
         So, now we have the sqaure sizes. We draw them
         in columns
 
         x_0 and y_0 are the coords of the top left corner
         of the board
-        '''
+        """
         x_0 = self.__coordinates[0]
         y_0 = self.__coordinates[1]
 
@@ -167,20 +167,20 @@ class Board:
 
         for i in range(self.__size):
             for j in range(self.__size):
-                '''
+                """
                 cell.draw_cell() takes the following arguments:
 
                 screen is the screen on which we want to draw it
 
                 display is the boolean toggle if we should draw
                 the unhit ships
-                '''
+                """
                 cell = self.__cells[i][j]
 
                 cell.draw_cell(screen, self.__display)
 
     def draw_labels(self, screen):
-        '''
+        """
         Draw the labels on the side of the board
 
         Create the necessary texts first
@@ -192,7 +192,7 @@ class Board:
         the location in which we draw the col labels
         is determined by the cell center of the cell
         at self._cells[j][0]
-        '''
+        """
 
         row_labels = []
         row_rects = []
@@ -228,17 +228,22 @@ class Board:
         return self.__cells[col][row]
 
     def get_cell_mouse(self, mouse_pos):
-        '''
+        """
         Given the position of a mouse, find a cell in self._cells
         such that the mouse collides with the cell.
 
         Returns None if the mouse does not collide with any cell
-        '''
+        """
         cell_size = self.__width / self.__size
         row = math.floor((mouse_pos[1] - self.__coordinates[1]) / cell_size)
         column = math.floor((mouse_pos[0] - self.__coordinates[0]) / cell_size)
-        if (row < 0 or column < 0 or row >= self.__size or column >= self.__size 
-            or self.__cells[column][row].is_hit):
+        if (
+            row < 0
+            or column < 0
+            or row >= self.__size
+            or column >= self.__size
+            or self.__cells[column][row].is_hit
+        ):
             return None
 
         return self.__cells[column][row]

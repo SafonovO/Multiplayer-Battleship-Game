@@ -1,11 +1,12 @@
 import pygame
 
 from utilities.fonts import get_font
+
 # import pygame_gui
 # from menu_views.menu_options import MenuElement
 from ships.normal_ship import Ship
 
-'''
+"""
 
 class Button:
     position = (0, 0)
@@ -22,7 +23,8 @@ class Button:
         
     def on_click(self):
         pass
-'''
+"""
+
 
 class Cell:
     coordinates = (0, 0)
@@ -34,13 +36,13 @@ class Cell:
     __location = None
     __bigMarkingSize = 36
     __smallMarkingSize = 24
-    '''
+    """
     width represents a number of pixels that is the side length
     of the cell when you draw it on the screen
 
     location is a tuple (x, y) that represents the coordinates of
     the top left corner of the cell when it is drawn on teh screen
-    '''
+    """
 
     def __init__(self, coords, width, location) -> None:
         self.coordinates = coords
@@ -63,9 +65,8 @@ class Cell:
     def print_cell(self):
         print("Coords:", self.coordinates, "Hit?", self.is_hit, "Ship?", self.ship != None)
 
-
     def draw_cell(self, screen, display):
-        '''
+        """
         x, y are the coordinate of the top left corner
         of the cell.
 
@@ -76,7 +77,7 @@ class Cell:
         display indicates if we should draw unhit
         ship cells differently. This would be done
         on my board only, not the opponenets board
-        '''
+        """
         markingSize = self.__smallMarkingSize if display else self.__bigMarkingSize
 
         x = self.__location[0]
@@ -120,7 +121,6 @@ class Cell:
             # draw the X
             screen.blit(x_text, x_rect)
 
-
     def draw_selected_cell(self, screen):
         # Draw a special cell that has been selected
         x = self.__location[0]
@@ -139,7 +139,6 @@ class Cell:
         question_rect = question_text.get_rect(center=cell_center)
         screen.blit(question_text, question_rect)
 
-
     def draw_cell_color(self, screen, color):
         # Draw this cell on the specified screen in the specifed color
         # Draw a special cell that has been selected
@@ -154,9 +153,11 @@ class Cell:
         # Draw teh cell in green
         pygame.draw.rect(screen, color, cell)
 
-
     def get_cell_center(self):
-        return (self.__location[0] + (0.5*self.__width), self.__location[1] + (0.5*self.__width))
+        return (
+            self.__location[0] + (0.5 * self.__width),
+            self.__location[1] + (0.5 * self.__width),
+        )
 
     def get_cell_corner(self):
         return (self.__location[0], self.__location[1])
@@ -165,7 +166,7 @@ class Cell:
         return self.__width
 
 
-'''
+"""
 class UICell(Button):
     cell = None
     def __init__(self, position: tuple, text: str, manager: pygame_gui.UIManager, size: int, coordinates: tuple):
@@ -176,4 +177,4 @@ class UICell(Button):
     def on_click(self):
         pass
 
-'''
+"""

@@ -19,7 +19,7 @@ class BoardFactory:
     def create_ships(self):
         ships = []
 
-        '''
+        """
         I am going to create ships in the following way:
 
         The first 3 ships are going to be 1x1.
@@ -36,7 +36,7 @@ class BoardFactory:
         3 1x1
         2 1x2
         1 1x3
-        '''
+        """
 
         for i in range(self.__nships):
             if i < 3:
@@ -52,7 +52,7 @@ class BoardFactory:
                 ship = NormalShip(3)
                 ships.append(ship)
 
-            elif i >=7 and i < 9:
+            elif i >= 7 and i < 9:
                 ship = NormalShip(4)
                 ships.append(ship)
 
@@ -63,12 +63,12 @@ class BoardFactory:
 
     # create the cells
     def create_cells(self):
-        '''
+        """
         cell size is the total width of the board (_width)
         divided by the number of cells (_size)
 
         x_0 and y_0 are the coordinates of teh baord
-        '''
+        """
         cell_size = self.__width / self.__size
         x_0 = self.__coords[0]
         y_0 = self.__coords[1]
@@ -77,7 +77,7 @@ class BoardFactory:
         for x in range(self.__size):
             row = []
             for y in range(self.__size):
-                '''
+                """
                 Cell contructor requires an (x, y), width, and
                 location.
 
@@ -87,12 +87,18 @@ class BoardFactory:
 
                 location is the coordinates of the top left corner of the
                 cell when we draw it
-                '''
+                """
 
                 location_x = x_0 + x * cell_size
                 location_y = y_0 + y * cell_size
 
-                row.append(Cell(coords=(x, y), width=cell_size, location=(location_x, location_y)))
+                row.append(
+                    Cell(
+                        coords=(x, y),
+                        width=cell_size,
+                        location=(location_x, location_y),
+                    )
+                )
             cells.append(row)
 
         return cells

@@ -18,12 +18,12 @@ class NormalShip(Ship):
     def get_hp(self):
         return self.__hp
 
-    '''
+    """
     "Hits" this ship.
 
     Returns a boolean value: True indicates the
     hit resulted in the ship sinking
-    '''
+    """
 
     def hit(self):
         # Do not hit a dead ship
@@ -40,7 +40,7 @@ class NormalShip(Ship):
         return self.__hp <= 0
 
 
-'''
+"""
 # TESTING CODE:
 
 ship = NormalShip(4)
@@ -62,4 +62,4 @@ print(ship.hit())
 print(ship.get_size())
 print(ship.get_hp())
 print("Sunk?", ship.sunk())
-'''
+"""

@@ -8,6 +8,7 @@ import string
 ADDRESS = "127.0.0.1"
 PORT = "8765"
 
+
 class Player:
     def __init__(self):
         self.guessed = []
@@ -16,6 +17,7 @@ class Player:
         self.result = None
         self.socket = None
 
+
 class Game:
     def __init__(self):
         self.players = (Player(), Player())
@@ -23,25 +25,24 @@ class Game:
 
     def generate_pw():
         chars = string.ascii_letters + string.digits + string.punctuation
-        return ''.join(random.choice(chars) for i in range(16))
+        return "".join(random.choice(chars) for i in range(16))
+
 
 class Server:
-    '''
+    """
     {
         "request": request,
         "game": game,
         "player": player,
         "details": details
     }
-    '''
+    """
+
     def __init__(self) -> None:
         self.games = []
 
     def create_message(self, request="ok", response="ok"):
-        return {
-            "request": request,
-            "response": response
-        }
+        return {"request": request, "response": response}
 
     async def handle_request(self, websocket):
         while True:
@@ -67,7 +68,7 @@ class Server:
                     response = self.create_message("invite", self.games[game_id].password)
                     await websocket.send(json.dumps(response))
 
-                # join a game 
+                # join a game
                 # we're going to want to pass in a game password later
                 case "joingame":
                     # BUG: temp hard coding: fix later
@@ -117,13 +118,12 @@ class Server:
                 case other:
                     print("invalid request")
 
-
     async def get_guess(self, game_id, player_id):
         while not self.games[game_id].players[player_id].next_guess:
             # wait for the player to guess
             await asyncio.sleep(0.1)
         return self.games[game_id].players[player_id].next_guess
-    
+
     async def get_result(self, game_id, player_id):
         while self.games[game_id].players[player_id].result == None:
             # wait for the opponent to validate the guess
@@ -135,6 +135,7 @@ async def main():
     server = Server()
     async with websockets.serve(server.handle_request, ADDRESS, PORT):
         await asyncio.Future()  # run forever
+
 
 if __name__ == "__main__":
     asyncio.run(main())
