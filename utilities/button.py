@@ -1,5 +1,3 @@
-from typing import Tuple
-
 import pygame
 
 """
@@ -10,7 +8,7 @@ as introduced in this YouTube video: https://www.youtube.com/watch?v=GMBqjxcKogA
 
 
 class Button:
-    def __init__(self, pos: Tuple[int, int], image: pygame.Surface) -> None:
+    def __init__(self, pos: tuple[int, int], image: pygame.Surface) -> None:
         self.pos = pos
         self.x_pos = pos[0]
         self.y_pos = pos[1]
@@ -70,7 +68,7 @@ class TextButton(ButtonDecorator):
         self._rendered_text: pygame.Surface = self.font.render(self.text, True, "White")
         self._text_rect = self._rendered_text.get_rect(center=self.button.pos)
 
-    def render(self, screen: pygame.Surface, mouse_position: Tuple[int, int]):
+    def render(self, screen: pygame.Surface, mouse_position: tuple[int, int]):
         self.button.render(screen, mouse_position)
         screen.blit(self._rendered_text, self._text_rect)
 
@@ -104,7 +102,7 @@ class ReactiveButton(ButtonDecorator):
         self._active_surface = surface
         self._active_rect = self._active_surface.get_rect(center=self.button.pos)
 
-    def render(self, screen: pygame.Surface, mouse_position: Tuple[int, int]):
+    def render(self, screen: pygame.Surface, mouse_position: tuple[int, int]):
         if self.is_hovered(mouse_position):
             screen.blit(self.hover_surface, self._hover_rect)
         else:
