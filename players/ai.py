@@ -47,7 +47,7 @@ class EasyAI(AI):
         self.guessed.append((x, y))
         return x, y
 
-class MediumAI(AI):
+class HardAI(AI):
     def __init__(self,ship_count,game_size):
         super().__init__(ship_count,game_size)
         self.init_ships()
@@ -161,3 +161,4 @@ class MediumAI(AI):
                 return cell[0], cell[1]
 
         return None
+

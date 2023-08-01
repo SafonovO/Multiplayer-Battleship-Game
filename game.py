@@ -21,6 +21,9 @@ join = False
 create = False
 # run = False
 server = None
+ai_easy = None
+
+PLAYING_SURFACE = pygame.Rect(100, 50, 1100, 700)
 
 
 async def placement(ship_count, game_size):
@@ -29,19 +32,20 @@ async def placement(ship_count, game_size):
     vertical = True
 
     ships_left = ship_count
-    playing_surface = pygame.Rect(100, 50, 1100, 700)
 
     # setup labels for the boards
     placement_board_label = get_font(30).render("Board Setup", True, "White")
     placement_board_label_rect = placement_board_label.get_rect(center=(425, 100))
 
     # create a game using the manager
+    print(ai_easy)
     await manager.create_game(
         ai_game=ai_game,
         ship_count=ship_count,
         game_size=game_size,
         create=create,
         join=join,
+        easy_ai = ai_easy
     )
     await asyncio.sleep(0.1)
 
@@ -68,7 +72,7 @@ async def placement(ship_count, game_size):
         SCREEN.blit(BG, (0, 0))
 
         # Draw the playing surface as described above
-        pygame.draw.rect(SCREEN, "#042574", playing_surface)
+        pygame.draw.rect(SCREEN, "#042574", PLAYING_SURFACE)
 
         # Draw the labels
         SCREEN.blit(placement_board_label, placement_board_label_rect)
@@ -145,6 +149,84 @@ async def placement(ship_count, game_size):
                         vertical = not vertical
     await play()
 
+async def select_opponent():
+    # selection screen: pick an AI game difficulty
+    # in the future will add option to play multiplayer
+    play_button = Button(image=base_button_image, pos=(650, 150))
+    play_button = ReactiveButton(
+        play_button,
+        hover_surface=hovered_button_image,
+        active_surface=hovered_button_image,
+    )
+    play_button = TextButton(play_button, text="Play vs. AI", font=get_font(50))
+
+
+    while True:
+        mouse = pygame.mouse.get_pos()
+        # Draw the backgroudn
+        SCREEN.blit(BG, (0, 0))
+
+        # Draw the playing surface as described above
+        pygame.draw.rect(SCREEN, "#042574", PLAYING_SURFACE)
+
+        play_button.render(SCREEN, mouse)
+
+        pygame.display.flip()
+
+
+        for event in pygame.event.get():
+            # BUG: quit button is not responsive while waiting for AI to make move
+            # probably due to sleep(1)
+            if event.type == pygame.QUIT:
+                quit_game()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                # if we hit confirm, fire with the manager
+                if play_button.is_hovered(mouse):
+                    await AI_settings()
+
+async def AI_settings():
+    # refer to global variable ai_easy
+    global ai_easy
+
+    text = get_font(50).render("Difficulty", True, "#b68f40")
+    text_rect = text.get_rect(center=(650, 100))
+
+    easy_button = Button(image=pygame.image.load("assets/ConfirmButton.png"), pos=(400, 175))
+    easy_button = TextButton(easy_button, text="Easy", font=get_font(20))
+
+    hard_button = Button(image=pygame.image.load("assets/ConfirmButton.png"), pos=(900, 175))
+    hard_button = TextButton(hard_button, text="Hard", font=get_font(20))
+
+
+    while True:
+        mouse = pygame.mouse.get_pos()
+        # Draw the backgroudn
+        SCREEN.blit(BG, (0, 0))
+
+        # Draw the playing surface as described above
+        pygame.draw.rect(SCREEN, "#042574", PLAYING_SURFACE)
+
+        easy_button.render(SCREEN, mouse)
+        hard_button.render(SCREEN, mouse)
+
+        SCREEN.blit(text, text_rect)
+
+        pygame.display.flip()
+
+
+        for event in pygame.event.get():
+            # BUG: quit button is not responsive while waiting for AI to make move
+            # probably due to sleep(1)
+            if event.type == pygame.QUIT:
+                quit_game()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                # if we hit confirm, fire with the manager
+                if easy_button.is_hovered(mouse):
+                    ai_easy = True
+                    await placement(5, 5)
+                elif hard_button.is_hovered(mouse):
+                    ai_easy = False
+                    await placement(5, 5)
 
 async def play():
     """
@@ -155,8 +237,6 @@ async def play():
     should be symmetrical around it, so its position should be at
     (100, 50)
     """
-
-    playing_surface = pygame.Rect(100, 50, 1100, 700)
 
     # setup labels for the boards
     opponent_board_label = get_font(30).render("OPPONENT'S BOARD", True, "White")
@@ -192,7 +272,7 @@ async def play():
         SCREEN.blit(BG, (0, 0))
 
         # Draw the playing surface as described above
-        pygame.draw.rect(SCREEN, "#042574", playing_surface)
+        pygame.draw.rect(SCREEN, "#042574", PLAYING_SURFACE)
 
         # Draw the labels
         SCREEN.blit(opponent_board_label, opponent_board_label_rect)
@@ -364,7 +444,7 @@ async def main_menu():
             # if we clicked, find out if we clicked on a button and execute that buttons action
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if play_button.is_hovered(mouse):
-                    await placement(8, 8)
+                    await select_opponent()
 
                 if quit_button.is_hovered(mouse):
                     quit_game()

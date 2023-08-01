@@ -4,7 +4,7 @@ from enum import Flag
 from client import Client
 from players.opponent import Opponent
 from players.player import Player
-from players.ai import EasyAI, AI, MediumAI
+from players.ai import EasyAI, AI, HardAI
 
 import pygame
 
@@ -57,13 +57,16 @@ class GameManager:
         else:
             return None
 
-    async def create_game(self, ai_game, ship_count, game_size, create, join):
+    async def create_game(self, ai_game, ship_count, game_size, create, join, easy_ai):
         print("is this an ai game?", ai_game)
         self.turn = Turn.PLAYER_ONE
         self.run = True
         self.__player1 = Player(ship_count, game_size)
         if ai_game:
-            self.__player2 = MediumAI(ship_count, game_size)
+            if easy_ai:
+                self.__player2 = EasyAI(ship_count, game_size)
+            else:
+                self.__player2 = HardAI(ship_count, game_size)
             self.client = None
         else:
             self.client = Client()
