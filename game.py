@@ -11,7 +11,7 @@ from game_manager import BG, SCREEN, GameManager
 
 
 pygame.init()
-pygame.display.set_caption("Menu")
+pygame.display.set_caption("Battleship")
 base_button_image = pygame.image.load("assets/navy_button.png")
 hovered_button_image = pygame.image.load("assets/navy_button_hover.png")
 
@@ -394,9 +394,9 @@ async def main_menu():
     # The loop for the main menu
     # render menu text, buttons
     text = get_font(100).render("BATTLESHIP", True, "#b68f40")
-    text_rect = text.get_rect(center=(650, 100))
+    text_rect = text.get_rect(center=(650, 150))
 
-    play_button = Button(image=base_button_image, pos=(650, 250))
+    play_button = Button(image=base_button_image, pos=(650, 350))
     play_button = ReactiveButton(
         play_button,
         hover_surface=hovered_button_image,
