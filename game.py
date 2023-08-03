@@ -68,7 +68,7 @@ async def placement(ship_count, game_size):
     while ships_left > 0:
         mouse = pygame.mouse.get_pos()
 
-        # Draw the backgroudn
+        # Draw the background
         SCREEN.blit(BG, (0, 0))
 
         # Draw the playing surface as described above
@@ -160,20 +160,16 @@ async def select_opponent():
     )
     play_button = TextButton(play_button, text="Play vs. AI", font=get_font(50))
 
+    # Draw the background
+    SCREEN.blit(BG, (0, 0))
+
+    # Draw the playing surface as described above
+    pygame.draw.rect(SCREEN, "#042574", PLAYING_SURFACE)
 
     while True:
         mouse = pygame.mouse.get_pos()
-        # Draw the backgroudn
-        SCREEN.blit(BG, (0, 0))
-
-        # Draw the playing surface as described above
-        pygame.draw.rect(SCREEN, "#042574", PLAYING_SURFACE)
-
         play_button.render(SCREEN, mouse)
-
         pygame.display.flip()
-
-
         for event in pygame.event.get():
             # BUG: quit button is not responsive while waiting for AI to make move
             # probably due to sleep(1)
@@ -200,7 +196,7 @@ async def AI_settings():
 
     while True:
         mouse = pygame.mouse.get_pos()
-        # Draw the backgroudn
+        # Draw the background
         SCREEN.blit(BG, (0, 0))
 
         # Draw the playing surface as described above
@@ -262,30 +258,29 @@ async def play():
     quit_button = TextButton(quit_button, text="QUIT", font=get_font(20))
 
     change_turn = True if join else False
+
+    # Draw the background
+    SCREEN.blit(BG, (0, 0))
+
+    # Draw the playing surface as described above
+    pygame.draw.rect(SCREEN, "#042574", PLAYING_SURFACE)
+
+    # Draw the labels
+    SCREEN.blit(opponent_board_label, opponent_board_label_rect)
+    SCREEN.blit(my_board_label, my_board_label_rect)
+    SCREEN.blit(select_text, select_text_rect)
+    quit_button.render(SCREEN, mouse)
+
     # BUG: game freezes after first move until next turn for multiplayer
     # BUG: type of cell does not match opponent's board after guess for multiplayer
     # BUG: game does not notify winner after winning. need to end game.
     while True:
         mouse = pygame.mouse.get_pos()
 
-        # Draw the backgroudn
-        SCREEN.blit(BG, (0, 0))
-
-        # Draw the playing surface as described above
-        pygame.draw.rect(SCREEN, "#042574", PLAYING_SURFACE)
-
-        # Draw the labels
-        SCREEN.blit(opponent_board_label, opponent_board_label_rect)
-        SCREEN.blit(my_board_label, my_board_label_rect)
-
-        SCREEN.blit(select_text, select_text_rect)
-
         manager.update_boards()
 
         # draw the confirm button
         confirm_button.render(SCREEN, mouse)
-
-        quit_button.render(SCREEN, mouse)
 
         # draw the coord text if it is not None
         if coord_text != None and coord_text_rect != None:
@@ -310,6 +305,7 @@ async def play():
 
         pygame.display.flip()
 
+        # FIXME: use async properly
         if manager.client:
             await asyncio.sleep(0.1)
 
