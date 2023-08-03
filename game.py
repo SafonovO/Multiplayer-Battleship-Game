@@ -333,9 +333,13 @@ async def play():
                     # if we hit confirm, fire with the manager
                     if confirm_button.is_hovered(mouse):
                         change_turn = await manager.fire_shot()
+                        await asyncio.sleep(0.1)
                         # update = True
                         coord_text = None
                         coord_text_rect = None
+                        await manager.endgame()
+                        await asyncio.sleep(0.1)
+            
 
 
 """

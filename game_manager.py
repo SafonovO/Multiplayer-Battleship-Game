@@ -279,7 +279,7 @@ class GameManager:
             if isinstance(self.__player2, AI):
                 x, y = self.__player2.guess()
                 hit = self.validate_shot(self.__player1.board.get_cell(x, y))
-
+                await self.endgame()
                 if hit:
                     # if the cell is a hit, set last_hit to x, y
                     self.__player2.set_last_hit(x, y)
@@ -316,6 +316,7 @@ class GameManager:
                     self.active_cell.set_ship(NormalShip(1))
                 self.client.my_result = None
             self.validate_shot(self.active_cell)
+            
             # self.active_cell.print_cell()
             self.active_cell = None
             return True
@@ -328,8 +329,6 @@ class GameManager:
         If ship, returns True, False otherwise.
         """
         if active_cell.hit():
-            self.endgame()
-
             return True
         else:
             return False
@@ -338,14 +337,13 @@ class GameManager:
     checks if the game is over
     """
 
-    def endgame(self):
+    async def endgame(self):
         if self.__player1.board.gameover():
             self.endgamescreen(False)
         elif self.__player2.board.gameover():
             self.endgamescreen(True)
 
     def endgamescreen(self, won):
-        run = False
         # TO DO: end the damn game for multiplayer
         # if self.client:
         #     self.client.end_game()
