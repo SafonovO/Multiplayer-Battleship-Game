@@ -4,6 +4,8 @@ import time
 from client import Client
 
 import pygame
+from pygame.locals import *
+from pygame import mixer
 from board.board import Board
 from utilities.button import Button, ReactiveButton, TextButton
 from utilities.fonts import get_font
@@ -22,7 +24,9 @@ create = False
 # run = False
 server = None
 ai_easy = None
-
+mixer.init()
+mixer.music.load('Sounds/bg.ogg')
+button_click = pygame.mixer.Sound('Sounds/ui-click.mp3')
 PLAYING_SURFACE = pygame.Rect(100, 50, 1100, 700)
 
 
@@ -126,11 +130,13 @@ async def placement(ship_count, game_size):
                 # check if we clicked a cell or something else
                 if not manager.set_active_cell_placement(mouse):
                     if quit_button.is_hovered(mouse):
+                        button_click.play()
                         # return to main menu
                         await main_menu()
 
                     # if we hit confirm, place with the manager
                     if manager.active_cell is not None and confirm_button.is_hovered(mouse):
+                        button_click.play()
                         successful_placement = await manager.place_ship(ships_left, vertical)
                         await asyncio.sleep(0.1)
                         # if the placement is successful, subtract the number of ships remaining.
@@ -178,10 +184,12 @@ async def select_opponent():
             # BUG: quit button is not responsive while waiting for AI to make move
             # probably due to sleep(1)
             if event.type == pygame.QUIT:
+                button_click.play()
                 quit_game()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 # if we hit confirm, fire with the manager
                 if play_button.is_hovered(mouse):
+                    button_click.play()
                     await AI_settings()
 
 async def AI_settings():
@@ -218,13 +226,16 @@ async def AI_settings():
             # BUG: quit button is not responsive while waiting for AI to make move
             # probably due to sleep(1)
             if event.type == pygame.QUIT:
+                button_click.play()
                 quit_game()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 # if we hit confirm, fire with the manager
                 if easy_button.is_hovered(mouse):
+                    button_click.play()
                     ai_easy = True
                     await placement(5, 5)
                 elif hard_button.is_hovered(mouse):
+                    button_click.play()
                     ai_easy = False
                     await placement(5, 5)
 
@@ -327,11 +338,13 @@ async def play():
                 # check if we clicked a cell or something else
                 if not manager.set_active_cell(mouse):
                     if quit_button.is_hovered(mouse):
+                        button_click.play()
                         # return to main menu
                         await main_menu()
 
                     # if we hit confirm, fire with the manager
                     if confirm_button.is_hovered(mouse):
+                        button_click.play()
                         change_turn = await manager.fire_shot()
                         await asyncio.sleep(0.1)
                         # update = True
@@ -446,9 +459,11 @@ async def main_menu():
             # if we clicked, find out if we clicked on a button and execute that buttons action
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if play_button.is_hovered(mouse):
+                    button_click.play()
                     await select_opponent()
 
                 if quit_button.is_hovered(mouse):
+                    button_click.play()
                     quit_game()
 
         pygame.display.update()
@@ -458,6 +473,7 @@ def quit_game():
     pygame.quit()
     sys.exit()
 
-
+mixer.music.play(-1)
 asyncio.run(main_menu())
+
 # main_menu()
