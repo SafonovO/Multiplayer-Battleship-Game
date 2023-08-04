@@ -109,8 +109,8 @@ class Board:
                     - it exceeds the boundaries of the board
                     - the cell already contains a ship
                 """
-                conflicts = True
-
+                
+                conflict=False
                 cells = []
                 for j in range(current_ship.get_size()):
                     cells.append((x, y + j))
@@ -118,23 +118,30 @@ class Board:
                 for c in cells:
                     if c[0] < self.__size and c[1] < self.__size:
                         cell = self.__cells[c[0]][c[1]]
-                        if cell.ship == None:
-                            cell.ship = current_ship
-                            occupied = True
-                            conflicts = False
+                        if cell.ship != None:
+                            conflict=True
+                            
+                
+                if(not conflict):
+                    # If there are conflicts, explore in the other direction
+                    conflict=False
+                    cells = []
+                    for j in range(current_ship.get_size()):
+                        cells.append((x + j, y))
 
-                # If there are conflicts, explore in the other direction
-                cells = []
-                for j in range(current_ship.get_size()):
-                    cells.append((x + j, y))
-
-                for c in cells:
-                    if c[0] < self.__size and c[1] < self.__size:
-                        cell = self.__cells[c[0]][c[1]]
-                        if cell.ship == None:
-                            cell.ship = current_ship
-                            occupied = True
-                            conflicts = False
+                    for c in cells:
+                        if c[0] < self.__size and c[1] < self.__size:
+                            cell = self.__cells[c[0]][c[1]]
+                            if cell.ship != None:
+                                conflict=True
+                
+                if(not conflict):
+                    for c in cells:
+                        if c[0] < self.__size and c[1] < self.__size:
+                            cell = self.__cells[c[0]][c[1]]
+                            if cell.ship == None:
+                                cell.ship=current_ship
+                                occupied=True
 
     def draw_board(self, screen):
         """
@@ -248,5 +255,5 @@ class Board:
 
         return self.__cells[column][row]
 
-    def gameover(self):
+    async def gameover(self):
         return all(ship.sunk() for ship in self.__ships)

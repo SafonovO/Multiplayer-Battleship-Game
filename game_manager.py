@@ -172,7 +172,7 @@ class GameManager:
 
             self.__player1.large_board.get_cell(c[0], c[1]).draw_cell_color(SCREEN, color)
 
-    def place_ship(self, num_left, vertical):
+    async def place_ship(self, num_left, vertical):
         """
         Create a list of cells that this ship would occupy
 
@@ -278,8 +278,8 @@ class GameManager:
         if self.turn == Turn.PLAYER_TWO:
             if isinstance(self.__player2, AI):
                 x, y = self.__player2.guess()
-                hit = self.validate_shot(self.__player1.board.get_cell(x, y))
-                await self.endgame()
+                hit = await self.validate_shot(self.__player1.board.get_cell(x, y))
+                await asyncio.sleep(0.1)
                 if hit:
                     # if the cell is a hit, set last_hit to x, y
                     self.__player2.set_last_hit(x, y)
@@ -292,9 +292,10 @@ class GameManager:
                 coords = (self.client.opp_guess).split(",")
                 self.client.opp_guess = None
                 # should prob check if coords is valid, ie not of size 0
-                result = self.validate_shot(
+                result = await self.validate_shot(
                     self.__player1.board.get_cell(int(coords[0]), int(coords[1]))
                 )
+                await asyncio.sleep(0.1)
                 self.client.send_result(result)
             self.turn ^= Turn.PLAYER_TWO
 
@@ -315,20 +316,22 @@ class GameManager:
                 if self.client.my_result == "True":
                     self.active_cell.set_ship(NormalShip(1))
                 self.client.my_result = None
-            self.validate_shot(self.active_cell)
-            
+            await self.validate_shot(self.active_cell)
+            await asyncio.sleep(0.1)
             # self.active_cell.print_cell()
             self.active_cell = None
             return True
         return False
 
-    def validate_shot(self, active_cell):
+    async def validate_shot(self, active_cell):
         """
         Marks the active cell as hit.
         Checks if there was a ship in the active cell.
         If ship, returns True, False otherwise.
         """
         if active_cell.hit():
+            await self.endgame()
+            await asyncio.sleep(0.1)
             return True
         else:
             return False
@@ -338,10 +341,11 @@ class GameManager:
     """
 
     async def endgame(self):
-        if self.__player1.board.gameover():
+        if await self.__player1.board.gameover():
             self.endgamescreen(False)
-        elif self.__player2.board.gameover():
+        elif await self.__player2.board.gameover():
             self.endgamescreen(True)
+        await asyncio.sleep(0.1)
 
     def endgamescreen(self, won):
         # TO DO: end the damn game for multiplayer
