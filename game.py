@@ -226,7 +226,6 @@ async def AI_settings():
             # BUG: quit button is not responsive while waiting for AI to make move
             # probably due to sleep(1)
             if event.type == pygame.QUIT:
-                button_click.play()
                 quit_game()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 # if we hit confirm, fire with the manager
@@ -318,7 +317,7 @@ async def play():
 
             coord_text = get_font(15).render("({}, {})".format(letter, num), True, "White")
             coord_text_rect = coord_text.get_rect(center=(1000, 200))
-
+        
         pygame.display.flip()
 
         if manager.client:
@@ -346,7 +345,6 @@ async def play():
                     if confirm_button.is_hovered(mouse):
                         button_click.play()
                         change_turn = await manager.fire_shot()
-                        await asyncio.sleep(0.1)
                         # update = True
                         coord_text = None
                         coord_text_rect = None

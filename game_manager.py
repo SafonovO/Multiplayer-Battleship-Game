@@ -7,6 +7,8 @@ from players.player import Player
 from players.ai import EasyAI, AI, HardAI
 
 import pygame
+from pygame.locals import *
+from pygame import mixer
 
 from board.board import Board
 from ships.normal_ship import NormalShip
@@ -23,8 +25,9 @@ class Turn(Flag):
 
 SCREEN = pygame.display.set_mode((1300, 800))
 BG = pygame.image.load("assets/Background.png")
-
-
+mixer.init()
+miss_sound = pygame.mixer.Sound('Sounds/miss.ogg')
+hit_sound = pygame.mixer.Sound('Sounds/hit.ogg')
 class GameManager:
     """
     create two instances of board
@@ -279,7 +282,7 @@ class GameManager:
             if isinstance(self.__player2, AI):
                 x, y = self.__player2.guess()
                 hit = await self.validate_shot(self.__player1.board.get_cell(x, y))
-                await asyncio.sleep(0.1)
+                await asyncio.sleep(0.5)
                 if hit:
                     # if the cell is a hit, set last_hit to x, y
                     self.__player2.set_last_hit(x, y)
@@ -330,10 +333,15 @@ class GameManager:
         If ship, returns True, False otherwise.
         """
         if active_cell.hit():
+            await asyncio.sleep(0.3)
+            
             await self.endgame()
-            await asyncio.sleep(0.1)
+            hit_sound.play()
             return True
         else:
+            await asyncio.sleep(0.3)
+            miss_sound.play(0,2000)
+            await asyncio.sleep(0.1)
             return False
 
     """
