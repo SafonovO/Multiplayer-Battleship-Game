@@ -7,6 +7,8 @@ from players.player import Player
 from players.ai import EasyAI, AI, HardAI
 
 import pygame
+from pygame.locals import *
+from pygame import mixer
 
 from board.board import Board
 from ships.normal_ship import NormalShip
@@ -16,6 +18,7 @@ from board.cell import Cell
 from utilities.fonts import get_font
 
 
+
 class Turn(Flag):
     PLAYER_ONE = 0
     PLAYER_TWO = 1
@@ -23,7 +26,11 @@ class Turn(Flag):
 
 SCREEN = pygame.display.set_mode((1300, 800))
 BG = pygame.image.load("assets/Background.png")
-
+mixer.init()
+miss_sound = pygame.mixer.Sound('Sounds/miss.ogg')
+hit_sound = pygame.mixer.Sound('Sounds/hit.ogg')
+click_sound = pygame.mixer.Sound('Sounds/ui-click.mp3')
+fire_sound = pygame.mixer.Sound('Sounds/fire.ogg') 
 
 class GameManager:
     """
@@ -172,7 +179,7 @@ class GameManager:
 
             self.__player1.large_board.get_cell(c[0], c[1]).draw_cell_color(SCREEN, color)
 
-    def place_ship(self, num_left, vertical):
+    async def place_ship(self, num_left, vertical):
         """
         Create a list of cells that this ship would occupy
 
@@ -278,8 +285,8 @@ class GameManager:
         if self.turn == Turn.PLAYER_TWO:
             if isinstance(self.__player2, AI):
                 x, y = self.__player2.guess()
-                hit = self.validate_shot(self.__player1.board.get_cell(x, y))
-                await self.endgame()
+                hit = await self.validate_shot(self.__player1.board.get_cell(x, y))
+                await asyncio.sleep(0.5)
                 if hit:
                     # if the cell is a hit, set last_hit to x, y
                     self.__player2.set_last_hit(x, y)
@@ -292,9 +299,10 @@ class GameManager:
                 coords = (self.client.opp_guess).split(",")
                 self.client.opp_guess = None
                 # should prob check if coords is valid, ie not of size 0
-                result = self.validate_shot(
+                result = await self.validate_shot(
                     self.__player1.board.get_cell(int(coords[0]), int(coords[1]))
                 )
+                await asyncio.sleep(0.1)
                 self.client.send_result(result)
             self.turn ^= Turn.PLAYER_TWO
 
@@ -303,7 +311,11 @@ class GameManager:
         Returns true if the shot was fired successfully
         """
         # checks if it's the right persons turn then proceeds with action
+        # play sounds
+        
         if self.active_cell and self.turn == Turn.PLAYER_ONE:
+            click_sound.play()
+            fire_sound.play()
             if isinstance(self.__player2, Opponent) and self.client:
                 coords = self.active_cell.coordinates
                 self.client.send_guess(coords[0], coords[1])
@@ -315,22 +327,27 @@ class GameManager:
                 if self.client.my_result == "True":
                     self.active_cell.set_ship(NormalShip(1))
                 self.client.my_result = None
-            self.validate_shot(self.active_cell)
-            
+            await self.validate_shot(self.active_cell)
             # self.active_cell.print_cell()
             self.active_cell = None
             return True
         return False
 
-    def validate_shot(self, active_cell):
+    async def validate_shot(self, active_cell):
         """
         Marks the active cell as hit.
         Checks if there was a ship in the active cell.
         If ship, returns True, False otherwise.
         """
         if active_cell.hit():
+            await asyncio.sleep(0.3)
+            await self.endgame()
+            hit_sound.play()
+            
             return True
         else:
+            await asyncio.sleep(0.3)
+            miss_sound.play(0,2000)
             return False
 
     """
@@ -338,9 +355,9 @@ class GameManager:
     """
 
     async def endgame(self):
-        if self.__player1.board.gameover():
+        if await self.__player1.board.gameover():
             self.endgamescreen(False)
-        elif self.__player2.board.gameover():
+        elif await self.__player2.board.gameover():
             self.endgamescreen(True)
 
     def endgamescreen(self, won):

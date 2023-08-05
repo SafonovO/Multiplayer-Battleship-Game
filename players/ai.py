@@ -70,6 +70,7 @@ class HardAI(AI):
         If there is not a recently hit cell to explore,
         simply pick a random one (like EasyAI)
         '''
+        
         if self.last_hit == None:
             return self.random_guess()
 
