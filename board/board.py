@@ -84,7 +84,6 @@ class Board:
         """
         Place each ship in a random, legal position
         """
-
         for i in range(self.__nships):
             current_ship = self.__ships[i]
 
@@ -121,9 +120,8 @@ class Board:
                         if cell.ship != None:
                             conflict=True
                 
-                
                 if(conflict):
-                    # If there are conflicts, explore in the other direction
+                # If there are conflicts, explore in the other direction
                     conflict=False
                     cells = []
                     for j in range(current_ship.get_size()):
@@ -134,6 +132,7 @@ class Board:
                             cell = self.__cells[c[0]][c[1]]
                             if cell.ship != None:
                                 conflict=True
+                
                 #place ships if possible
                 if(not conflict):
                     for c in cells:

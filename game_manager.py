@@ -18,6 +18,7 @@ from board.cell import Cell
 from utilities.fonts import get_font
 
 
+
 class Turn(Flag):
     PLAYER_ONE = 0
     PLAYER_TWO = 1
@@ -28,6 +29,9 @@ BG = pygame.image.load("assets/Background.png")
 mixer.init()
 miss_sound = pygame.mixer.Sound('Sounds/miss.ogg')
 hit_sound = pygame.mixer.Sound('Sounds/hit.ogg')
+click_sound = pygame.mixer.Sound('Sounds/ui-click.mp3')
+fire_sound = pygame.mixer.Sound('Sounds/fire.ogg') 
+
 class GameManager:
     """
     create two instances of board
@@ -307,7 +311,11 @@ class GameManager:
         Returns true if the shot was fired successfully
         """
         # checks if it's the right persons turn then proceeds with action
+        # play sounds
+        
         if self.active_cell and self.turn == Turn.PLAYER_ONE:
+            click_sound.play()
+            fire_sound.play()
             if isinstance(self.__player2, Opponent) and self.client:
                 coords = self.active_cell.coordinates
                 self.client.send_guess(coords[0], coords[1])
@@ -320,7 +328,6 @@ class GameManager:
                     self.active_cell.set_ship(NormalShip(1))
                 self.client.my_result = None
             await self.validate_shot(self.active_cell)
-            await asyncio.sleep(0.1)
             # self.active_cell.print_cell()
             self.active_cell = None
             return True
@@ -334,14 +341,13 @@ class GameManager:
         """
         if active_cell.hit():
             await asyncio.sleep(0.3)
-            
             await self.endgame()
             hit_sound.play()
+            
             return True
         else:
             await asyncio.sleep(0.3)
             miss_sound.play(0,2000)
-            await asyncio.sleep(0.1)
             return False
 
     """
@@ -353,7 +359,6 @@ class GameManager:
             self.endgamescreen(False)
         elif await self.__player2.board.gameover():
             self.endgamescreen(True)
-        await asyncio.sleep(0.1)
 
     def endgamescreen(self, won):
         # TO DO: end the damn game for multiplayer
