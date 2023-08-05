@@ -119,6 +119,8 @@ class Board:
                         cell = self.__cells[c[0]][c[1]]
                         if cell.ship != None:
                             conflict=True
+                    else:
+                        conflict=True
                 
                 if(conflict):
                 # If there are conflicts, explore in the other direction
@@ -132,7 +134,9 @@ class Board:
                             cell = self.__cells[c[0]][c[1]]
                             if cell.ship != None:
                                 conflict=True
-                
+                        else:
+                            conflict = True
+               
                 #place ships if possible
                 if(not conflict):
                     for c in cells:
@@ -141,6 +145,7 @@ class Board:
                             if cell.ship == None:
                                 cell.ship=current_ship
                                 occupied=True
+                                print("Place a size "+ str(current_ship.get_size()) + " ship on coords " + str(c[0]) + "," + str(c[1]))
 
     def draw_board(self, screen):
         """
