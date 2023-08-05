@@ -120,9 +120,9 @@ class Board:
                         cell = self.__cells[c[0]][c[1]]
                         if cell.ship != None:
                             conflict=True
-                            
                 
-                if(not conflict):
+                
+                if(conflict):
                     # If there are conflicts, explore in the other direction
                     conflict=False
                     cells = []
@@ -134,7 +134,7 @@ class Board:
                             cell = self.__cells[c[0]][c[1]]
                             if cell.ship != None:
                                 conflict=True
-                
+                #place ships if possible
                 if(not conflict):
                     for c in cells:
                         if c[0] < self.__size and c[1] < self.__size:
