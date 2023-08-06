@@ -362,3 +362,6 @@ class GameManager:
         elif await self.__player2.board.gameover():
             self.won = True
             self.game_over = True
+        elif self.client.game_over:
+            self.won = self.client.won
+            self.game_over = True

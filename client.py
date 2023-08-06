@@ -16,7 +16,8 @@ class Client:
         self.response = []
         self.opp_guess = None
         self.my_result = None
-        self.lost = False
+        self.won = False
+        self.game_over = False
 
     def create_message(self, request, details=""):
         return {
@@ -72,9 +73,11 @@ class Client:
             case "broadcast":
                 print("broadcasting...")
             case "endgame":
-                self.lost = True
+                self.won = msg["response"]
+                self.game_over = True
             case "ok":
-                print("ok")
+                pass
+                # print("ok")
             case other:
                 print("invalid response")
 
@@ -106,11 +109,11 @@ class Client:
         message = self.create_message("setguess", f"{x},{y}")
         self.requests.append(json.dumps(message))
 
-    def end_game(self):
-        message = self.create_message("endgame")
+    def end_game(self, won):
+        message = self.create_message("endgame", won)
         self.requests.append(json.dumps(message))
         print("ending game")
-        # print(* self.requests)
+        print(* self.requests)
 
     def broadcast(self):
         message = self.create_message("broadcast")

@@ -40,14 +40,33 @@ class Server:
 
     def __init__(self) -> None:
         self.games = []
+        self.queues = []
+        self.tasks = []
+
 
     def create_message(self, request="ok", response="ok"):
         return {"request": request, "response": response}
 
-    async def handle_request(self, websocket):
+    async def rx(self, websocket):
+        print("creating task")
+        # each worker has it's own queue
+        new_worker = asyncio.Queue()
+        worker_id = len(self.queues)
+        task = asyncio.create_task(self.worker(websocket, worker_id))
+        self.tasks.append(task)
+        self.queues.append(new_worker)
         while True:
+            print("awaiting request from client")
             packet = await websocket.recv()
+            self.queues[worker_id].put_nowait(packet)
             print(packet)
+
+
+    async def worker(self, websocket, workerID):
+        while True:
+            print(workerID, "is awaiting task")
+            packet = await self.queues[workerID].get()
+            print("worker id:", workerID, "packet:", packet)
             msg = json.loads(packet)
             game_id = int(msg["game"]) if msg["game"] else None
             player_id = int(msg["player"]) if msg["player"] else None
@@ -74,6 +93,7 @@ class Server:
                     # BUG: temp hard coding: fix later
                     self.games[0].players[1].socket = websocket
                     response = self.create_message("newgame", "0")
+                    print(response)
                     await websocket.send(json.dumps(response))
 
                 # join first empty game
@@ -118,6 +138,11 @@ class Server:
                 case other:
                     print("invalid request")
 
+            print("done taskk!!")
+            self.queues[workerID].task_done()
+
+
+
     async def get_guess(self, game_id, player_id):
         while not self.games[game_id].players[player_id].next_guess:
             # wait for the player to guess
@@ -131,11 +156,21 @@ class Server:
         return self.games[game_id].players[player_id].result
 
 
+
+
 async def main():
     server = Server()
-    async with websockets.serve(server.handle_request, ADDRESS, PORT):
-        await asyncio.Future()  # run forever
 
+    async with websockets.serve(server.rx, ADDRESS, PORT):
+        await asyncio.Future()  # run forever
+        print("after aawiting future")
+
+    print("i escaped")
+    # Cancel our worker tasks.
+    for task in server.tasks:
+        task.cancel()
+    # Wait until all worker tasks are cancelled.
+    await asyncio.gather(*server.tasks, return_exceptions=True)
 
 if __name__ == "__main__":
     asyncio.run(main())

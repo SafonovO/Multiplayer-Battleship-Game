@@ -25,7 +25,7 @@ click_sound = pygame.mixer.Sound('Sounds/ui-click.mp3')
 
 PLAYING_SURFACE = pygame.Rect(100, 50, 1100, 700)
 BOARD_SIZE = 5
-NUM_SHIPS = 5
+NUM_SHIPS = 1
 
 def make_button(x, y, text, font_size, reactive=False, image=base_button_image):
     button = Button(image=image, pos=(x, y))
@@ -357,7 +357,8 @@ async def play():
                             coord_text = None
                             coord_text_rect = None
                             await asyncio.sleep(0.7)
-
+    if manager.client:
+        manager.client.end_game(manager.won)
 
 async def main_menu():
     # The loop for the main menu
@@ -393,9 +394,6 @@ async def main_menu():
 
 
 def endgamescreen(won):
-    # TO DO: end the damn game for multiplayer
-    # if self.client:
-    #     self.client.end_game()
     text = get_font(100).render(
         "Congratulations, you won!" if won else "You lost, try again...",
         True,
