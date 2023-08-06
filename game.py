@@ -15,6 +15,8 @@ pygame.init()
 pygame.display.set_caption("Battleship")
 base_button_image = pygame.image.load("assets/navy_button.png")
 hovered_button_image = pygame.image.load("assets/navy_button_hover.png")
+quit_button_image = pygame.image.load("assets/quit.png")
+confirm_button_image = pygame.image.load("assets/ConfirmButton.png")
 
 manager = GameManager()
 ai_game = True
@@ -28,6 +30,16 @@ click_sound = pygame.mixer.Sound('Sounds/ui-click.mp3')
 
 PLAYING_SURFACE = pygame.Rect(100, 50, 1100, 700)
 
+
+def make_button(x, y, text, font_size, reactive=False, image=base_button_image):
+    button = Button(image=image, pos=(x, y))
+    if reactive:
+        button = ReactiveButton(
+            button,
+            hover_surface=hovered_button_image,
+            active_surface=hovered_button_image,
+        )
+    return TextButton(button, text=text, font=get_font(font_size))
 
 async def placement(ship_count, game_size):
     # Track the orientation of the ship we are about to place
@@ -50,22 +62,12 @@ async def placement(ship_count, game_size):
         easy_ai = ai_easy
     )
     await asyncio.sleep(0.1)
-    
-    # Create a confirm button
-    confirm_button = Button(image=pygame.image.load("assets/ConfirmButton.png"), pos=(1000, 225))
-    confirm_button = TextButton(confirm_button, text="Place", font=get_font(20))
-
-    # Make a quit button
-    quit_button = Button(image=pygame.image.load("assets/quit.png"), pos=(1000, 25))
-    quit_button = TextButton(quit_button, text="QUIT", font=get_font(20))
+    confirm_button = make_button(1000, 225, "Place", 20, image=confirm_button_image)
+    quit_button = make_button(1000, 25, "QUIT", 20, image=quit_button_image)
+    rotate_button = make_button(1000, 150, "Rotate", 20, image=confirm_button_image)
 
     ships_left_label = get_font(30).render("Ships Left: " + str(ships_left), True, "White")
     ships_left_label_rect = ships_left_label.get_rect(center=(1000, 100))
-
-    # make a rotate button
-    vertical_orientation = True
-    rotate_button = Button(image=pygame.image.load("assets/ConfirmButton.png"), pos=(1000, 150))
-    rotate_button = TextButton(rotate_button, text="Rotate", font=get_font(20))
 
     while ships_left > 0:
         mouse = pygame.mouse.get_pos()
@@ -153,18 +155,10 @@ async def placement(ship_count, game_size):
                         vertical = not vertical
     await play()
 
-def make_button(x, y, text, font_size):
-    button = Button(image=base_button_image, pos=(x, y))
-    button = ReactiveButton(
-        button,
-        hover_surface=hovered_button_image,
-        active_surface=hovered_button_image,
-    )
-    return TextButton(button, text=text, font=get_font(font_size))
 
 async def select_opponent():
-    play_button_ai = make_button(650, 150, "Play vs. AI", 50)
-    play_button_human = make_button(650, 350, "Play vs. Human", 50)
+    play_button_ai = make_button(650, 150, "Play vs. AI", 50, reactive=True)
+    play_button_human = make_button(650, 350, "Play vs. Human", 50, reactive=True)
 
     while True:
         mouse = pygame.mouse.get_pos()
@@ -194,8 +188,8 @@ async def select_opponent():
 
 async def human_settings():
     global ai_game, create
-    create_button = make_button(650, 150, "Create Game", 50)
-    join_button = make_button(650, 350, "Join Game", 50)
+    create_button = make_button(650, 150, "Create Game", 50, reactive=True)
+    join_button = make_button(650, 350, "Join Game", 50, reactive=True)
 
     while True:
         mouse = pygame.mouse.get_pos()
@@ -226,27 +220,20 @@ async def AI_settings():
     text = get_font(50).render("Difficulty", True, "#b68f40")
     text_rect = text.get_rect(center=(650, 100))
 
-    easy_button = Button(image=pygame.image.load("assets/ConfirmButton.png"), pos=(400, 175))
-    easy_button = TextButton(easy_button, text="Easy", font=get_font(20))
-
-    hard_button = Button(image=pygame.image.load("assets/ConfirmButton.png"), pos=(900, 175))
-    hard_button = TextButton(hard_button, text="Hard", font=get_font(20))
+    easy_button = make_button(400, 175, "Easy", 20, image=confirm_button_image)
+    hard_button = make_button(900, 175, "Hard", 20, image=confirm_button_image)
 
     while True:
         mouse = pygame.mouse.get_pos()
         # Draw the backgroudn
         SCREEN.blit(BG, (0, 0))
-
-        # Draw the playing surface as described above
         pygame.draw.rect(SCREEN, "#042574", PLAYING_SURFACE)
 
         easy_button.render(SCREEN, mouse)
         hard_button.render(SCREEN, mouse)
 
         SCREEN.blit(text, text_rect)
-
         pygame.display.flip()
-
 
         for event in pygame.event.get():
             # BUG: quit button is not responsive while waiting for AI to make move
@@ -280,9 +267,8 @@ async def play():
     my_board_label = get_font(30).render("MY BOARD", True, "White")
     my_board_label_rect = my_board_label.get_rect(center=(1000, 325))
 
-    # Create a confirm button
-    confirm_button = Button(image=pygame.image.load("assets/ConfirmButton.png"), pos=(1000, 250))
-    confirm_button = TextButton(confirm_button, text="FIRE", font=get_font(20))
+    confirm_button = make_button(1000, 250, "FIRE", 20, image=confirm_button_image)
+    quit_button = make_button(1000, 25, "QUIT", 20, image=quit_button_image)
 
     # Create text
     select_text = get_font(15).render("YOU HAVE SELECTED:", True, "White")
@@ -291,10 +277,6 @@ async def play():
     # Coord text
     coord_text = None
     coord_text_rect = None
-
-    # Make a quit button
-    quit_button = Button(image=pygame.image.load("assets/quit.png"), pos=(1000, 25))
-    quit_button = TextButton(quit_button, text="QUIT", font=get_font(20))
 
     change_turn = False if ai_game or create else True
     # BUG: game freezes after first move until next turn for multiplayer
@@ -382,21 +364,8 @@ async def main_menu():
     text = get_font(100).render("BATTLESHIP", True, "#b68f40")
     text_rect = text.get_rect(center=(650, 150))
 
-    play_button = Button(image=base_button_image, pos=(650, 350))
-    play_button = ReactiveButton(
-        play_button,
-        hover_surface=hovered_button_image,
-        active_surface=hovered_button_image,
-    )
-    play_button = TextButton(play_button, text="PLAY", font=get_font(75))
-
-    quit_button = Button(image=base_button_image, pos=(650, 550))
-    quit_button = ReactiveButton(
-        quit_button,
-        hover_surface=hovered_button_image,
-        active_surface=hovered_button_image,
-    )
-    quit_button = TextButton(quit_button, text="QUIT", font=get_font(75))
+    play_button = make_button(650, 350, "PLAY", 75, reactive=True)
+    quit_button = make_button(650, 550, "QUIT", 75, reactive=True)
 
     while True:
         # Draw the background
