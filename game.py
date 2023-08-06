@@ -22,7 +22,6 @@ manager = GameManager()
 ai_game = True
 create = False
 # run = False
-server = None
 ai_easy = None
 mixer.init()
 mixer.music.load('Sounds/bg.ogg')
@@ -132,7 +131,8 @@ async def placement(ship_count, game_size):
                     if quit_button.is_hovered(mouse):
                         click_sound.play()
                         # return to main menu
-                        await main_menu()
+                        
+                        await main()
 
                     # if we hit confirm, place with the manager
                     if manager.active_cell is not None and confirm_button.is_hovered(mouse):
@@ -361,7 +361,7 @@ async def play():
                     if quit_button.is_hovered(mouse):
                         click_sound.play()
                         # return to main menu
-                        await main_menu()
+                        await main()
                     
                     # if we hit confirm, fire with the manager
                     if confirm_button.is_hovered(mouse):
@@ -407,6 +407,10 @@ async def main_menu():
 
 
 async def main():
+    global ai_game, ai_easy, create
+    ai_game = True
+    ai_easy = None
+    create = False
     await main_menu()
     await select_opponent()
     if ai_game:
@@ -426,4 +430,3 @@ def quit_game():
 mixer.music.play(-1)
 asyncio.run(main())
 
-# main_menu()
