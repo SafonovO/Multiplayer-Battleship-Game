@@ -18,17 +18,14 @@ hovered_button_image = pygame.image.load("assets/navy_button_hover.png")
 quit_button_image = pygame.image.load("assets/quit.png")
 confirm_button_image = pygame.image.load("assets/ConfirmButton.png")
 
-manager = GameManager()
-ai_game = True
-create = False
-# run = False
-ai_easy = None
+
 mixer.init()
 mixer.music.load('Sounds/bg.ogg')
 click_sound = pygame.mixer.Sound('Sounds/ui-click.mp3')
 
 PLAYING_SURFACE = pygame.Rect(100, 50, 1100, 700)
-
+BOARD_SIZE = 5
+NUM_SHIPS = 5
 
 def make_button(x, y, text, font_size, reactive=False, image=base_button_image):
     button = Button(image=image, pos=(x, y))
@@ -51,16 +48,8 @@ async def placement(ship_count, game_size):
     placement_board_label = get_font(30).render("Board Setup", True, "White")
     placement_board_label_rect = placement_board_label.get_rect(center=(425, 100))
 
-    # create a game using the manager
     print(ai_easy)
-    await manager.create_game(
-        ai_game=ai_game,
-        ship_count=ship_count,
-        game_size=game_size,
-        create=create,
-        easy_ai = ai_easy
-    )
-    await asyncio.sleep(0.1)
+
     confirm_button = make_button(1000, 225, "Place", 20, image=confirm_button_image)
     quit_button = make_button(1000, 25, "QUIT", 20, image=quit_button_image)
     rotate_button = make_button(1000, 150, "Rotate", 20, image=confirm_button_image)
@@ -70,18 +59,13 @@ async def placement(ship_count, game_size):
 
     while ships_left > 0:
         mouse = pygame.mouse.get_pos()
-
         # Draw the backgroudn
         SCREEN.blit(BG, (0, 0))
-
         # Draw the playing surface as described above
         pygame.draw.rect(SCREEN, "#042574", PLAYING_SURFACE)
-
         # Draw the labels
         SCREEN.blit(placement_board_label, placement_board_label_rect)
-
         # Draw the amount of ships left
-
         SCREEN.blit(ships_left_label, ships_left_label_rect)
 
         manager.update_placement()
@@ -265,6 +249,8 @@ async def AI_settings():
                     click_sound.play()
                     quit_game()
 
+
+
 async def play():
     """
     the screen is 1700 wide and 800 tall.
@@ -297,7 +283,7 @@ async def play():
     # BUG: game freezes after first move until next turn for multiplayer
     # BUG: type of cell does not match opponent's board after guess for multiplayer
     # BUG: game does not notify winner after winning. need to end game.
-    while True:
+    while not manager.game_over:
         mouse = pygame.mouse.get_pos()
 
         # Draw the backgroudn
@@ -406,19 +392,59 @@ async def main_menu():
 
 
 
+def endgamescreen(won):
+    # TO DO: end the damn game for multiplayer
+    # if self.client:
+    #     self.client.end_game()
+    text = get_font(100).render(
+        "Congratulations, you won!" if won else "You lost, try again...",
+        True,
+        "#b68f40",
+    )
+    text_rect = text.get_rect(center=(650, 100))
+    quit_button = make_button(650, 550, "QUIT", 75, reactive=True)
+    while True:
+        mouse = pygame.mouse.get_pos()
+        SCREEN.blit(BG, (0, 0))
+        SCREEN.blit(text, text_rect)
+        for button in [quit_button]:
+            button.render(SCREEN, mouse)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if quit_button.is_hovered(mouse):
+                    pygame.quit()
+                    sys.exit()
+        pygame.display.update()
+
+
+
 async def main():
-    global ai_game, ai_easy, create
+    global ai_game, ai_easy, create, manager
     ai_game = True
     ai_easy = None
     create = False
+    manager = GameManager()
+
     await main_menu()
     await select_opponent()
     if ai_game:
         await AI_settings()
     else:
         await human_settings()
-    await placement(5, 5)
+    await manager.create_game(
+        ai_game=ai_game,
+        ship_count=NUM_SHIPS,
+        game_size=BOARD_SIZE,
+        create=create,
+        easy_ai = ai_easy
+    )
+    await asyncio.sleep(0.1)
+    await placement(NUM_SHIPS, BOARD_SIZE)
     await play() # loops forever
+    endgamescreen(manager.won)
 
 
 

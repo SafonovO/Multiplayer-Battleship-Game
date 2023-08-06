@@ -66,6 +66,7 @@ class GameManager:
 
     async def create_game(self, ai_game, ship_count, game_size, create, easy_ai):
         print("is this an ai game?", ai_game)
+        self.game_over = False
         self.turn = Turn.PLAYER_ONE
         self.run = True
         self.__player1 = Player(ship_count, game_size)
@@ -356,39 +357,8 @@ class GameManager:
 
     async def endgame(self):
         if await self.__player1.board.gameover():
-            self.endgamescreen(False)
+            self.won = False
+            self.game_over = True
         elif await self.__player2.board.gameover():
-            self.endgamescreen(True)
-
-    def endgamescreen(self, won):
-        # TO DO: end the damn game for multiplayer
-        # if self.client:
-        #     self.client.end_game()
-        text = get_font(100).render(
-            "Congratulations, you won!" if won else "You lost, try again...",
-            True,
-            "#b68f40",
-        )
-        text_rect = text.get_rect(center=(650, 100))
-        quit_button = Button(image=pygame.image.load("assets/navy_button.png"), pos=(650, 550))
-        quit_button = ReactiveButton(
-            quit_button,
-            hover_surface=pygame.image.load("assets/navy_button_hover.png"),
-            active_surface=pygame.image.load("assets/navy_button_hover.png"),
-        )
-        quit_button = TextButton(quit_button, text="QUIT", font=get_font(75))
-        while True:
-            mouse = pygame.mouse.get_pos()
-            SCREEN.blit(BG, (0, 0))
-            SCREEN.blit(text, text_rect)
-            for button in [quit_button]:
-                button.render(SCREEN, mouse)
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if quit_button.is_hovered(mouse):
-                        pygame.quit()
-                        sys.exit()
-            pygame.display.update()
+            self.won = True
+            self.game_over = True
