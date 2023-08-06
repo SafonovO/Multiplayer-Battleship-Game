@@ -153,14 +153,16 @@ async def placement(ship_count, game_size):
 
                     if rotate_button.is_hovered(mouse):
                         vertical = not vertical
-    await play()
 
 
-async def select_opponent(quit_button):
+
+async def select_opponent():
     play_button_ai = make_button(650, 150, "Play vs. AI", 50, reactive=True)
     play_button_human = make_button(650, 350, "Play vs. Human", 50, reactive=True)
+    quit_button = make_button(650, 550, "QUIT", 75, reactive=True)
 
-    while True:
+    loop = True
+    while loop:
         mouse = pygame.mouse.get_pos()
         # Draw the backgroudn
         SCREEN.blit(BG, (0, 0))
@@ -180,21 +182,25 @@ async def select_opponent(quit_button):
                 if play_button_ai.is_hovered(mouse):
                     click_sound.play()
                     ai_game = True
-                    await AI_settings(quit_button)
+                    loop = False
                 elif play_button_human.is_hovered(mouse):
                     click_sound.play()
                     ai_game = False
-                    await human_settings(quit_button)
+                    loop = False
                 elif quit_button.is_hovered(mouse):
                     click_sound.play()
                     quit_game()
 
-async def human_settings(quit_button):
+
+
+async def human_settings():
     global ai_game, create
     create_button = make_button(650, 150, "Create Game", 50, reactive=True)
     join_button = make_button(650, 350, "Join Game", 50, reactive=True)
+    quit_button = make_button(650, 550, "QUIT", 75, reactive=True)
 
-    while True:
+    loop = True
+    while loop:
         mouse = pygame.mouse.get_pos()
         create_button.render(SCREEN, mouse)
         join_button.render(SCREEN, mouse)
@@ -208,26 +214,28 @@ async def human_settings(quit_button):
                 if create_button.is_hovered(mouse):
                     click_sound.play()
                     create = True
-                    await placement(5, 5)
+                    loop = False
                 elif join_button.is_hovered(mouse):
                     click_sound.play()
                     create = False
-                    await placement(5, 5)
+                    loop = False
                 elif quit_button.is_hovered(mouse):
                     click_sound.play()
                     quit_game()
 
-async def AI_settings(quit_button):
-    # refer to global variable ai_easy
+
+
+async def AI_settings():
     global ai_easy
 
     text = get_font(50).render("Difficulty", True, "#b68f40")
     text_rect = text.get_rect(center=(650, 100))
-
+    quit_button = make_button(650, 550, "QUIT", 75, reactive=True)
     easy_button = make_button(400, 175, "Easy", 20, image=confirm_button_image)
     hard_button = make_button(900, 175, "Hard", 20, image=confirm_button_image)
 
-    while True:
+    loop = True
+    while loop:
         mouse = pygame.mouse.get_pos()
         # Draw the backgroudn
         SCREEN.blit(BG, (0, 0))
@@ -248,11 +256,11 @@ async def AI_settings(quit_button):
                 if easy_button.is_hovered(mouse):
                     click_sound.play()
                     ai_easy = True
-                    await placement(5, 5)
+                    loop = False
                 elif hard_button.is_hovered(mouse):
                     click_sound.play()
                     ai_easy = False
-                    await placement(5, 5)
+                    loop = False
                 elif quit_button.is_hovered(mouse):
                     click_sound.play()
                     quit_game()
@@ -373,31 +381,23 @@ async def main_menu():
 
     play_button = make_button(650, 350, "PLAY", 75, reactive=True)
     quit_button = make_button(650, 550, "QUIT", 75, reactive=True)
-
-    while True:
+    loop = True
+    while loop:
         # Draw the background
         SCREEN.blit(BG, (0, 0))
-
-        # Get mouse position
         mouse = pygame.mouse.get_pos()
-
-        # draw meny text, buttons
         SCREEN.blit(text, text_rect)
 
         for button in [play_button, quit_button]:
             button.render(SCREEN, mouse)
 
-        # get events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 quit_game()
-
-            # if we clicked, find out if we clicked on a button and execute that buttons action
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if play_button.is_hovered(mouse):
                     click_sound.play()
-                    await select_opponent(quit_button)
-
+                    loop = False
                 if quit_button.is_hovered(mouse):
                     click_sound.play()
                     quit_game()
@@ -405,11 +405,25 @@ async def main_menu():
         pygame.display.update()
 
 
+
+async def main():
+    await main_menu()
+    await select_opponent()
+    if ai_game:
+        await AI_settings()
+    else:
+        await human_settings()
+    await placement(5, 5)
+    await play() # loops forever
+
+
+
+
 def quit_game():
     pygame.quit()
     sys.exit()
 
 mixer.music.play(-1)
-asyncio.run(main_menu())
+asyncio.run(main())
 
 # main_menu()
