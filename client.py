@@ -12,11 +12,12 @@ class Client:
     def __init__(self) -> None:
         self.game_id = None
         self.player_id = None
-        self.requests = []
+        self.requests = asyncio.Queue()
         self.response = []
         self.opp_guess = None
         self.my_result = None
-        self.lost = False
+        self.won = False
+        self.game_over = False
 
     def create_message(self, request, details=""):
         return {
@@ -31,26 +32,20 @@ class Client:
         async with websockets.connect(URI) as websocket:
             print("Connected to server")
             await asyncio.gather(
-                self.consumer_handler(websocket),
-                self.producer_handler(websocket),
+                self.response_handler(websocket),
+                self.request_sender(websocket),
             )
 
-    async def consumer_handler(self, websocket):
+    async def response_handler(self, websocket):
         async for message in websocket:
             self.handle_response(message)
 
-    async def producer_handler(self, websocket):
+    async def request_sender(self, websocket):
         while True:
-            message = await self.producer()
+            message = await self.requests.get()
             print(message)
             await websocket.send(message)
-
-    async def producer(self):
-        while not self.requests:
-            await asyncio.sleep(0.5)
-        request = self.requests[0]
-        self.requests.pop(0)
-        return request
+            self.requests.task_done()
 
     def handle_response(self, response):
         """{
@@ -72,46 +67,47 @@ class Client:
             case "broadcast":
                 print("broadcasting...")
             case "endgame":
-                self.lost = True
+                self.won = msg["response"]
+                self.game_over = True
             case "ok":
-                print("ok")
+                pass
+                # print("ok")
             case other:
                 print("invalid response")
 
     def create_game(self):
         message = self.create_message("newgame")
-        self.requests.append(json.dumps(message))
+        self.requests.put_nowait(json.dumps(message))
         self.player_id = "0"
         print("creating game")
 
     def join_game(self):
         message = self.create_message("joingame")
-        self.requests.append(json.dumps(message))
+        self.requests.put_nowait(json.dumps(message))
         self.player_id = "1"
         print("joining game")
 
     def get_guess(self):
         message = self.create_message("getguess")
-        self.requests.append(json.dumps(message))
+        self.requests.put_nowait(json.dumps(message))
 
     def get_result(self):
         message = self.create_message("getresult")
-        self.requests.append(json.dumps(message))
+        self.requests.put_nowait(json.dumps(message))
 
     def send_result(self, result):
         message = self.create_message("setresult", result)
-        self.requests.append(json.dumps(message))
+        self.requests.put_nowait(json.dumps(message))
 
     def send_guess(self, x, y):
         message = self.create_message("setguess", f"{x},{y}")
-        self.requests.append(json.dumps(message))
+        self.requests.put_nowait(json.dumps(message))
 
-    def end_game(self):
-        message = self.create_message("endgame")
-        self.requests.append(json.dumps(message))
+    def end_game(self, won):
+        message = self.create_message("endgame", won)
+        self.requests.put_nowait(json.dumps(message))
         print("ending game")
-        # print(* self.requests)
 
     def broadcast(self):
         message = self.create_message("broadcast")
-        self.requests.append(json.dumps(message))
+        self.requests.put_nowait(json.dumps(message))
