@@ -18,7 +18,6 @@ hovered_button_image = pygame.image.load("assets/navy_button_hover.png")
 
 manager = GameManager()
 ai_game = True
-join = False
 create = False
 # run = False
 server = None
@@ -48,7 +47,6 @@ async def placement(ship_count, game_size):
         ship_count=ship_count,
         game_size=game_size,
         create=create,
-        join=join,
         easy_ai = ai_easy
     )
     await asyncio.sleep(0.1)
@@ -155,30 +153,27 @@ async def placement(ship_count, game_size):
                         vertical = not vertical
     await play()
 
-async def select_opponent():
-    # selection screen: pick an AI game difficulty
-    # in the future will add option to play multiplayer
-    play_button = Button(image=base_button_image, pos=(650, 150))
-    play_button = ReactiveButton(
-        play_button,
+def make_button(x, y, text, font_size):
+    button = Button(image=base_button_image, pos=(x, y))
+    button = ReactiveButton(
+        button,
         hover_surface=hovered_button_image,
         active_surface=hovered_button_image,
     )
-    play_button = TextButton(play_button, text="Play vs. AI", font=get_font(50))
+    return TextButton(button, text=text, font=get_font(font_size))
 
+async def select_opponent():
+    play_button_ai = make_button(650, 150, "Play vs. AI", 50)
+    play_button_human = make_button(650, 350, "Play vs. Human", 50)
 
     while True:
         mouse = pygame.mouse.get_pos()
         # Draw the backgroudn
         SCREEN.blit(BG, (0, 0))
-
-        # Draw the playing surface as described above
         pygame.draw.rect(SCREEN, "#042574", PLAYING_SURFACE)
-
-        play_button.render(SCREEN, mouse)
-
+        play_button_ai.render(SCREEN, mouse)
+        play_button_human.render(SCREEN, mouse)
         pygame.display.flip()
-
 
         for event in pygame.event.get():
             # BUG: quit button is not responsive while waiting for AI to make move
@@ -187,10 +182,42 @@ async def select_opponent():
                 click_sound.play()
                 quit_game()
             if event.type == pygame.MOUSEBUTTONDOWN:
-                # if we hit confirm, fire with the manager
-                if play_button.is_hovered(mouse):
+                global ai_game
+                if play_button_ai.is_hovered(mouse):
                     click_sound.play()
+                    ai_game = True
                     await AI_settings()
+                elif play_button_human.is_hovered(mouse):
+                    click_sound.play()
+                    ai_game = False
+                    await human_settings()
+
+async def human_settings():
+    global ai_game, create
+    create_button = make_button(650, 150, "Create Game", 50)
+    join_button = make_button(650, 350, "Join Game", 50)
+
+    while True:
+        mouse = pygame.mouse.get_pos()
+        SCREEN.blit(BG, (0, 0))
+        pygame.draw.rect(SCREEN, "#042574", PLAYING_SURFACE)
+        create_button.render(SCREEN, mouse)
+        join_button.render(SCREEN, mouse)
+        pygame.display.flip()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                quit_game()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if create_button.is_hovered(mouse):
+                    click_sound.play()
+                    create = True
+                    await placement(5, 5)
+                elif join_button.is_hovered(mouse):
+                    click_sound.play()
+                    create = False
+                    await placement(5, 5)
+
 
 async def AI_settings():
     # refer to global variable ai_easy
@@ -227,7 +254,6 @@ async def AI_settings():
             if event.type == pygame.QUIT:
                 quit_game()
             if event.type == pygame.MOUSEBUTTONDOWN:
-                # if we hit confirm, fire with the manager
                 if easy_button.is_hovered(mouse):
                     click_sound.play()
                     ai_easy = True
@@ -270,7 +296,7 @@ async def play():
     quit_button = Button(image=pygame.image.load("assets/quit.png"), pos=(1000, 25))
     quit_button = TextButton(quit_button, text="QUIT", font=get_font(20))
 
-    change_turn = True if join else False
+    change_turn = False if ai_game or create else True
     # BUG: game freezes after first move until next turn for multiplayer
     # BUG: type of cell does not match opponent's board after guess for multiplayer
     # BUG: game does not notify winner after winning. need to end game.
@@ -348,59 +374,6 @@ async def play():
                             coord_text = None
                             coord_text_rect = None
                             await asyncio.sleep(0.7)
-                        
-
-
-"""
-def setup():
-    # Ship setup screen
-
-    # Render text
-    text = get_font(70).render("SETUP YOUR SHIPS", True, "White")
-    text_rect = text.get_rect(center=(650, 100))
-
-    # Placeholder text for now
-    placeholder1_text = get_font(24).render("This function has not been implemented yet for this prototype.", True,
-                                            "White")
-    placeholder2_text = get_font(24).render("Please continue to game.", True, "White")
-    placeholder3_text = get_font(24).render("All ships will be 1x1 and placed randomly", True, "White")
-
-    placeholder1_rect = placeholder1_text.get_rect(center=(650, 300))
-    placeholder2_rect = placeholder2_text.get_rect(center=(650, 350))
-    placeholder3_rect = placeholder3_text.get_rect(center=(650, 400))
-
-    # Continue to gameplay button
-    continue_button = Button(image=base_button_image, pos=(650, 550))
-    continue_button = TextButton(continue_button, text="CONTINUE", font=get_font(60))
-
-    while True:
-        # paint background
-        SCREEN.blit(BG, (0, 0))
-
-        # get mouse position
-        mouse = pygame.mouse.get_pos()
-
-        SCREEN.blit(text, text_rect)
-
-        SCREEN.blit(placeholder1_text, placeholder1_rect)
-        SCREEN.blit(placeholder2_text, placeholder2_rect)
-        SCREEN.blit(placeholder3_text, placeholder3_rect)
-
-        continue_button.render(SCREEN, mouse)
-
-        # get events
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                quit_game()
-
-            # if we clicked, find out if we clicked on a button and execute that buttons action
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if continue_button.is_hovered(mouse):
-                    placement(ship_count=5, game_size = 5)
-
-        pygame.display.update()
-
-"""
 
 
 async def main_menu():
@@ -442,17 +415,6 @@ async def main_menu():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 quit_game()
-
-            if event.type == pygame.KEYDOWN:
-                global ai_game, create, join
-                if event.key == pygame.K_c:
-                    ai_game = False
-                    create = True
-                    join = False
-                if event.key == pygame.K_j:
-                    ai_game = False
-                    join = True
-                    create = False
 
             # if we clicked, find out if we clicked on a button and execute that buttons action
             if event.type == pygame.MOUSEBUTTONDOWN:
