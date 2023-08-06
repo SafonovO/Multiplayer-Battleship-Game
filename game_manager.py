@@ -15,7 +15,6 @@ from ships.normal_ship import NormalShip
 from ships.ship import Ship
 from utilities.button import Button, ReactiveButton, TextButton
 from board.cell import Cell
-from utilities.fonts import get_font
 
 
 
