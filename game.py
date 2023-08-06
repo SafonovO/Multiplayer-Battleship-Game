@@ -24,8 +24,8 @@ mixer.music.load('Sounds/bg.ogg')
 click_sound = pygame.mixer.Sound('Sounds/ui-click.mp3')
 
 PLAYING_SURFACE = pygame.Rect(100, 50, 1100, 700)
-BOARD_SIZE = 5
-NUM_SHIPS = 1
+BOARD_SIZE = 2
+NUM_SHIPS = 2
 
 def make_button(x, y, text, font_size, reactive=False, image=base_button_image):
     button = Button(image=image, pos=(x, y))
@@ -356,7 +356,8 @@ async def play():
                             # update = True
                             coord_text = None
                             coord_text_rect = None
-                            await asyncio.sleep(0.7)
+                            # await asyncio.sleep(0.7)
+    # outside of while not manager.game_over
     if manager.client:
         manager.client.end_game(manager.won)
 

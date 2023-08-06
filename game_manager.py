@@ -304,7 +304,7 @@ class GameManager:
                     self.__player1.board.get_cell(int(coords[0]), int(coords[1]))
                 )
                 await asyncio.sleep(0.1)
-                self.client.send_result(result)
+                self.client.send_result("True" if result else "False")
             self.turn ^= Turn.PLAYER_TWO
 
     async def fire_shot(self):
@@ -326,6 +326,7 @@ class GameManager:
                     await asyncio.sleep(0.1)
                 # print("result is", self.client.my_result)
                 if self.client.my_result == "True":
+                    print("HIT A SHIP!!!!")
                     self.active_cell.set_ship(NormalShip(1))
                 self.client.my_result = None
             await self.validate_shot(self.active_cell)
