@@ -90,7 +90,6 @@ async def placement(ship_count, game_size):
                     if button_array[Element.QUIT_BUTTON.value].is_hovered(mouse):
                         click_sound.play()
                         # return to main menu
-                        
                         await main()
 
                     # if we hit confirm, place with the manager
@@ -142,7 +141,7 @@ async def select_opponent():
                     loop = False
                 elif button_array[Element.QUIT_BUTTON.value].is_hovered(mouse):
                     click_sound.play()
-                    quit_game()
+                    await main()
 
 
 
@@ -171,7 +170,7 @@ async def human_settings():
                     loop = False
                 elif button_array[Element.QUIT_BUTTON.value].is_hovered(mouse):
                     click_sound.play()
-                    quit_game()
+                    await main()
 
 
 
@@ -203,7 +202,7 @@ async def AI_settings():
                     loop = False
                 elif button_array[Element.QUIT_BUTTON.value].is_hovered(mouse):
                     click_sound.play()
-                    quit_game()
+                    await main()
 
 
 
