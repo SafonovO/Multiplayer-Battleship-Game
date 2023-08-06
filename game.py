@@ -123,9 +123,12 @@ async def placement(ship_count, game_size):
                             ships_left -= 1
 
                         # update = True
-                        draw.clear_coord()
+                        coord_text = None
+                        coord_text_rect = None
                         # update the count label
-                        draw.update_ships_left(ships_left)
+                        ships_left_label = get_font(30).render(
+                            "Ships Left: " + str(ships_left), True, "White"
+                        )
 
                     if button_array[Element.ROTATE_BUTTON.value].is_hovered(mouse):
                         vertical = not vertical
@@ -288,31 +291,9 @@ async def play():
                         if manager.active_cell!=None:
                             change_turn = await manager.fire_shot()
                             # update = True
-                            
-                            if (change_turn):
-                                winner = await manager.endgame()
-                                print(winner)
-                                if(winner!=0):
-                                    print('passed')
-                                    await endgame(winner)
                             draw.clear_coord()
-                            await asyncio.sleep(0.3)
+                            await asyncio.sleep(0.7)
 
-async def endgame(won):
-    draw.clear_array()
-    draw.draw_screen('endgame',winner=won)
-    while True:
-        mouse = pygame.mouse.get_pos()
-        draw.render_screen(mouse)
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if button_array[Element.QUIT_BUTTON.value].is_hovered(mouse):
-                    pygame.quit()
-                    sys.exit()
-        pygame.display.update()   
 
 async def main_menu():
     draw.clear_array()

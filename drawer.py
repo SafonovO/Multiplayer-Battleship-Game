@@ -48,7 +48,7 @@ class Drawer():
     
     coord_tuple=None
     
-    def draw_screen(self,screen,ships_left=None,winner=None):
+    def draw_screen(self,screen,ships_left=None):
         if(screen=='main'):
             self.main_menu()
         elif(screen=='select_opponent'):
@@ -61,8 +61,6 @@ class Drawer():
             self.placement(ships_left)
         elif(screen=='play'):
             self.play()
-        elif(screen=='endgame'):
-            self.endgame(winner)
     
     def main_menu(self):
         text = get_font(100).render("BATTLESHIP", True, "#b68f40")
@@ -159,23 +157,7 @@ class Drawer():
             SCREEN.blit(element[0], element[1])
         for button in button_array:
             button.render(SCREEN, mouse)
-    
-    def endgame(self,won):
-        text = get_font(100).render(
-        "Congratulations, you won!" if won==2 else "You lost, try again...",
-        True,
-        "#b68f40",
-        )
-        text_rect = text.get_rect(center=(650, 100))
-        text_tuple=(text,text_rect)
-        
-        quit_button = make_button(650, 550, "QUIT", 75, reactive=True)
-        
-        for element in [text_tuple]:
-            text_array.append(element)
-        for button in [quit_button]:
-            button_array.append(button)
-    
+            
     def draw_coord(self,num, letter):
         coord_text = get_font(15).render("({}, {})".format(letter, num), True, "White")
         coord_text_rect = coord_text.get_rect(center=(1000, 200))
@@ -187,10 +169,3 @@ class Drawer():
     def clear_array(self):
         button_array.clear()
         text_array.clear()
-        self.coord_tuple=None
-    
-    def update_ships_left(self,ships_left):
-        ships_left_label = get_font(30).render("Ships Left: " + str(ships_left), True, "White")
-        ships_left_label_rect = ships_left_label.get_rect(center=(1000, 100))
-        ships_left_tuple=(ships_left_label, ships_left_label_rect)
-        text_array[1]= (ships_left_tuple)
