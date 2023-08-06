@@ -5,6 +5,7 @@ import websockets
 
 URI = "ws://24.199.115.192:8765"
 URI = "ws://127.0.0.1:8765"
+# URI = "ws://209.87.58.21:8765"
 
 
 class Client:

@@ -64,7 +64,7 @@ class GameManager:
         else:
             return None
 
-    async def create_game(self, ai_game, ship_count, game_size, create, join, easy_ai):
+    async def create_game(self, ai_game, ship_count, game_size, create, easy_ai):
         print("is this an ai game?", ai_game)
         self.turn = Turn.PLAYER_ONE
         self.run = True
@@ -81,7 +81,7 @@ class GameManager:
             self.__player2 = Opponent(ship_count, game_size)
             if create:
                 self.client.create_game()
-            elif join:
+            else:
                 self.client.join_game()
         self.active_cell = None
 
