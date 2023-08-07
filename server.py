@@ -1,12 +1,20 @@
 import asyncio
 import json
-from time import sleep
-import websockets
+import logging
 import random
+import signal
 import string
+import uuid
+import websockets.server
+import websockets.exceptions
 
-ADDRESS = "127.0.0.1"
+ADDRESS = "0.0.0.0"
 PORT = "8765"
+logging.basicConfig(
+    format="%(asctime)s.%(msecs)03d [%(levelname)s] %(name)s - %(message)s",
+    level=logging.DEBUG,
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
 
 
 class Player:
@@ -15,17 +23,20 @@ class Player:
         self.ships = []
         self.next_guess = None
         self.result = None
-        self.socket = None
+        self.socket: websockets.server.WebSocketServerProtocol | None = None
 
 
 class Game:
     def __init__(self):
-        self.players = (Player(), Player())
+        self.id = str(uuid.uuid4())
+        self.players: tuple[Player, Player] = (Player(), Player())
         self.password = Game.generate_pw()
+        self.logger = logging.getLogger("battleship.game")
+        self.logger.info(f"Game created, id {self.id} password {self.password}")
 
     def generate_pw():
-        chars = string.ascii_letters + string.digits + string.punctuation
-        return "".join(random.choice(chars) for i in range(16))
+        chars = string.ascii_uppercase + string.digits
+        return "".join(random.choice(chars) for i in range(9))
 
 
 class Server:
@@ -39,61 +50,79 @@ class Server:
     """
 
     def __init__(self) -> None:
-        self.games = []
-        self.queues = []
+        self.games: dict[str, Game] = {}
+        self.queues: list[asyncio.Queue] = []
         self.tasks = []
-
+        self.clients = set()
+        self.socket_to_player: dict[websockets.server.WebSocketServerProtocol, Player] = {}
+        self.logger = logging.getLogger("battleship.server")
 
     def create_message(self, request="ok", response="ok"):
         return {"request": request, "response": response}
 
-    async def rx(self, websocket):
-        print("creating task")
-        # each worker has it's own queue
-        new_worker = asyncio.Queue()
-        worker_id = len(self.queues)
-        task = asyncio.create_task(self.worker(websocket, worker_id))
-        self.tasks.append(task)
-        self.queues.append(new_worker)
-        while True:
-            print("awaiting request from client")
-            packet = await websocket.recv()
-            self.queues[worker_id].put_nowait(packet)
-            print(packet)
+    async def handler(self, websocket: websockets.server.WebSocketServerProtocol):
+        self.logger.info("Incoming client")
+        self.clients.add(websocket)
+        try:
+            # each worker has it's own queue
+            new_worker = asyncio.Queue()
+            worker_id = len(self.queues)
+            task = asyncio.create_task(self.worker(websocket, worker_id))
+            self.tasks.append(task)
+            self.queues.append(new_worker)
+            while True:
+                self.logger.info("Awaiting request from client")
+                packet = await websocket.recv()
+                self.queues[worker_id].put_nowait(packet)
+        except websockets.exceptions.ConnectionClosedOK:
+            self.logger.info("Client quit")
+        except websockets.exceptions.ConnectionClosedError:
+            self.logger.info("Client quit unexpectedly")
+        finally:
+            self.logger.info("Removing client")
+            self.clients.remove(websocket)
+            self.socket_to_player.get(websocket).socket = None
 
-
-    async def worker(self, websocket, workerID):
+    async def worker(self, websocket: websockets.server.WebSocketServerProtocol, workerID: int):
         while True:
-            print(workerID, "is awaiting task")
+            self.logger.debug(f"worker {workerID} is awaiting task")
             packet = await self.queues[workerID].get()
-            print("worker id:", workerID, "packet:", packet)
-            msg = json.loads(packet)
-            game_id = int(msg["game"]) if msg["game"] else None
-            player_id = int(msg["player"]) if msg["player"] else None
-            request = msg["request"]
-            details = msg["details"]
+            self.logger.debug(f"worker id: {workerID} packet: {packet}")
+            msg: dict = json.loads(packet)
+            request = msg.get("request")
+            game_id = msg.get("game")
+            player_id = int(msg.get("player")) if msg.get("player") != None else None
+            details = msg.get("details")
             match request:
                 # create a new game
-                case "newgame":
-                    self.games.append(Game())
-                    new_game_id = len(self.games) - 1
-                    self.games[new_game_id].players[0].socket = websocket
-                    response = self.create_message("newgame", str(new_game_id))
-                    print(response)
+                case "new_game":
+                    game = Game()
+                    self.logger.info(f"Created a new game with id {game.id}")
+                    game.players[0].socket = websocket
+                    self.socket_to_player[websocket] = game.players[0]
+                    self.games[game.id] = game
+                    response = {
+                        "request": "new_game",
+                        "game_id": game.id,
+                        "password": game.password,
+                    }
                     await websocket.send(json.dumps(response))
 
-                # get a code to share so your friend can join your game
-                case "invite":
-                    response = self.create_message("invite", self.games[game_id].password)
-                    await websocket.send(json.dumps(response))
-
-                # join a game
-                # we're going to want to pass in a game password later
                 case "joingame":
-                    # BUG: temp hard coding: fix later
-                    self.games[0].players[1].socket = websocket
-                    response = self.create_message("newgame", "0")
-                    print(response)
+                    game = self.games.get(msg.get("game_id"))
+                    if game == None:
+                        self.logger.debug("No such game")
+                        return
+                    if game.players[0].socket != None and game.players[1].socket != None:
+                        self.logger.debug("Game is full")
+                        return
+                    available_slot = -1
+                    if game.players[1].socket == None:
+                        available_slot = 1
+                    if game.players[0].socket == None:
+                        available_slot = 0
+                    self.socket_to_player[websocket] = game.players[available_slot]
+                    response = self.create_message("new_game", msg.get("game_id"))
                     await websocket.send(json.dumps(response))
 
                 # join first empty game
@@ -135,13 +164,10 @@ class Server:
                     for player in self.games[game_id].players:
                         await player.socket.send(json.dumps(broadcast))
 
-                case other:
-                    print("invalid request")
+                case _:
+                    self.logger.debug("Invalid request")
 
-            print("done taskk!!")
             self.queues[workerID].task_done()
-
-
 
     async def get_guess(self, game_id, player_id):
         while not self.games[game_id].players[player_id].next_guess:
@@ -156,21 +182,24 @@ class Server:
         return self.games[game_id].players[player_id].result
 
 
-
-
 async def main():
     server = Server()
 
-    async with websockets.serve(server.rx, ADDRESS, PORT):
-        await asyncio.Future()  # run forever
-        print("after aawiting future")
+    loop = asyncio.get_running_loop()
+    stop = loop.create_future()
+    loop.add_signal_handler(signal.SIGINT, stop.set_result, None)
 
-    print("i escaped")
+    async with websockets.server.serve(server.handler, ADDRESS, PORT, ping_interval=None):
+        await stop  # run forever
+
+    logging.info("Cancelling worker tasks...")
     # Cancel our worker tasks.
     for task in server.tasks:
         task.cancel()
     # Wait until all worker tasks are cancelled.
     await asyncio.gather(*server.tasks, return_exceptions=True)
 
+
 if __name__ == "__main__":
+    logging.info("Starting server...")
     asyncio.run(main())

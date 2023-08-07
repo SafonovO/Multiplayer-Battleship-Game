@@ -1,16 +1,14 @@
 import asyncio
 import json
-from time import sleep
-import websockets
+import websockets.client
 
 URI = "ws://24.199.115.192:8765"
 URI = "ws://127.0.0.1:8765"
-# URI = "ws://209.87.58.21:8765"
 
 
 class Client:
     def __init__(self) -> None:
-        self.game_id = None
+        self.game_id: str | None = None
         self.player_id = None
         self.requests = asyncio.Queue()
         self.response = []
@@ -22,14 +20,14 @@ class Client:
     def create_message(self, request, details=""):
         return {
             "request": request,
-            "game": self.game_id if self.game_id is not None else "-1",
+            "game": self.game_id,
             "player": self.player_id if self.player_id is not None else "-1",
             "details": details,
         }
 
     async def start(self):
         print("connecting to server")
-        async with websockets.connect(URI) as websocket:
+        async with websockets.client.connect(URI) as websocket:
             print("Connected to server")
             await asyncio.gather(
                 self.response_handler(websocket),
@@ -55,9 +53,9 @@ class Client:
         print(response)
         msg = json.loads(response)
         match msg["request"]:
-            case "newgame":
-                self.game_id = str(msg["response"])
-                # print("set game id to", self.game_id)
+            case "new_game":
+                self.game_id = str(msg["game_id"])
+                print(f"set game id to {self.game_id}")
             case "getguess":
                 self.opp_guess = msg["response"]
                 # print("set opponents guess to", self.opp_guess)
@@ -76,7 +74,7 @@ class Client:
                 print("invalid response")
 
     def create_game(self):
-        message = self.create_message("newgame")
+        message = {"request": "new_game"}
         self.requests.put_nowait(json.dumps(message))
         self.player_id = "0"
         print("creating game")
