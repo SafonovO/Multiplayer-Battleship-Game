@@ -11,6 +11,7 @@ from utilities.button import Button, ReactiveButton, TextButton
 from utilities.fonts import get_font
 from game_manager import BG, SCREEN, GameManager
 from drawer import Drawer, button_array,Element
+from client import Stages
 
 pygame.init()
 pygame.display.set_caption("Battleship")
@@ -172,6 +173,41 @@ async def human_settings():
                     click_sound.play()
                     await main()
 
+
+async def human_game_pending():
+    draw.clear_array()
+    draw.draw_screen("human_create_pending", manager=manager)
+
+    while manager.client.stage == Stages.PENDING_OPPONENT_JOIN:
+        mouse = pygame.mouse.get_pos()
+        draw.render_screen(mouse, True)
+        pygame.display.flip()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                quit_game()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if button_array[Element.QUIT_BUTTON.value].is_hovered(mouse):
+                    click_sound.play()
+                    await main()
+
+
+async def human_game_join():
+    draw.clear_array()
+    draw.draw_screen("human_join", manager=manager)
+
+    while True:
+        mouse = pygame.mouse.get_pos()
+        draw.render_screen(mouse, True)
+        pygame.display.flip()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                quit_game()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if button_array[Element.QUIT_BUTTON.value].is_hovered(mouse):
+                    click_sound.play()
+                    await main()
 
 
 async def AI_settings():
@@ -353,6 +389,11 @@ async def main():
         easy_ai = ai_easy
     )
     await asyncio.sleep(0.1)
+    if not ai_game:
+        if create:
+            await human_game_pending()
+        else:
+            await human_game_join()
     await placement(NUM_SHIPS, BOARD_SIZE)
     await play() # loops forever
     endgamescreen(manager.won)

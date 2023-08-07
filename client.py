@@ -1,14 +1,23 @@
 import asyncio
 import json
 import websockets.client
+from enum import Enum
 
 URI = "ws://24.199.115.192:8765"
 URI = "ws://127.0.0.1:8765"
 
 
+class Stages(Enum):
+    ERROR = -1
+    PENDING_OPPONENT_JOIN = 0
+    PLACEMENT = 1
+    PENDING_OPPONENT_PLACEMENT = 2
+
+
 class Client:
     def __init__(self) -> None:
         self.game_id: str | None = None
+        self.code = ""
         self.player_id = None
         self.requests = asyncio.Queue()
         self.response = []
@@ -16,6 +25,8 @@ class Client:
         self.my_result = None
         self.won = False
         self.game_over = False
+        self.stage = Stages.PENDING_OPPONENT_JOIN
+        self.error = None
 
     def create_message(self, request, details=""):
         return {
@@ -54,8 +65,16 @@ class Client:
         msg = json.loads(response)
         match msg["request"]:
             case "new_game":
-                self.game_id = str(msg["game_id"])
+                if msg.get("error"):
+                    self.error = msg.get("error")
+                    self.stage = Stages.ERROR
+                    return
+                self.game_id = msg.get("game_id")
+                self.code = msg.get("password")
                 print(f"set game id to {self.game_id}")
+            case "ready_for_placement":
+                print("ready for placement! proceed to placement screen")
+                self.stage = Stages.PLACEMENT
             case "getguess":
                 self.opp_guess = msg["response"]
                 # print("set opponents guess to", self.opp_guess)
@@ -80,7 +99,7 @@ class Client:
         print("creating game")
 
     def join_game(self):
-        message = self.create_message("joingame")
+        message = {"request": "join_game", "game_code": "foobar"}
         self.requests.put_nowait(json.dumps(message))
         self.player_id = "1"
         print("joining game")

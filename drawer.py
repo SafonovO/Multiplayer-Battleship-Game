@@ -41,6 +41,11 @@ def make_button(x, y, text, font_size, reactive=False, image=base_button_image):
                 active_surface=hovered_button_image,
             )
         return TextButton(button, text=text, font=get_font(font_size))
+
+def make_text(text: str, pos: tuple[int, int], size: int, colour: str):
+    text_rendered = get_font(size).render(text, True, colour)
+    text_rect = text_rendered.get_rect(center=pos)
+    return (text_rendered, text_rect)
     
 class Drawer():
     def __init__(self):
@@ -48,13 +53,17 @@ class Drawer():
     
     coord_tuple=None
     
-    def draw_screen(self,screen,ships_left=None):
+    def draw_screen(self,screen,ships_left=None, manager=None):
         if(screen=='main'):
             self.main_menu()
         elif(screen=='select_opponent'):
             self.select_op()
         elif(screen=='human_settings'):
-            self.human()
+            self.human_settings()
+        elif screen== "human_create_pending":
+            self.human_create_pending(manager)
+        elif screen== "human_join":
+            self.human_join(manager)
         elif(screen=='AI_settings'):
             self.ai()
         elif(screen=='placement'):
@@ -83,13 +92,41 @@ class Drawer():
         for button in [quit_button,play_button_human,play_button_ai]:
             button_array.append(button)
     
-    def human(self):
+    def human_settings(self):
         create_button = make_button(650, 150, "Create Game", 50, reactive=True)
         join_button = make_button(650, 350, "Join Game", 50, reactive=True)
         quit_button = make_button(650, 550, "QUIT", 75, reactive=True)
         
         for button in [quit_button,join_button,create_button]:
             button_array.append(button)
+    
+    def human_create_pending(self, manager):
+        quit_button = make_button(1000, 25, "QUIT", 20, image=quit_button_image)
+
+        waiting_title = make_text("Waiting for opponent", (650, 300), 50, "#b68f40")
+        waiting_text = make_text(
+            "You can invite a friend to this game with the code below",
+            (650, 375),
+            30,
+            "#ffffff"
+        )
+
+        code = get_font(30).render(manager.client.code, True, "#b68f40")
+        code_rect = code.get_rect(center=(650, 425))
+        code_tuple = (code, code_rect)
+            
+        for tuple in [waiting_title, waiting_text, code_tuple]:
+            text_array.append(tuple)
+
+        for button in [quit_button]:
+            button_array.append(button)
+
+    def human_join(self, manager):
+        quit_button = make_button(1000, 25, "QUIT", 20, image=quit_button_image)
+
+        for button in [quit_button]:
+            button_array.append(button)
+        pass
             
     def ai(self):
         text = get_font(50).render("Difficulty", True, "#b68f40")
