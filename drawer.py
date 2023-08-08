@@ -3,6 +3,7 @@ from pygame.locals import *
 from pygame import mixer
 from utilities.button import Button,ReactiveButton, TextButton
 from utilities.fonts import get_font
+from utilities.input import Input
 from enum import Enum
 
 
@@ -53,7 +54,7 @@ class Drawer():
     
     coord_tuple=None
     
-    def draw_screen(self,screen,ships_left=None, manager=None):
+    def draw_screen(self,screen,ships_left=None, manager=None, input_code=""):
         if(screen=='main'):
             self.main_menu()
         elif(screen=='select_opponent'):
@@ -62,8 +63,6 @@ class Drawer():
             self.human_settings()
         elif screen== "human_create_pending":
             self.human_create_pending(manager)
-        elif screen== "human_join":
-            self.human_join(manager)
         elif(screen=='AI_settings'):
             self.ai()
         elif(screen=='placement'):
@@ -121,10 +120,20 @@ class Drawer():
         for button in [quit_button]:
             button_array.append(button)
 
-    def human_join(self, manager):
+    def human_join(self, code_input: Input, manager):
         quit_button = make_button(1000, 25, "QUIT", 20, image=quit_button_image)
 
-        for button in [quit_button]:
+        join_title = make_text("Join game", (650, 300), 50, "#b68f40")
+        join_desc = make_text("Enter an invite code to join a game", (650, 375), 30, "#ffffff")
+        
+        code_chars = make_text(" ".join(code_input.value.ljust(9, "_")), (650, 425), 30, "#b68f40")
+
+        join_button = make_button(650, 550, "Join", 50, reactive=True)
+            
+        for tuple in [join_title, join_desc, code_chars]:
+            text_array.append(tuple)
+
+        for button in [quit_button, join_button]:
             button_array.append(button)
         pass
             

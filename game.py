@@ -1,4 +1,5 @@
 import asyncio
+import string
 import sys
 import time
 from client import Client
@@ -9,6 +10,7 @@ from pygame import mixer
 from board.board import Board
 from utilities.button import Button, ReactiveButton, TextButton
 from utilities.fonts import get_font
+from utilities.input import Input
 from game_manager import BG, SCREEN, GameManager
 from drawer import Drawer, button_array,Element
 from client import Stages
@@ -193,10 +195,12 @@ async def human_game_pending():
 
 
 async def human_game_join():
-    draw.clear_array()
-    draw.draw_screen("human_join", manager=manager)
+    code_input = Input(max_length=9)
 
-    while True:
+    loop = True
+    while loop:
+        draw.clear_array()
+        draw.human_join(code_input, manager)
         mouse = pygame.mouse.get_pos()
         draw.render_screen(mouse, True)
         pygame.display.flip()
@@ -208,6 +212,14 @@ async def human_game_join():
                 if button_array[Element.QUIT_BUTTON.value].is_hovered(mouse):
                     click_sound.play()
                     await main()
+                if button_array[Element.JOIN_BUTTON.value].is_hovered(mouse) and len(code_input.value) == 9:
+                    click_sound.play()
+                    loop = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_BACKSPACE:
+                    code_input.backspace()
+                elif event.unicode in string.ascii_letters + string.digits:
+                    code_input.input(event.unicode.upper())
 
 
 async def AI_settings():

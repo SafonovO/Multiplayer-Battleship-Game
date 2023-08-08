@@ -99,8 +99,8 @@ class Client:
         print("creating game")
 
     def join_game(self):
-        message = {"request": "join_game", "game_code": "foobar"}
-        self.requests.put_nowait(json.dumps(message))
+        # message = {"request": "join_game", "game_code": "foobar"}
+        # self.requests.put_nowait(json.dumps(message))
         self.player_id = "1"
         print("joining game")
 

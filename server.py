@@ -116,7 +116,7 @@ class Server:
                     game = self.code_to_game.get(msg.get("game_code"))
                     if game == None:
                         self.logger.debug("No such game")
-                        await websocket.send(json.dumps({"response": "new_game", "error": "Invalid invite code"}))
+                        await websocket.send(json.dumps({"request": "new_game", "error": "Invalid invite code"}))
                         return
                     if game.players[0].socket != None and game.players[1].socket != None:
                         self.logger.debug("Game is full")
