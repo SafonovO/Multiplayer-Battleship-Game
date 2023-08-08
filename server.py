@@ -72,7 +72,7 @@ class Server:
             self.tasks.append(task)
             self.queues.append(new_worker)
             while True:
-                self.logger.info("Awaiting request from client")
+                self.logger.debug("Ready to handle next request from client")
                 packet = await websocket.recv()
                 self.queues[worker_id].put_nowait(packet)
         except websockets.exceptions.ConnectionClosedOK:
@@ -100,7 +100,6 @@ class Server:
                 # create a new game
                 case "new_game":
                     game = Game()
-                    self.logger.info(f"Created a new game with id {game.id}")
                     game.players[0].socket = websocket
                     self.socket_to_player[websocket] = game.players[0]
                     self.games[game.id] = game

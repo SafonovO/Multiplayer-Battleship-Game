@@ -80,7 +80,7 @@ class GameManager:
             task = asyncio.ensure_future(self.client.start())
             self.__player2 = Opponent(ship_count, game_size)
             if create:
-                self.client.create_game()
+                self.client.create_game(ship_count, game_size)
             else:
                 self.client.join_game()
         self.active_cell = None

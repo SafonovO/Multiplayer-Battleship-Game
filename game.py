@@ -178,7 +178,7 @@ async def human_settings():
 
 async def human_game_pending():
     draw.clear_array()
-    draw.draw_screen("human_create_pending", manager=manager)
+    draw.human_create_pending(manager)
 
     while manager.client.stage == Stages.PENDING_OPPONENT_JOIN:
         mouse = pygame.mouse.get_pos()
@@ -329,9 +329,7 @@ async def play():
 
 async def main_menu():
     draw.clear_array()
-    # The loop for the main menu
-    # render menu text, buttons
-    draw.draw_screen('main')
+    draw.main_menu()
     loop = True
     while loop:
         # Draw the background

@@ -54,10 +54,8 @@ class Drawer():
     
     coord_tuple=None
     
-    def draw_screen(self,screen,ships_left=None, manager=None, input_code=""):
-        if(screen=='main'):
-            self.main_menu()
-        elif(screen=='select_opponent'):
+    def draw_screen(self,screen,ships_left=None, manager=None):
+        if(screen=='select_opponent'):
             self.select_op()
         elif(screen=='human_settings'):
             self.human_settings()

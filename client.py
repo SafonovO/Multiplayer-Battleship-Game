@@ -92,8 +92,8 @@ class Client:
             case other:
                 print("invalid response")
 
-    def create_game(self):
-        message = {"request": "new_game"}
+    def create_game(self, ship_count, board_size):
+        message = {"request": "new_game", "ship_count": ship_count, "board_size": board_size}
         self.requests.put_nowait(json.dumps(message))
         self.player_id = "0"
         print("creating game")
