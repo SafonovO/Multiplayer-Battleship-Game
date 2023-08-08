@@ -27,11 +27,13 @@ class Player:
 
 
 class Game:
-    def __init__(self):
+    def __init__(self, ship_count: int, board_size: int):
+        self.logger = logging.getLogger("battleship.game")
         self.id = str(uuid.uuid4())
         self.players: tuple[Player, Player] = (Player(), Player())
         self.password = Game.generate_pw()
-        self.logger = logging.getLogger("battleship.game")
+        self.ship_count = ship_count
+        self.board_size = board_size
         self.logger.info(f"Game created, id {self.id} password {self.password}")
 
     def generate_pw():
@@ -50,13 +52,13 @@ class Server:
     """
 
     def __init__(self) -> None:
+        self.logger = logging.getLogger("battleship.server")
         self.games: dict[str, Game] = {}
         self.queues: list[asyncio.Queue] = []
         self.tasks = []
         self.clients = set()
         self.socket_to_player: dict[websockets.server.WebSocketServerProtocol, Player] = {}
         self.code_to_game: dict[str, Game] = {}
-        self.logger = logging.getLogger("battleship.server")
 
     def create_message(self, request="ok", response="ok"):
         return {"request": request, "response": response}
@@ -99,7 +101,7 @@ class Server:
             match request:
                 # create a new game
                 case "new_game":
-                    game = Game()
+                    game = Game(msg.get("ship_count"), msg.get("board_size"))
                     game.players[0].socket = websocket
                     self.socket_to_player[websocket] = game.players[0]
                     self.games[game.id] = game
@@ -126,6 +128,7 @@ class Server:
                     if game.players[0].socket == None:
                         available_slot = 0
                     self.socket_to_player[websocket] = game.players[available_slot]
+                    game.players[available_slot].socket = websocket
                     response = {
                         "request": "new_game",
                         "game_id": game.id,
@@ -133,10 +136,13 @@ class Server:
                     }
                     await websocket.send(json.dumps(response))
                     if game.players[0].socket != None and game.players[1].socket != None:
+                        self.logger.debug("Game starting, notifying clients")
                         response = {"request": "ready_for_placement"}
                         response_json = json.dumps(response)
                         await game.players[0].socket.send(response_json)
                         await game.players[1].socket.send(response_json)
+                    else:
+                        self.logger.debug("Still waiting for both players...")
 
                 # join first empty game
                 # might need to return error if no empty games, then create game instead
@@ -176,6 +182,9 @@ class Server:
                     broadcast = self.create_message("endgame")
                     for player in self.games[game_id].players:
                         await player.socket.send(json.dumps(broadcast))
+
+                case "identify":
+                    await websocket.send(json.dumps({"request": "identify", "response": "hello"}))
 
                 case _:
                     self.logger.debug("Invalid request")

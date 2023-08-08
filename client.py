@@ -52,7 +52,7 @@ class Client:
     async def request_sender(self, websocket):
         while True:
             message = await self.requests.get()
-            print(message)
+            print(f"message queued: {message}")
             await websocket.send(message)
             self.requests.task_done()
 
@@ -61,9 +61,9 @@ class Client:
             request:
             response:
         }"""
-        print(response)
+        print(f"response {response}")
         msg = json.loads(response)
-        match msg["request"]:
+        match msg.get("request"):
             case "new_game":
                 if msg.get("error"):
                     self.error = msg.get("error")
@@ -89,8 +89,15 @@ class Client:
             case "ok":
                 pass
                 # print("ok")
+            case "identify":
+                pass
             case other:
                 print("invalid response")
+
+    def identify(self):
+        message = {"request": "identify"}
+        self.requests.put_nowait(json.dumps(message))
+
 
     def create_game(self, ship_count, board_size):
         message = {"request": "new_game", "ship_count": ship_count, "board_size": board_size}
@@ -98,11 +105,11 @@ class Client:
         self.player_id = "0"
         print("creating game")
 
-    def join_game(self):
-        # message = {"request": "join_game", "game_code": "foobar"}
-        # self.requests.put_nowait(json.dumps(message))
+    def join_game(self, code: str):
+        message = {"request": "join_game", "game_code": code}
+        self.requests.put_nowait(json.dumps(message))
         self.player_id = "1"
-        print("joining game")
+        print(f"joining game with code {code}")
 
     def get_guess(self):
         message = self.create_message("getguess")

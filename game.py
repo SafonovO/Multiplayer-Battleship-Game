@@ -1,8 +1,6 @@
 import asyncio
 import string
 import sys
-import time
-from client import Client
 
 import pygame
 from pygame.locals import *
@@ -46,7 +44,7 @@ async def placement(ship_count, game_size):
     # vertical = True by default
     vertical = True
     ships_left = ship_count
-    print(ai_easy)
+    print(f"ai_easy? {ai_easy}")
     draw.draw_screen('placement',ships_left=ships_left)
 
     while ships_left > 0:
@@ -197,10 +195,9 @@ async def human_game_pending():
 async def human_game_join():
     code_input = Input(max_length=9)
 
-    loop = True
-    while loop:
+    while True:
         draw.clear_array()
-        draw.human_join(code_input, manager)
+        draw.human_join(code_input)
         mouse = pygame.mouse.get_pos()
         draw.render_screen(mouse, True)
         pygame.display.flip()
@@ -214,7 +211,7 @@ async def human_game_join():
                     await main()
                 if button_array[Element.JOIN_BUTTON.value].is_hovered(mouse) and len(code_input.value) == 9:
                     click_sound.play()
-                    loop = False
+                    return code_input.value
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_BACKSPACE:
                     code_input.backspace()
@@ -403,7 +400,9 @@ async def main():
         if create:
             await human_game_pending()
         else:
-            await human_game_join()
+            code = await human_game_join()
+            manager.client.join_game(code)
+    await asyncio.sleep(0.1) # everything breaks if you remove this line
     await placement(NUM_SHIPS, BOARD_SIZE)
     await play() # loops forever
     endgamescreen(manager.won)

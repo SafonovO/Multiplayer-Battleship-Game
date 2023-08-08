@@ -79,10 +79,9 @@ class GameManager:
             self.client = Client()
             task = asyncio.ensure_future(self.client.start())
             self.__player2 = Opponent(ship_count, game_size)
+            self.client.identify()
             if create:
                 self.client.create_game(ship_count, game_size)
-            else:
-                self.client.join_game()
         self.active_cell = None
 
     def update_boards(self):
@@ -292,6 +291,7 @@ class GameManager:
                     self.__player2.set_last_hit(x, y)
 
             elif self.client:
+                print("[manager] get guess")
                 self.client.get_guess()
                 while self.client.opp_guess is None:
                     # wait for opponent to guess

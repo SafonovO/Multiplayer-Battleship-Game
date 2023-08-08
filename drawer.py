@@ -118,7 +118,7 @@ class Drawer():
         for button in [quit_button]:
             button_array.append(button)
 
-    def human_join(self, code_input: Input, manager):
+    def human_join(self, code_input: Input):
         quit_button = make_button(1000, 25, "QUIT", 20, image=quit_button_image)
 
         join_title = make_text("Join game", (650, 300), 50, "#b68f40")
@@ -134,6 +134,18 @@ class Drawer():
         for button in [quit_button, join_button]:
             button_array.append(button)
         pass
+
+    def error(self, error_msg: str):
+        error_text = make_text(error_msg, (650, 375), 30, "#ffffff")
+        quit_button = make_button(650, 550, "Quit", 50, reactive=True)
+
+        for tuple in [error_text]:
+            text_array.append(tuple)
+
+        for button in [quit_button]:
+            button_array.append(button)
+        pass
+
             
     def ai(self):
         text = get_font(50).render("Difficulty", True, "#b68f40")
