@@ -1,11 +1,12 @@
 import pygame
 from pygame.locals import *
-from pygame import mixer
-from utilities.button import Button,ReactiveButton, TextButton
-from utilities.fonts import get_font
-from utilities.input import Input
+from ui.fonts import get_font
+from ui.input import Input
+from ui.elements import make_button, make_text
 from enum import Enum
 
+
+routing_stack = []
 
 pygame.init()
 pygame.display.set_caption("Battleship")
@@ -32,21 +33,6 @@ class Element(Enum):
     CONFIRM_BUTTON=2
     CREATE_BUTTON=2
     HARD_BUTTON=2
-    
-def make_button(x, y, text, font_size, reactive=False, image=base_button_image):
-        button = Button(image=image, pos=(x, y))
-        if reactive:
-            button = ReactiveButton(
-                button,
-                hover_surface=hovered_button_image,
-                active_surface=hovered_button_image,
-            )
-        return TextButton(button, text=text, font=get_font(font_size))
-
-def make_text(text: str, pos: tuple[int, int], size: int, colour: str):
-    text_rendered = get_font(size).render(text, True, colour)
-    text_rect = text_rendered.get_rect(center=pos)
-    return (text_rendered, text_rect)
     
 class Drawer():
     def __init__(self):

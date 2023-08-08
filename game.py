@@ -6,11 +6,11 @@ import pygame
 from pygame.locals import *
 from pygame import mixer
 from board.board import Board
-from utilities.button import Button, ReactiveButton, TextButton
-from utilities.fonts import get_font
-from utilities.input import Input
+from ui.button import Button, ReactiveButton, TextButton
+from ui.fonts import get_font
+from ui.input import Input
 from game_manager import BG, SCREEN, GameManager
-from drawer import Drawer, button_array,Element
+from ui.router import Drawer, button_array,Element
 from client import Stages
 
 pygame.init()
@@ -21,8 +21,8 @@ quit_button_image = pygame.image.load("assets/quit.png")
 confirm_button_image = pygame.image.load("assets/ConfirmButton.png")
 
 mixer.init()
-mixer.music.load('Sounds/bg.ogg')
-click_sound = pygame.mixer.Sound('Sounds/ui-click.mp3')
+mixer.music.load('assets/sounds/bg.ogg')
+click_sound = pygame.mixer.Sound('assets/sounds/ui-click.mp3')
 
 PLAYING_SURFACE = pygame.Rect(100, 50, 1100, 700)
 BOARD_SIZE = 2

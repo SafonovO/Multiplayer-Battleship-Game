@@ -13,7 +13,7 @@ from pygame import mixer
 from board.board import Board
 from ships.normal_ship import NormalShip
 from ships.ship import Ship
-from utilities.button import Button, ReactiveButton, TextButton
+from ui.button import Button, ReactiveButton, TextButton
 from board.cell import Cell
 
 
@@ -26,10 +26,10 @@ class Turn(Flag):
 SCREEN = pygame.display.set_mode((1300, 800))
 BG = pygame.image.load("assets/Background.png")
 mixer.init()
-miss_sound = pygame.mixer.Sound('Sounds/miss.ogg')
-hit_sound = pygame.mixer.Sound('Sounds/hit.ogg')
-click_sound = pygame.mixer.Sound('Sounds/ui-click.mp3')
-fire_sound = pygame.mixer.Sound('Sounds/fire.ogg') 
+miss_sound = pygame.mixer.Sound('assets/sounds/miss.ogg')
+hit_sound = pygame.mixer.Sound('assets/sounds/hit.ogg')
+click_sound = pygame.mixer.Sound('assets/sounds/ui-click.mp3')
+fire_sound = pygame.mixer.Sound('assets/sounds/fire.ogg') 
 
 class GameManager:
     """

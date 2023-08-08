@@ -3,7 +3,7 @@ import random
 
 from board.board_factory import BoardFactory
 from board.cell import Cell
-from utilities.fonts import get_font
+from ui.fonts import get_font
 
 
 class Board:
