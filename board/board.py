@@ -145,7 +145,7 @@ class Board:
                             if cell.ship == None:
                                 cell.ship=current_ship
                                 occupied=True
-                                print("Place a size "+ str(current_ship.get_size()) + " ship on coords " + str(c[0]) + "," + str(c[1]))
+                                # print("Place a size "+ str(current_ship.get_size()) + " ship on coords " + str(c[0]) + "," + str(c[1]))
 
     def draw_board(self, screen):
         """

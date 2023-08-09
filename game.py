@@ -24,8 +24,8 @@ mixer.music.load('Sounds/bg.ogg')
 click_sound = pygame.mixer.Sound('Sounds/ui-click.mp3')
 
 PLAYING_SURFACE = pygame.Rect(100, 50, 1100, 700)
-BOARD_SIZE = 2
-NUM_SHIPS = 2
+BOARD_SIZE = 5
+NUM_SHIPS = 5
 
 def make_button(x, y, text, font_size, reactive=False, image=base_button_image):
     button = Button(image=image, pos=(x, y))
@@ -43,7 +43,7 @@ async def placement(ship_count, game_size):
     # vertical = True by default
     vertical = True
     ships_left = ship_count
-    print(ai_easy)
+    # print(ai_level)
     draw.draw_screen('placement',ships_left=ships_left)
 
     while ships_left > 0:
@@ -176,7 +176,7 @@ async def human_settings():
 
 async def AI_settings():
     draw.clear_array()
-    global ai_easy
+    global ai_level
     draw.draw_screen('AI_settings')
     
     loop = True
@@ -194,11 +194,12 @@ async def AI_settings():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if button_array[Element.EASY_BUTTON.value].is_hovered(mouse):
                     click_sound.play()
-                    ai_easy = True
+                    # ai_level = 0 indicates easy ai. simalar for 1, 2
+                    ai_level = 0
                     loop = False
                 elif button_array[Element.HARD_BUTTON.value].is_hovered(mouse):
                     click_sound.play()
-                    ai_easy = False
+                    ai_level = 2
                     loop = False
                 elif button_array[Element.QUIT_BUTTON.value].is_hovered(mouse):
                     click_sound.play()
@@ -220,6 +221,11 @@ async def play():
     draw.draw_screen('play')
 
     change_turn = False if ai_game or create else True
+
+    # if hardAI game, allow it to peek into your array
+    if ai_game and ai_level == 2:
+        manager.hard_ai_setup()
+
     # BUG: game freezes after first move until next turn for multiplayer
     # BUG: type of cell does not match opponent's board after guess for multiplayer
     # BUG: game does not notify winner after winning. need to end game.
@@ -332,10 +338,10 @@ def endgamescreen(won):
 
 
 async def main():
-    global ai_game, ai_easy, create, manager, draw
+    global ai_game, ai_level, create, manager, draw
     draw = Drawer()
     ai_game = True
-    ai_easy = None
+    ai_level = None
     create = False
     manager = GameManager()
 
@@ -350,7 +356,7 @@ async def main():
         ship_count=NUM_SHIPS,
         game_size=BOARD_SIZE,
         create=create,
-        easy_ai = ai_easy
+        ai_level = ai_level
     )
     await asyncio.sleep(0.1)
     await placement(NUM_SHIPS, BOARD_SIZE)

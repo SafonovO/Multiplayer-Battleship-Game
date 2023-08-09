@@ -63,17 +63,23 @@ class GameManager:
         else:
             return None
 
-    async def create_game(self, ai_game, ship_count, game_size, create, easy_ai):
+    async def create_game(self, ai_game, ship_count, game_size, create, ai_level):
         print("is this an ai game?", ai_game)
         self.game_over = False
         self.turn = Turn.PLAYER_ONE
         self.run = True
         self.__player1 = Player(ship_count, game_size)
         if ai_game:
-            if easy_ai:
+            if ai_level == 0:
                 self.__player2 = EasyAI(ship_count, game_size)
+            elif ai_level == 1:
+                self.__player2 = MedAI(ship_count, game_size)
+            elif ai_level == 2:
+                self.__player2 = HardAI(ship_count, game_size, self.__player1)
+
             else:
-                self.__player2 = HardAI(ship_count, game_size)
+                print("Invalid AI Difficulty")
+
             self.client = None
         else:
             self.client = Client()
@@ -84,6 +90,22 @@ class GameManager:
             else:
                 self.client.join_game()
         self.active_cell = None
+
+    def hard_ai_setup(self):
+        '''
+        HardAI wil be able to peek into its opponent's array.
+
+        However, it is instantiated before the opponentn places
+        their ships. So after the oppoennt has placed their ships,
+        invoke this method to tell the hardAI where they are
+
+        *************PRECONDITION - IMPORTANT!!!!!!!
+        This function will assume __player2 is a hardAI
+        if this is not the case, I make no promises to what
+        this function will do
+        '''
+        if isinstance(self.__player2, HardAI):
+            self.__player2.get_opp_ships()
 
     def update_boards(self):
         # draw my board
