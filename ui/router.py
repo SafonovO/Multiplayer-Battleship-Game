@@ -43,6 +43,7 @@ class Screen:
         """Define layout in the constructor. Subclasses can define more layout after super()ing"""
         self.text_array = []
         self.button_array: list[Button] = []
+        self.draw_background = False
 
     #  "Router" (with quotes) is a forward reference to the class below to avoid cyclic reference
     def handle_event(self, event: pygame.Event, mouse: tuple[int, int], router: "Router"):
@@ -75,6 +76,8 @@ class Router:
             mouse = pygame.mouse.get_pos()
             screen = self.routing_stack[-1]
             SCREEN.blit(BG, (0, 0))
+            if screen.draw_background:
+                pygame.draw.rect(SCREEN, Colours.NAVY_BLUE.value, PLAYING_SURFACE)
             for element in screen.text_array:
                 SCREEN.blit(element[0], element[1])
             for button in screen.button_array:

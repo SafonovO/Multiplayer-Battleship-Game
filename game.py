@@ -9,7 +9,7 @@ from board.board import Board
 from ui.button import Button, ReactiveButton, TextButton
 from ui.fonts import get_font
 from ui.input import Input
-from ui.screens.all import MainMenu, SelectOpponent
+from ui.screens.all import AIConfiguration, MainMenu, SelectOpponent
 from game_manager import BG, SCREEN, GameManager
 from ui.router import Drawer, button_array, Element, Router, Screen
 from client import Stages
@@ -362,7 +362,13 @@ def main():
     create = False
     manager = GameManager()
 
-    router = Router({"main_menu": MainMenu(), "select_opponent": SelectOpponent()})
+    router = Router(
+        {
+            "main_menu": MainMenu(),
+            "select_opponent": SelectOpponent(),
+            "ai_configuration": AIConfiguration(),
+        }
+    )
 
     router.navigate_to("main_menu")
 
