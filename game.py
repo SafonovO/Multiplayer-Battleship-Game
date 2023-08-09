@@ -336,12 +336,13 @@ def main():
     manager = GameManager()
 
     router = Router(
+        manager,
         {
             "main_menu": MainMenu(),
             "select_opponent": SelectOpponent(),
             "ai_configuration": AIConfiguration(),
             "online_game_options": OnlineGameOptions(),
-        }
+        },
     )
 
     router.navigate_to("main_menu")

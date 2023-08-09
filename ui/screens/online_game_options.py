@@ -1,6 +1,5 @@
 import pygame
-from ui.colours import Colours
-from ui.elements import make_button, make_text, confirm_button_image
+from ui.elements import make_button
 from ui.router import Element, Screen
 from ui.sounds import click_sound
 
@@ -16,7 +15,7 @@ class OnlineGameOptions(Screen):
         for button in [quit_button, join_button, create_button]:
             self.button_array.append(button)
 
-    def handle_event(self, event, mouse, router):
+    def handle_event(self, event, mouse, router, manager):
         if event.type == pygame.MOUSEBUTTONDOWN:
             if self.button_array[Element.CREATE_BUTTON.value].is_hovered(mouse):
                 click_sound.play()

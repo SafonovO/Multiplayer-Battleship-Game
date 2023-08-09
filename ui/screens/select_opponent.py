@@ -15,7 +15,7 @@ class SelectOpponent(Screen):
         for button in [quit_button, play_button_human, play_button_ai]:
             self.button_array.append(button)
 
-    def handle_event(self, event, mouse, router):
+    def handle_event(self, event, mouse, router, manager):
         if event.type == pygame.MOUSEBUTTONDOWN:
             if self.button_array[Element.AI_PLAY_BUTTON.value].is_hovered(mouse):
                 click_sound.play()

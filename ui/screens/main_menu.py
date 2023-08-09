@@ -19,7 +19,7 @@ class MainMenu(Screen):
         for tuple in [text]:
             self.text_array.append(tuple)
 
-    def handle_event(self, event, mouse, router):
+    def handle_event(self, event, mouse, router, _manager):
         if event.type == pygame.MOUSEBUTTONDOWN:
             if self.button_array[Element.PLAY_BUTTON.value].is_hovered(mouse):
                 click_sound.play()

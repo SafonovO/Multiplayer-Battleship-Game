@@ -1,6 +1,6 @@
 import asyncio
 import sys
-from enum import Flag
+from enum import Enum, Flag
 from client import Client
 from players.opponent import Opponent
 from players.player import Player
@@ -22,6 +22,9 @@ class Turn(Flag):
     PLAYER_ONE = 0
     PLAYER_TWO = 1
 
+class AIDifficulty(Enum):
+    EASY = 0
+    HARD = 2
 
 SCREEN = pygame.display.set_mode((1300, 800))
 BG = pygame.image.load("assets/Background.png")
@@ -82,6 +85,22 @@ class GameManager:
             self.client.identify()
             if create:
                 self.client.create_game(ship_count, game_size)
+        self.active_cell = None
+
+    def create_ai_game(self, ship_count: int, board_size: int, ai_difficulty: AIDifficulty):
+        print("creating AI game")
+        self.game_over = False
+        self.turn = Turn.PLAYER_ONE
+        self.run = True
+        self.__player1 = Player(ship_count, board_size)
+        match ai_difficulty:
+            case AIDifficulty.EASY:
+                self.__player2 = EasyAI(ship_count, board_size)
+            case AIDifficulty.HARD:
+                self.__player2 = HardAI(ship_count, board_size)
+            case _:
+                print("Unknown AI difficulty")
+        self.client = None
         self.active_cell = None
 
     def update_boards(self):

@@ -2,6 +2,7 @@ import asyncio
 import pygame
 from enum import Enum
 from pygame.locals import *
+from game_manager import GameManager
 from ui.button import Button
 from ui.colours import Colours
 from ui.elements import make_button, make_text
@@ -46,14 +47,15 @@ class Screen:
         self.draw_background = False
 
     #  "Router" (with quotes) is a forward reference to the class below to avoid cyclic reference
-    def handle_event(self, event: pygame.Event, mouse: tuple[int, int], router: "Router"):
+    def handle_event(self, event: pygame.Event, mouse: tuple[int, int], router: "Router", manager: GameManager):
         """Contains the interactive logic for the screen"""
         pass
 
 
 class Router:
-    def __init__(self, screens: dict[str, Screen] = {}) -> None:
+    def __init__(self, manager: GameManager, screens: dict[str, Screen] = {}) -> None:
         self.routing_stack: list[Screen] = []
+        self.manager = manager
         self.screens = screens
 
     def navigate_to(self, screen_name: str):
@@ -86,7 +88,7 @@ class Router:
                 if event.type == pygame.QUIT:
                     quit_game()
                     return
-                screen.handle_event(event, mouse, self)
+                screen.handle_event(event, mouse, self, self.manager)
             pygame.display.update()
 
 
