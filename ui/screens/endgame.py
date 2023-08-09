@@ -1,7 +1,8 @@
 import pygame
 from ui.colours import Colours
-from ui.elements import make_button, make_text
+from ui.elements import make_button
 from ui.router import Screen
+from ui.text import Text
 from utilities import quit_game
 
 
@@ -10,7 +11,7 @@ class Endgame(Screen):
         super().__init__(manager)
         self.draw_background = True
 
-        endgame_title = make_text(
+        endgame_title = Text(
             "Congratulations, you won!" if manager.won else "You lost, try again..",
             (650, 150),
             100,

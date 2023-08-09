@@ -1,9 +1,10 @@
 import pygame
 from game_manager import AIDifficulty
 from ui.colours import Colours
-from ui.elements import make_button, make_text, confirm_button_image
+from ui.elements import make_button, confirm_button_image
 from ui.router import Element, Screen
 from ui.sounds import click_sound
+from ui.text import Text
 from game_config import SHIP_COUNT, BOARD_SIZE
 
 
@@ -11,7 +12,7 @@ class AIConfiguration(Screen):
     def __init__(self, manager) -> None:
         super().__init__(manager)
         self.draw_background = True
-        text = make_text("Difficulty", (650, 100), 50, Colours.GOLD.value)
+        text = Text("Difficulty", (650, 100), 50, Colours.GOLD.value)
         quit_button = make_button(650, 550, "Cancel", 75, reactive=True)
         easy_button = make_button(300, 175, "Easy", 20, image=confirm_button_image)
         med_button = make_button(650, 175, "Medium", 20, image=confirm_button_image)

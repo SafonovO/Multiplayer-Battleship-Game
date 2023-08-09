@@ -5,9 +5,9 @@ from pygame.locals import *
 from game_manager import GameManager
 from ui.button import Button
 from ui.colours import Colours
-from ui.elements import make_button, make_text
+from ui.elements import make_button
 from ui.fonts import get_font
-from ui.input import Input
+from ui.text import Text
 from utilities import quit_game
 
 
@@ -43,7 +43,7 @@ class Element(Enum):
 class Screen:
     def __init__(self, manager: GameManager) -> None:
         """Define layout in the constructor. Subclasses can define more layout after super()ing"""
-        self.text_array = []
+        self.text_array: list[Text] = []
         self.button_array: list[Button] = []
         self.draw_background = False
 
@@ -85,13 +85,11 @@ class Router:
             SCREEN.blit(BG, (0, 0))
             if screen.draw_background:
                 pygame.draw.rect(SCREEN, Colours.NAVY_BLUE.value, PLAYING_SURFACE)
-            for element in screen.text_array:
-                if element == None:
-                    continue
-                SCREEN.blit(element[0], element[1])
+            screen.render(self.manager)
+            for text in screen.text_array:
+                text.render(SCREEN)
             for button in screen.button_array:
                 button.render(SCREEN, mouse)
-            screen.render(self.manager)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     quit_game()
@@ -104,44 +102,14 @@ class Drawer:
     def __init__(self):
         pass
 
-    coord_tuple = None
-
-    def draw_screen(self, screen):
-        if screen == "play":
-            self.play()
-
     def error(self, error_msg: str):
-        error_text = make_text(error_msg, (650, 375), 30, "#ffffff")
+        error_text = Text(error_msg, (650, 375), 30, "#ffffff")
         quit_button = make_button(650, 550, "Quit", 50, reactive=True)
 
         for tuple in [error_text]:
             text_array.append(tuple)
 
         for button in [quit_button]:
-            button_array.append(button)
-
-    def play(self):
-        # setup labels for the boards
-        opponent_board_label = get_font(30).render("OPPONENT'S BOARD", True, "White")
-        opponent_board_label_rect = opponent_board_label.get_rect(center=(425, 100))
-        opponent_tuple = (opponent_board_label, opponent_board_label_rect)
-
-        my_board_label = get_font(30).render("MY BOARD", True, "White")
-        my_board_label_rect = my_board_label.get_rect(center=(1000, 325))
-        my_board_tuple = (my_board_label, my_board_label_rect)
-
-        fire_button = make_button(1000, 250, "FIRE", 20, image=confirm_button_image)
-        quit_button = make_button(1000, 25, "QUIT", 20, image=quit_button_image)
-
-        # Create text
-        select_text = get_font(15).render("YOU HAVE SELECTED:", True, "White")
-        select_text_rect = select_text.get_rect(center=(1000, 150))
-        select_tuple = (select_text, select_text_rect)
-
-        for tuple in [opponent_tuple, my_board_tuple, select_tuple]:
-            text_array.append(tuple)
-
-        for button in [quit_button, fire_button]:
             button_array.append(button)
 
     def render_screen(self, mouse, playing_surface=False):

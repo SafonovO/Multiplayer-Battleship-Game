@@ -1,8 +1,9 @@
 import pygame
 from ui.colours import Colours
-from ui.elements import make_button, make_text, confirm_button_image, quit_button_image
+from ui.elements import make_button, confirm_button_image, quit_button_image
 from ui.router import Element, Screen
 from ui.sounds import click_sound
+from ui.text import Text
 from game_config import SHIP_COUNT
 
 
@@ -13,11 +14,11 @@ class Placement(Screen):
         self.ships_left = SHIP_COUNT
         self.ship_vertical = True
 
-        placement_board_label = make_text("Board Setup", (425, 100), 30, Colours.WHITE.value)
+        placement_board_label = Text("Board Setup", (425, 100), 30, Colours.WHITE.value)
         confirm_button = make_button(1000, 225, "Place", 20, image=confirm_button_image)
         quit_button = make_button(1000, 25, "QUIT", 20, image=quit_button_image)
         rotate_button = make_button(1000, 150, "Rotate", 20, image=confirm_button_image)
-        ships_left_label = make_text(
+        ships_left_label = Text(
             f"Ships Left: {str(self.ships_left)}", (1000, 1000), 30, Colours.WHITE.value
         )
 
@@ -58,12 +59,10 @@ class Placement(Screen):
             """
             manager.preview_ship(self.ships_left, self.ship_vertical)
 
-        ships_left_label = make_text(
+        ships_left_label = Text(
             f"Ships Left: {str(self.ships_left)}", (1000, 1000), 30, Colours.WHITE.value
         )
         self.text_array[1] = ships_left_label
-
-        pygame.display.flip()
 
     def handle_event(self, event, mouse, router, manager):
         if event.type == pygame.MOUSEBUTTONDOWN:

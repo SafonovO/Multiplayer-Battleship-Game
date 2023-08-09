@@ -1,9 +1,10 @@
 import pygame
 from ui.colours import Colours
-from ui.elements import make_button, make_text, quit_button_image
+from ui.elements import make_button, quit_button_image
 from ui.fonts import get_font
 from ui.router import Element, Screen
 from ui.sounds import click_sound
+from ui.text import Text
 
 
 class OnlineCreatePending(Screen):
@@ -12,8 +13,8 @@ class OnlineCreatePending(Screen):
         self.draw_background = True
         quit_button = make_button(1000, 25, "QUIT", 20, image=quit_button_image)
 
-        waiting_title = make_text("Waiting for opponent", (650, 300), 50, Colours.GOLD.value)
-        waiting_text = make_text(
+        waiting_title = Text("Waiting for opponent", (650, 300), 50, Colours.GOLD.value)
+        waiting_text = Text(
             "You can invite a friend to this game with the code below",
             (650, 375),
             30,

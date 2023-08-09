@@ -1,15 +1,16 @@
 import pygame
 from utilities import quit_game
 from ui.colours import Colours
-from ui.elements import make_button, make_text
+from ui.elements import make_button
 from ui.router import Element, Screen
 from ui.sounds import click_sound
+from ui.text import Text
 
 
 class MainMenu(Screen):
     def __init__(self, manager) -> None:
         super().__init__(manager)
-        text = make_text("BATTLESHIP", (650, 150), 100, Colours.GOLD.value)
+        text = Text("BATTLESHIP", (650, 150), 100, Colours.GOLD.value)
         play_button = make_button(650, 350, "PLAY", 75, reactive=True)
         quit_button = make_button(650, 550, "QUIT", 75, reactive=True)
 

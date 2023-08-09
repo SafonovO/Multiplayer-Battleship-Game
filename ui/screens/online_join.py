@@ -1,10 +1,11 @@
 import string
 import pygame
 from ui.colours import Colours
-from ui.elements import make_button, make_text, quit_button_image
+from ui.elements import make_button, quit_button_image
 from ui.input import Input
 from ui.router import Element, Screen
 from ui.sounds import click_sound
+from ui.text import Text
 
 
 class OnlineJoin(Screen):
@@ -15,12 +16,12 @@ class OnlineJoin(Screen):
 
         quit_button = make_button(1000, 25, "QUIT", 20, image=quit_button_image)
 
-        join_title = make_text("Join game", (650, 300), 50, Colours.GOLD.value)
-        join_desc = make_text(
+        join_title = Text("Join game", (650, 300), 50, Colours.GOLD.value)
+        join_desc = Text(
             "Enter an invite code to join a game", (650, 375), 30, Colours.WHITE.value
         )
 
-        code_chars = make_text("_________", (650, 425), 30, "#b68f40")
+        code_chars = Text("_________", (650, 425), 30, "#b68f40")
 
         join_button = make_button(650, 550, "Join", 50, reactive=True)
 
@@ -31,7 +32,7 @@ class OnlineJoin(Screen):
             self.button_array.append(button)
 
     def render(self, _manager):
-        code_chars = make_text(
+        code_chars = Text(
             " ".join(self.code_input.value.ljust(9, "_")), (650, 425), 30, Colours.GOLD.value
         )
         self.text_array[2] = code_chars
