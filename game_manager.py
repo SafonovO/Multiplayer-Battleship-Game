@@ -57,7 +57,7 @@ class GameManager:
             cls.instance = super(GameManager, cls).__new__(cls)
         return cls.instance
 
-    async def start_client(self, stop: asyncio.Future):
+    async def start_client(self, stop: asyncio.Event):
         print("manager attempting to start client")
         self.client = Client()
         await self.client.start(stop)

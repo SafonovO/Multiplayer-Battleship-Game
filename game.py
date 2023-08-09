@@ -383,10 +383,15 @@ async def old_main():
     # endgamescreen(manager.won)
 
 
-async def game_loop(stop: asyncio.Future, router: Router):
-    while not stop.done():
+async def game_loop(stop: asyncio.Event, router: Router):
+    while not stop.is_set():
         router.render()
         await asyncio.sleep(1 / MAX_FRAME_RATE)
+
+
+def keyboard_interrupt(stop: asyncio.Event):
+    stop.set()
+    quit_game()
 
 
 async def main():
@@ -404,8 +409,8 @@ async def main():
     router.navigate_to("main_menu")
 
     loop = asyncio.get_event_loop()
-    stop = loop.create_future()
-    loop.add_signal_handler(signal.SIGINT, stop.set_result, None)
+    stop = asyncio.Event()
+    loop.add_signal_handler(signal.SIGINT, keyboard_interrupt, stop)
 
     try:
         await asyncio.gather(manager.start_client(stop), game_loop(stop, router))
@@ -415,7 +420,6 @@ async def main():
         pass
     finally:
         loop.remove_signal_handler(signal.SIGINT)
-        pygame.quit()
 
 
 def quit_game():
