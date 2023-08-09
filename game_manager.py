@@ -17,22 +17,25 @@ from ui.button import Button, ReactiveButton, TextButton
 from board.cell import Cell
 
 
-
 class Turn(Flag):
     PLAYER_ONE = 0
     PLAYER_TWO = 1
+
 
 class AIDifficulty(Enum):
     EASY = 0
     HARD = 2
 
+
 SCREEN = pygame.display.set_mode((1300, 800))
 BG = pygame.image.load("assets/Background.png")
 mixer.init()
-miss_sound = pygame.mixer.Sound('assets/sounds/miss.ogg')
-hit_sound = pygame.mixer.Sound('assets/sounds/hit.ogg')
-click_sound = pygame.mixer.Sound('assets/sounds/ui-click.mp3')
-fire_sound = pygame.mixer.Sound('assets/sounds/fire.ogg') 
+miss_sound = pygame.mixer.Sound("assets/sounds/miss.ogg")
+hit_sound = pygame.mixer.Sound("assets/sounds/hit.ogg")
+click_sound = pygame.mixer.Sound("assets/sounds/ui-click.mp3")
+fire_sound = pygame.mixer.Sound("assets/sounds/fire.ogg")
+
+async_tasks = set()
 
 class GameManager:
     """
@@ -54,9 +57,10 @@ class GameManager:
             cls.instance = super(GameManager, cls).__new__(cls)
         return cls.instance
 
-    def start_client(self):
+    async def start_client(self, stop: asyncio.Future):
+        print("manager attempting to start client")
         self.client = Client()
-        self.client.start()
+        await self.client.start(stop)
 
     def get_player(self, player_ID):
         if player_ID == 1:
@@ -66,25 +70,18 @@ class GameManager:
         else:
             return None
 
-    async def create_game(self, ai_game, ship_count, game_size, create, easy_ai):
-        print("is this an ai game?", ai_game)
+    def create_online_game(self, ship_count: int, board_size: int, creating_game: bool):
+        if self.client == None:
+            raise Exception("Multiplayer client must be started first!")
+        print(f"{'Creating' if creating_game else 'Joining'} online game")
         self.game_over = False
         self.turn = Turn.PLAYER_ONE
         self.run = True
-        self.__player1 = Player(ship_count, game_size)
-        if ai_game:
-            if easy_ai:
-                self.__player2 = EasyAI(ship_count, game_size)
-            else:
-                self.__player2 = HardAI(ship_count, game_size)
-            self.client = None
-        else:
-            self.client = Client()
-            task = asyncio.ensure_future(self.client.start())
-            self.__player2 = Opponent(ship_count, game_size)
-            self.client.identify()
-            if create:
-                self.client.create_game(ship_count, game_size)
+        self.__player1 = Player(ship_count, board_size)
+        self.__player2 = Opponent(ship_count, board_size)
+        self.client.identify()
+        if creating_game:
+            self.client.create_game(ship_count, board_size)
         self.active_cell = None
 
     def create_ai_game(self, ship_count: int, board_size: int, ai_difficulty: AIDifficulty):
@@ -331,7 +328,7 @@ class GameManager:
         """
         # checks if it's the right persons turn then proceeds with action
         # play sounds
-        
+
         if self.active_cell and self.turn == Turn.PLAYER_ONE:
             click_sound.play()
             fire_sound.play()
@@ -363,11 +360,11 @@ class GameManager:
             await asyncio.sleep(0.3)
             await self.endgame()
             hit_sound.play()
-            
+
             return True
         else:
             await asyncio.sleep(0.3)
-            miss_sound.play(0,2000)
+            miss_sound.play(0, 2000)
             return False
 
     """

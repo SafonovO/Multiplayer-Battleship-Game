@@ -1,4 +1,5 @@
 import asyncio
+import signal
 import string
 import sys
 
@@ -9,10 +10,18 @@ from board.board import Board
 from ui.button import Button, ReactiveButton, TextButton
 from ui.fonts import get_font
 from ui.input import Input
-from ui.screens.all import AIConfiguration, MainMenu, OnlineGameOptions, SelectOpponent
+from ui.screens.all import (
+    AIConfiguration,
+    MainMenu,
+    OnlineCreatePending,
+    OnlineGameOptions,
+    SelectOpponent,
+)
 from game_manager import BG, SCREEN, GameManager
 from ui.router import Drawer, button_array, Element, Router, Screen
 from client import Stages
+
+MAX_FRAME_RATE = 80
 
 pygame.init()
 pygame.display.set_caption("Battleship")
@@ -327,14 +336,14 @@ def endgamescreen(won):
         pygame.display.update()
 
 
-def main():
-    global ai_game, ai_easy, create, manager, draw
+async def old_main():
+    global ai_easy, create, manager, draw
     # draw = Drawer()
-    ai_game = True
     ai_easy = None
     create = False
     manager = GameManager()
-
+    await manager.start_client()
+    print("finished awaiting client starts")
     router = Router(
         manager,
         {
@@ -342,6 +351,7 @@ def main():
             "select_opponent": SelectOpponent(),
             "ai_configuration": AIConfiguration(),
             "online_game_options": OnlineGameOptions(),
+            "online_create_pending": OnlineCreatePending(),
         },
     )
 
@@ -373,6 +383,41 @@ def main():
     # endgamescreen(manager.won)
 
 
+async def game_loop(stop: asyncio.Future, router: Router):
+    while not stop.done():
+        router.render()
+        await asyncio.sleep(1 / MAX_FRAME_RATE)
+
+
+async def main():
+    manager = GameManager()
+    router = Router(
+        manager,
+        {
+            "main_menu": MainMenu(),
+            "select_opponent": SelectOpponent(),
+            "ai_configuration": AIConfiguration(),
+            "online_game_options": OnlineGameOptions(),
+            "online_create_pending": OnlineCreatePending(),
+        },
+    )
+    router.navigate_to("main_menu")
+
+    loop = asyncio.get_event_loop()
+    stop = loop.create_future()
+    loop.add_signal_handler(signal.SIGINT, stop.set_result, None)
+
+    try:
+        await asyncio.gather(manager.start_client(stop), game_loop(stop, router))
+    except asyncio.CancelledError:
+        pass
+    except SystemExit:
+        pass
+    finally:
+        loop.remove_signal_handler(signal.SIGINT)
+        pygame.quit()
+
+
 def quit_game():
     pygame.quit()
     sys.exit()
@@ -380,4 +425,4 @@ def quit_game():
 
 mixer.music.play(-1)
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())

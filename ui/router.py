@@ -46,6 +46,10 @@ class Screen:
         self.button_array: list[Button] = []
         self.draw_background = False
 
+    def render(self, manager: GameManager) -> None:
+        """Define layout that depends on dynamic data from game manager"""
+        pass
+
     #  "Router" (with quotes) is a forward reference to the class below to avoid cyclic reference
     def handle_event(self, event: pygame.Event, mouse: tuple[int, int], router: "Router", manager: GameManager):
         """Contains the interactive logic for the screen"""
@@ -84,6 +88,7 @@ class Router:
                 SCREEN.blit(element[0], element[1])
             for button in screen.button_array:
                 button.render(SCREEN, mouse)
+            screen.render(self.manager)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     quit_game()

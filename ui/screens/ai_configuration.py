@@ -4,6 +4,7 @@ from ui.colours import Colours
 from ui.elements import make_button, make_text, confirm_button_image
 from ui.router import Element, Screen
 from ui.sounds import click_sound
+from game_config import SHIP_COUNT, BOARD_SIZE
 
 
 class AIConfiguration(Screen):
@@ -25,11 +26,11 @@ class AIConfiguration(Screen):
         if event.type == pygame.MOUSEBUTTONDOWN:
             if self.button_array[Element.EASY_BUTTON.value].is_hovered(mouse):
                 click_sound.play()
-                manager.create_ai_game(2, 2, AIDifficulty.EASY)
+                manager.create_ai_game(SHIP_COUNT, BOARD_SIZE, AIDifficulty.EASY)
                 return router.navigate_to("ai_play")
             if self.button_array[Element.HARD_BUTTON.value].is_hovered(mouse):
                 click_sound.play()
-                manager.create_ai_game(2, 2, AIDifficulty.HARD)
+                manager.create_ai_game(SHIP_COUNT, BOARD_SIZE, AIDifficulty.HARD)
                 return router.navigate_to("ai_play")
             if self.button_array[Element.QUIT_BUTTON.value].is_hovered(mouse):
                 click_sound.play()

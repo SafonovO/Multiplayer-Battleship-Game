@@ -2,6 +2,7 @@ import pygame
 from ui.elements import make_button
 from ui.router import Element, Screen
 from ui.sounds import click_sound
+from game_config import SHIP_COUNT, BOARD_SIZE
 
 
 class OnlineGameOptions(Screen):
@@ -19,9 +20,11 @@ class OnlineGameOptions(Screen):
         if event.type == pygame.MOUSEBUTTONDOWN:
             if self.button_array[Element.CREATE_BUTTON.value].is_hovered(mouse):
                 click_sound.play()
+                manager.create_online_game(SHIP_COUNT, BOARD_SIZE, True)
                 return router.navigate_to("online_create_pending")
             elif self.button_array[Element.JOIN_BUTTON.value].is_hovered(mouse):
                 click_sound.play()
+                manager.create_online_game(SHIP_COUNT, BOARD_SIZE, False)
                 return router.navigate_to("online_join")
             elif self.button_array[Element.QUIT_BUTTON.value].is_hovered(mouse):
                 click_sound.play()

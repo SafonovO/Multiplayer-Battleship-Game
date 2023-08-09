@@ -36,21 +36,23 @@ class Client:
             "details": details,
         }
 
-    async def start(self):
+    async def start(self, stop: asyncio.Future):
         print("connecting to server")
         async with websockets.client.connect(URI) as websocket:
             print("Connected to server")
             await asyncio.gather(
                 self.response_handler(websocket),
-                self.request_sender(websocket),
+                self.request_sender(websocket, stop),
             )
 
     async def response_handler(self, websocket):
+        print("Response handler ready")
         async for message in websocket:
             self.handle_response(message)
 
-    async def request_sender(self, websocket):
-        while True:
+    async def request_sender(self, websocket, stop: asyncio.Future):
+        print("Request sender ready")
+        while not stop.done():
             message = await self.requests.get()
             print(f"message queued: {message}")
             await websocket.send(message)
@@ -97,7 +99,6 @@ class Client:
     def identify(self):
         message = {"request": "identify"}
         self.requests.put_nowait(json.dumps(message))
-
 
     def create_game(self, ship_count, board_size):
         message = {"request": "new_game", "ship_count": ship_count, "board_size": board_size}
