@@ -1,9 +1,9 @@
 import math
+import pygame
 import random
 import string
 
 from board.board_factory import BoardFactory
-from board.cell import Cell
 from ui.fonts import get_font
 
 
@@ -106,9 +106,9 @@ class Board:
                     - it exceeds the boundaries of the board
                     - the cell already contains a ship
                 """
-                
-                conflict=False
-                cells = []
+
+                conflict = False
+                cells: list[tuple[int, int]] = []
                 for j in range(current_ship.get_size()):
                     cells.append((x, y + j))
 
@@ -116,13 +116,13 @@ class Board:
                     if c[0] < self.__size and c[1] < self.__size:
                         cell = self.__cells[c[0]][c[1]]
                         if cell.ship != None:
-                            conflict=True
+                            conflict = True
                     else:
-                        conflict=True
-                
-                if(conflict):
-                # If there are conflicts, explore in the other direction
-                    conflict=False
+                        conflict = True
+
+                if conflict:
+                    # If there are conflicts, explore in the other direction
+                    conflict = False
                     cells = []
                     for j in range(current_ship.get_size()):
                         cells.append((x + j, y))
@@ -131,21 +131,21 @@ class Board:
                         if c[0] < self.__size and c[1] < self.__size:
                             cell = self.__cells[c[0]][c[1]]
                             if cell.ship != None:
-                                conflict=True
+                                conflict = True
                         else:
                             conflict = True
-               
-                #place ships if possible
-                if(not conflict):
+
+                # place ships if possible
+                if not conflict:
                     for c in cells:
                         if c[0] < self.__size and c[1] < self.__size:
                             cell = self.__cells[c[0]][c[1]]
                             if cell.ship == None:
-                                cell.ship=current_ship
-                                occupied=True
+                                cell.ship = current_ship
+                                occupied = True
                                 # print("Place a size "+ str(current_ship.get_size()) + " ship on coords " + str(c[0]) + "," + str(c[1]))
 
-    def draw_board(self, screen):
+    def draw_board(self, screen: pygame.Surface):
         """
         location is the coordinates of the top left corner
 
@@ -188,7 +188,7 @@ class Board:
 
                 cell.draw_cell(screen, self.__display)
 
-    def draw_labels(self, screen):
+    def draw_labels(self, screen: pygame.Surface):
         """
         Draw the labels on the side of the board
 
@@ -233,10 +233,10 @@ class Board:
             screen.blit(row_labels[j], row_rects[j])
             screen.blit(col_labels[j], col_rects[j])
 
-    def get_cell(self, col, row):
+    def get_cell(self, col: int, row: int):
         return self.__cells[col][row]
 
-    def get_cell_mouse(self, mouse_pos):
+    def get_cell_mouse(self, mouse_pos: tuple[int, int]):
         """
         Given the position of a mouse, find a cell in self._cells
         such that the mouse collides with the cell.
@@ -244,8 +244,8 @@ class Board:
         Returns None if the mouse does not collide with any cell
         """
         cell_size = self.__width / self.__size
-        row = math.floor((mouse_pos[1] - self.__coordinates[1]) / cell_size)
-        column = math.floor((mouse_pos[0] - self.__coordinates[0]) / cell_size)
+        row: int = math.floor((mouse_pos[1] - self.__coordinates[1]) / cell_size)
+        column: int = math.floor((mouse_pos[0] - self.__coordinates[0]) / cell_size)
         if (
             row < 0
             or column < 0

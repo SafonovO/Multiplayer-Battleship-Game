@@ -78,7 +78,7 @@ class GameManager:
         self.game_over = False
         self.turn = Turn.PLAYER_ONE
         self.run = True
-        self.won = None
+        self.won = False
         self.__player1 = Player(ship_count, board_size)
         self.__player2 = Opponent(ship_count, board_size)
         self.client.identify()
@@ -91,7 +91,7 @@ class GameManager:
         self.game_over = False
         self.turn = Turn.PLAYER_ONE
         self.run = True
-        self.won = None
+        self.won = False
         self.__player1 = Player(ship_count, board_size)
         match ai_difficulty:
             case AIDifficulty.EASY:
@@ -299,7 +299,7 @@ class GameManager:
     def get_active_cell(self):
         return self.active_cell
 
-    def set_active_cell(self, mouse):
+    def set_active_cell(self, mouse: tuple[int, int]):
         """
         returns false if mouse click is not on cell,
         returns true and sets the active cell otherwise
@@ -309,7 +309,7 @@ class GameManager:
             return True
         return False
 
-    def set_active_cell_placement(self, mouse):
+    def set_active_cell_placement(self, mouse: tuple[int, int]):
         if self.__player1.large_board.get_cell_mouse(mouse) is not None:
             self.active_cell = self.__player1.large_board.get_cell_mouse(mouse)
             return True

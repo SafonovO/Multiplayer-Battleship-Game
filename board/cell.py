@@ -28,7 +28,7 @@ class Button:
 
 class Cell:
     coordinates = (0, 0)
-    ship: Ship = None
+    ship: Ship | None = None
     is_hit: bool = False
 
     # for drawing purposes. the side length and location of the cell
