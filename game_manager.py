@@ -414,15 +414,16 @@ class GameManager:
             miss_sound.play(0, 2000)
             return False
 
-    """
-    checks if the game is over
-    """
-
     def endgame(self):
-        self.game_over = True
+        """
+        Checks if the game is over and update the state variables accordingly
+        """
         if self.__player1.board.gameover():
+            self.game_over = True
             self.won = False
         elif self.__player2.board.gameover():
+            self.game_over = True
             self.won = True
         elif self.client and self.client.game_over:
+            self.game_over = True
             self.won = self.client.won
