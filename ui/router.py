@@ -52,7 +52,9 @@ class Screen:
         pass
 
     #  "Router" (with quotes) is a forward reference to the class below to avoid cyclic reference
-    def handle_event(self, event: pygame.Event, mouse: tuple[int, int], router: "Router", manager: GameManager):
+    def handle_event(
+        self, event: pygame.Event, mouse: tuple[int, int], router: "Router", manager: GameManager
+    ):
         """Contains the interactive logic for the screen"""
         pass
 
@@ -102,47 +104,9 @@ class Drawer:
 
     coord_tuple = None
 
-    def draw_screen(self, screen, ships_left=None, manager=None):
-        if screen == "human_create_pending":
-            self.human_create_pending(manager)
-        elif screen == "placement":
-            self.placement(ships_left)
-        elif screen == "play":
+    def draw_screen(self, screen):
+        if screen == "play":
             self.play()
-
-    def human_create_pending(self, manager):
-        quit_button = make_button(1000, 25, "QUIT", 20, image=quit_button_image)
-
-        waiting_title = make_text("Waiting for opponent", (650, 300), 50, "#b68f40")
-        waiting_text = make_text(
-            "You can invite a friend to this game with the code below", (650, 375), 30, "#ffffff"
-        )
-
-        code = get_font(30).render(manager.client.code, True, "#b68f40")
-        code_rect = code.get_rect(center=(650, 425))
-        code_tuple = (code, code_rect)
-
-        for tuple in [waiting_title, waiting_text, code_tuple]:
-            text_array.append(tuple)
-
-        for button in [quit_button]:
-            button_array.append(button)
-
-    def human_join(self, code_input: Input):
-        quit_button = make_button(1000, 25, "QUIT", 20, image=quit_button_image)
-
-        join_title = make_text("Join game", (650, 300), 50, "#b68f40")
-        join_desc = make_text("Enter an invite code to join a game", (650, 375), 30, "#ffffff")
-
-        code_chars = make_text(" ".join(code_input.value.ljust(9, "_")), (650, 425), 30, "#b68f40")
-
-        join_button = make_button(650, 550, "Join", 50, reactive=True)
-
-        for tuple in [join_title, join_desc, code_chars]:
-            text_array.append(tuple)
-
-        for button in [quit_button, join_button]:
-            button_array.append(button)
 
     def error(self, error_msg: str):
         error_text = make_text(error_msg, (650, 375), 30, "#ffffff")
@@ -152,24 +116,6 @@ class Drawer:
             text_array.append(tuple)
 
         for button in [quit_button]:
-            button_array.append(button)
-
-    def placement(self, ships_left):
-        # setup labels for the boards
-        placement_board_label = get_font(30).render("Board Setup", True, "White")
-        placement_board_label_rect = placement_board_label.get_rect(center=(425, 100))
-        placement_tuple = (placement_board_label, placement_board_label_rect)
-        confirm_button = make_button(1000, 225, "Place", 20, image=confirm_button_image)
-        quit_button = make_button(1000, 25, "QUIT", 20, image=quit_button_image)
-        rotate_button = make_button(1000, 150, "Rotate", 20, image=confirm_button_image)
-
-        ships_left_label = get_font(30).render("Ships Left: " + str(ships_left), True, "White")
-        ships_left_label_rect = ships_left_label.get_rect(center=(1000, 100))
-        ships_left_tuple = (ships_left_label, ships_left_label_rect)
-        for tuple in [placement_tuple, ships_left_tuple]:
-            text_array.append(tuple)
-
-        for button in [quit_button, rotate_button, confirm_button]:
             button_array.append(button)
 
     def play(self):
