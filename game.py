@@ -1,14 +1,11 @@
 import asyncio
-import signal
-import sys
-
 import pygame
+import signal
 from pygame.locals import *
 from pygame import mixer
 from board.board import Board
 from ui.button import Button, ReactiveButton, TextButton
 from ui.fonts import get_font
-from ui.input import Input
 from ui.screens.all import (
     AIConfiguration,
     Endgame,
@@ -21,7 +18,7 @@ from ui.screens.all import (
     SelectOpponent,
 )
 from game_manager import BG, SCREEN, GameManager
-from ui.router import button_array, Element, Router
+from ui.router import Router
 from utilities import quit_game
 
 MAX_FRAME_RATE = 80

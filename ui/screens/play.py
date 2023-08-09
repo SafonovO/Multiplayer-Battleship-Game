@@ -21,11 +21,8 @@ class Play(Screen):
         self.fire_button = make_button(1000, 250, "FIRE", 20, image=confirm_button_image)
         self.quit_button = make_button(1000, 25, "QUIT", 20, image=quit_button_image)
 
-        for tuple in [opponent_board_label, my_board_label, select_text, self.coord_text]:
-            self.text_array.append(tuple)
-
-        for button in [self.quit_button, self.fire_button]:
-            self.button_array.append(button)
+        self.text_array = [opponent_board_label, my_board_label, select_text, self.coord_text]
+        self.button_array = [self.quit_button, self.fire_button]
 
     def render(self, manager):
         manager.update_boards()

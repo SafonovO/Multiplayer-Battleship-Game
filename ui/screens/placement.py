@@ -1,7 +1,7 @@
 import pygame
 from ui.colours import Colours
 from ui.elements import make_button, confirm_button_image, quit_button_image
-from ui.router import Element, Screen
+from ui.router import Screen
 from ui.sounds import click_sound
 from ui.text import Text
 from game_config import SHIP_COUNT
@@ -15,18 +15,15 @@ class Placement(Screen):
         self.ship_vertical = True
 
         placement_board_label = Text("Board Setup", (425, 100), 30, Colours.WHITE.value)
-        confirm_button = make_button(1000, 225, "Place", 20, image=confirm_button_image)
-        quit_button = make_button(1000, 25, "QUIT", 20, image=quit_button_image)
-        rotate_button = make_button(1000, 150, "Rotate", 20, image=confirm_button_image)
-        ships_left_label = Text(
+        self.confirm_button = make_button(1000, 225, "Place", 20, image=confirm_button_image)
+        self.quit_button = make_button(1000, 25, "QUIT", 20, image=quit_button_image)
+        self.rotate_button = make_button(1000, 150, "Rotate", 20, image=confirm_button_image)
+        self.ships_left_label = Text(
             f"Ships Left: {str(self.ships_left)}", (1000, 1000), 30, Colours.WHITE.value
         )
 
-        for tuple in [placement_board_label, ships_left_label]:
-            self.text_array.append(tuple)
-
-        for button in [quit_button, rotate_button, confirm_button]:
-            self.button_array.append(button)
+        self.text_array = [placement_board_label, self.ships_left_label]
+        self.button_array = [self.quit_button, self.rotate_button, self.confirm_button]
 
     def render(self, manager) -> None:
         if self.ships_left <= 0:
@@ -59,23 +56,18 @@ class Placement(Screen):
             """
             manager.preview_ship(self.ships_left, self.ship_vertical)
 
-        ships_left_label = Text(
-            f"Ships Left: {str(self.ships_left)}", (1000, 1000), 30, Colours.WHITE.value
-        )
-        self.text_array[1] = ships_left_label
+        self.ships_left_label.value = f"Ships Left: {str(self.ships_left)}"
 
     def handle_event(self, event, mouse, router, manager):
         if event.type == pygame.MOUSEBUTTONDOWN:
             # check if we clicked a cell or something else
             if not manager.set_active_cell_placement(mouse):
-                if self.button_array[Element.QUIT_BUTTON.value].is_hovered(mouse):
+                if self.quit_button.is_hovered(mouse):
                     click_sound.play()
                     router.navigate_to("main_menu")
 
                 # if we hit confirm, place with the manager
-                if manager.active_cell is not None and self.button_array[
-                    Element.CONFIRM_BUTTON.value
-                ].is_hovered(mouse):
+                if manager.active_cell is not None and self.confirm_button.is_hovered(mouse):
                     click_sound.play()
                     successful_placement = manager.place_ship(self.ships_left, self.ship_vertical)
                     # if the placement is successful, subtract the number of ships remaining.
@@ -84,5 +76,5 @@ class Placement(Screen):
                     if self.ships_left <= 0:
                         return router.navigate_to("play")
 
-                if self.button_array[Element.ROTATE_BUTTON.value].is_hovered(mouse):
+                if self.rotate_button.is_hovered(mouse):
                     self.ship_vertical = not self.ship_vertical
