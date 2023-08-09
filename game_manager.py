@@ -102,7 +102,6 @@ class GameManager:
                 self.__player2 = HardAI(ship_count, board_size, self.__player1)
             case _:
                 print("Invalid AI Difficulty")
-        self.client = None
         self.active_cell = None
 
     def hard_ai_setup(self):

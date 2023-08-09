@@ -1,11 +1,9 @@
 import asyncio
 import pygame
 import signal
-from pygame.locals import *
-from pygame import mixer
 from board.board import Board
-from ui.button import Button, ReactiveButton, TextButton
-from ui.fonts import get_font
+from game_manager import GameManager
+from pygame.locals import *
 from ui.screens.all import (
     AIConfiguration,
     Endgame,
@@ -17,7 +15,6 @@ from ui.screens.all import (
     Play,
     SelectOpponent,
 )
-from game_manager import BG, SCREEN, GameManager
 from ui.router import Router
 from utilities import quit_game
 
@@ -25,29 +22,9 @@ MAX_FRAME_RATE = 80
 
 pygame.init()
 pygame.display.set_caption("Battleship")
-base_button_image = pygame.image.load("assets/navy_button.png")
-hovered_button_image = pygame.image.load("assets/navy_button_hover.png")
-quit_button_image = pygame.image.load("assets/quit.png")
-confirm_button_image = pygame.image.load("assets/ConfirmButton.png")
 
-mixer.init()
-mixer.music.load("assets/sounds/bg.ogg")
-click_sound = pygame.mixer.Sound("assets/sounds/ui-click.mp3")
-
-PLAYING_SURFACE = pygame.Rect(100, 50, 1100, 700)
-BOARD_SIZE = 5
-NUM_SHIPS = 5
-
-
-def make_button(x, y, text, font_size, reactive=False, image=base_button_image):
-    button = Button(image=image, pos=(x, y))
-    if reactive:
-        button = ReactiveButton(
-            button,
-            hover_surface=hovered_button_image,
-            active_surface=hovered_button_image,
-        )
-    return TextButton(button, text=text, font=get_font(font_size))
+pygame.mixer.init()
+pygame.mixer.music.load("assets/sounds/bg.ogg")
 
 
 async def play():
@@ -105,54 +82,10 @@ async def play():
             continue
 
         for event in pygame.event.get():
-            # BUG: quit button is not responsive while waiting for AI to make move
-            # probably due to sleep(1)
-            if event.type == pygame.QUIT:
-                quit_game()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                # check if we clicked a cell or something else
-                if not manager.set_active_cell(mouse):
-                    if button_array[Element.QUIT_BUTTON.value].is_hovered(mouse):
-                        click_sound.play()
-                        # return to main menu
-                        await main()
-
-                    # if we hit confirm, fire with the manager
-                    if button_array[Element.FIRE_BUTTON.value].is_hovered(mouse):
-                        if manager.active_cell != None:
-                            change_turn = await manager.fire_shot()
-                            # update = True
-                            draw.clear_coord()
-                            # await asyncio.sleep(0.7)
+            pass
     # outside of while not manager.game_over
     if manager.client:
         manager.client.end_game(manager.won)
-
-
-async def old_main():
-    global manager
-
-    # FIXME: migrate to new UI structure and remove this chunk of dead code
-    # await main_menu()
-    # await select_opponent()
-    # if ai_game:
-    #     await AI_settings()
-    # else:
-    #     await human_settings()
-    # await manager.create_game(
-    #     ai_game=ai_game, ship_count=NUM_SHIPS, game_size=BOARD_SIZE, create=create, easy_ai=ai_easy
-    # )
-    # await asyncio.sleep(0.1)
-    # if not ai_game:
-    #     if create:
-    #         await human_game_pending()
-    #     else:
-    #         code = await human_game_join()
-    #         manager.client.join_game(code)
-    # await asyncio.sleep(0.1)  # everything breaks if you remove this line
-    # await placement(NUM_SHIPS, BOARD_SIZE)
-    # await play()  # loops forever
-    # endgamescreen(manager.won)
 
 
 async def game_loop(stop: asyncio.Event, router: Router):
@@ -200,5 +133,5 @@ def keyboard_interrupt(stop: asyncio.Event):
 
 
 if __name__ == "__main__":
-    mixer.music.play(-1)
+    pygame.mixer.music.play(-1)
     asyncio.run(main())
