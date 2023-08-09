@@ -97,22 +97,12 @@ class Drawer:
     coord_tuple = None
 
     def draw_screen(self, screen, ships_left=None, manager=None):
-        if screen == "human_settings":
-            self.human_settings()
-        elif screen == "human_create_pending":
+        if screen == "human_create_pending":
             self.human_create_pending(manager)
         elif screen == "placement":
             self.placement(ships_left)
         elif screen == "play":
             self.play()
-
-    def human_settings(self):
-        create_button = make_button(650, 150, "Create Game", 50, reactive=True)
-        join_button = make_button(650, 350, "Join Game", 50, reactive=True)
-        quit_button = make_button(650, 550, "QUIT", 75, reactive=True)
-
-        for button in [quit_button, join_button, create_button]:
-            button_array.append(button)
 
     def human_create_pending(self, manager):
         quit_button = make_button(1000, 25, "QUIT", 20, image=quit_button_image)
