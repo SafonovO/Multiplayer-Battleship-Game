@@ -144,7 +144,6 @@ class Drawer:
 
         for button in [quit_button, join_button]:
             button_array.append(button)
-        pass
 
     def error(self, error_msg: str):
         error_text = make_text(error_msg, (650, 375), 30, "#ffffff")
@@ -155,7 +154,6 @@ class Drawer:
 
         for button in [quit_button]:
             button_array.append(button)
-        pass
 
     def placement(self, ships_left):
         # setup labels for the boards

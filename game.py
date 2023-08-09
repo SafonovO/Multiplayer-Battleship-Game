@@ -15,6 +15,7 @@ from ui.screens.all import (
     MainMenu,
     OnlineCreatePending,
     OnlineGameOptions,
+    OnlineJoin,
     SelectOpponent,
 )
 from game_manager import BG, SCREEN, GameManager
@@ -389,11 +390,6 @@ async def game_loop(stop: asyncio.Event, router: Router):
         await asyncio.sleep(1 / MAX_FRAME_RATE)
 
 
-def keyboard_interrupt(stop: asyncio.Event):
-    stop.set()
-    quit_game()
-
-
 async def main():
     manager = GameManager()
     router = Router(
@@ -404,6 +400,7 @@ async def main():
             "ai_configuration": AIConfiguration(),
             "online_game_options": OnlineGameOptions(),
             "online_create_pending": OnlineCreatePending(),
+            "online_join": OnlineJoin(),
         },
     )
     router.navigate_to("main_menu")
@@ -422,11 +419,16 @@ async def main():
         loop.remove_signal_handler(signal.SIGINT)
 
 
+def keyboard_interrupt(stop: asyncio.Event):
+    stop.set()
+    quit_game()
+
+
 def quit_game():
     pygame.quit()
     sys.exit()
 
 
-mixer.music.play(-1)
 if __name__ == "__main__":
+    mixer.music.play(-1)
     asyncio.run(main())
