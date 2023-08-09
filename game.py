@@ -1,6 +1,5 @@
 import asyncio
 import signal
-import string
 import sys
 
 import pygame
@@ -20,8 +19,7 @@ from ui.screens.all import (
     SelectOpponent,
 )
 from game_manager import BG, SCREEN, GameManager
-from ui.router import Drawer, button_array, Element, Router, Screen
-from client import Stages
+from ui.router import button_array, Element, Router
 from utilities import quit_game
 
 MAX_FRAME_RATE = 80
@@ -51,198 +49,6 @@ def make_button(x, y, text, font_size, reactive=False, image=base_button_image):
             active_surface=hovered_button_image,
         )
     return TextButton(button, text=text, font=get_font(font_size))
-
-
-async def placement(ship_count, game_size):
-    draw.clear_array()
-    # Track the orientation of the ship we are about to place
-    # vertical = True by default
-    vertical = True
-    ships_left = ship_count
-    # print(ai_level)
-    draw.draw_screen("placement", ships_left=ships_left)
-
-    while ships_left > 0:
-        mouse = pygame.mouse.get_pos()
-        draw.render_screen(mouse, playing_surface=True)
-        manager.update_placement()
-        # active cell is teh cell we are clicking on
-        if manager.get_active_cell() != None:
-            """
-            We have selected a cell.
-
-            First, display the cell as text on screen.
-
-            If the user then clicks FIRE, we call the game
-            manager to execute the fire
-
-            Here, I want to draw all the cells that will be occupied
-            by the ship i'm about to place.
-
-            IF there is a conflict, i will draw  the ship's cells in red
-            if there is no conflict, the ship will be drawn in green
-
-            there is a conflict IF:
-                - one or more cells that this ship will occupy is already
-                occupied by some ship
-                - one or more cells that this ship will occupy exceeds the
-                boundaries of the board
-
-            If the user attempts to place a ship in an invlaid position,
-            simply do nothing
-            """
-            manager.preview_ship(ships_left, vertical)
-
-        pygame.display.flip()
-
-        for event in pygame.event.get():
-            # BUG: quit button is not responsive while waiting for AI to make move
-            # probably due to sleep(1)
-            if event.type == pygame.QUIT:
-                quit_game()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                # check if we clicked a cell or something else
-                if not manager.set_active_cell_placement(mouse):
-                    if button_array[Element.QUIT_BUTTON.value].is_hovered(mouse):
-                        click_sound.play()
-                        # return to main menu
-                        await main()
-
-                    # if we hit confirm, place with the manager
-                    if manager.active_cell is not None and button_array[
-                        Element.CONFIRM_BUTTON.value
-                    ].is_hovered(mouse):
-                        click_sound.play()
-                        successful_placement = await manager.place_ship(ships_left, vertical)
-                        await asyncio.sleep(0.1)
-                        # if the placement is successful, subtract the number of ships remaining.
-                        if successful_placement:
-                            ships_left -= 1
-
-                        # update = True
-                        coord_text = None
-                        coord_text_rect = None
-                        # update the count label
-                        ships_left_label = get_font(30).render(
-                            "Ships Left: " + str(ships_left), True, "White"
-                        )
-
-                    if button_array[Element.ROTATE_BUTTON.value].is_hovered(mouse):
-                        vertical = not vertical
-
-
-async def select_opponent():
-    draw.clear_array()
-    draw.draw_screen("select_opponent")
-    loop = True
-    while loop:
-        mouse = pygame.mouse.get_pos()
-        # Draw the backgroudn
-        draw.render_screen(mouse, playing_surface=True)
-        pygame.display.flip()
-
-        for event in pygame.event.get():
-            # BUG: quit button is not responsive while waiting for AI to make move
-            # probably due to sleep(1)
-            if event.type == pygame.QUIT:
-                quit_game()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                global ai_game
-                if button_array[Element.AI_PLAY_BUTTON.value].is_hovered(mouse):
-                    click_sound.play()
-                    ai_game = True
-                    loop = False
-                elif button_array[Element.PLAY_BUTTON.value].is_hovered(mouse):
-                    click_sound.play()
-                    ai_game = False
-                    loop = False
-                elif button_array[Element.QUIT_BUTTON.value].is_hovered(mouse):
-                    click_sound.play()
-                    await main()
-
-
-async def human_game_pending():
-    draw.clear_array()
-    draw.human_create_pending(manager)
-
-    while manager.client.stage == Stages.PENDING_OPPONENT_JOIN:
-        mouse = pygame.mouse.get_pos()
-        draw.render_screen(mouse, True)
-        pygame.display.flip()
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                quit_game()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if button_array[Element.QUIT_BUTTON.value].is_hovered(mouse):
-                    click_sound.play()
-                    await main()
-
-
-async def human_game_join():
-    code_input = Input(max_length=9)
-
-    while True:
-        draw.clear_array()
-        draw.human_join(code_input)
-        mouse = pygame.mouse.get_pos()
-        draw.render_screen(mouse, True)
-        pygame.display.flip()
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                quit_game()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if button_array[Element.QUIT_BUTTON.value].is_hovered(mouse):
-                    click_sound.play()
-                    await main()
-                if (
-                    button_array[Element.JOIN_BUTTON.value].is_hovered(mouse)
-                    and len(code_input.value) == 9
-                ):
-                    click_sound.play()
-                    return code_input.value
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_BACKSPACE:
-                    code_input.backspace()
-                elif event.unicode in string.ascii_letters + string.digits:
-                    code_input.input(event.unicode.upper())
-
-
-async def AI_settings():
-    draw.clear_array()
-    global ai_level
-    draw.draw_screen("AI_settings")
-
-    loop = True
-    while loop:
-        mouse = pygame.mouse.get_pos()
-        # Draw the backgroudn
-        draw.render_screen(mouse, playing_surface=True)
-        pygame.display.flip()
-
-        for event in pygame.event.get():
-            # BUG: quit button is not responsive while waiting for AI to make move
-            # probably due to sleep(1)
-            if event.type == pygame.QUIT:
-                quit_game()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if button_array[Element.EASY_BUTTON.value].is_hovered(mouse):
-                    click_sound.play()
-                    # ai_level = 0 indicates easy ai. simalar for 1, 2
-                    ai_level = 0
-                    loop = False
-                elif button_array[Element.MED_BUTTON.value].is_hovered(mouse):
-                    click_sound.play()
-                    ai_level = 1
-                    loop = False
-                elif button_array[Element.HARD_BUTTON.value].is_hovered(mouse):
-                    click_sound.play()
-                    ai_level = 2
-                    loop = False
-                elif button_array[Element.QUIT_BUTTON.value].is_hovered(mouse):
-                    click_sound.play()
-                    await main()
 
 
 async def play():
@@ -350,28 +156,7 @@ def endgamescreen(won):
 
 
 async def old_main():
-    global ai_easy, create, manager, draw
-    # draw = Drawer()
-    ai_easy = None
-    create = False
-    manager = GameManager()
-    await manager.start_client()
-    print("finished awaiting client starts")
-    router = Router(
-        manager,
-        {
-            "main_menu": MainMenu(),
-            "select_opponent": SelectOpponent(),
-            "ai_configuration": AIConfiguration(),
-            "online_game_options": OnlineGameOptions(),
-            "online_create_pending": OnlineCreatePending(),
-        },
-    )
-
-    router.navigate_to("main_menu")
-
-    while True:
-        router.render()
+    global manager
 
     # FIXME: migrate to new UI structure and remove this chunk of dead code
     # await main_menu()

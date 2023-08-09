@@ -1,5 +1,4 @@
 import asyncio
-import sys
 from enum import Enum, Flag
 from client import Client
 from players.opponent import Opponent
