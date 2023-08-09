@@ -132,31 +132,6 @@ async def play():
         manager.client.end_game(manager.won)
 
 
-def endgamescreen(won):
-    text = get_font(100).render(
-        "Congratulations, you won!" if won else "You lost, try again...",
-        True,
-        "#b68f40",
-    )
-    text_rect = text.get_rect(center=(650, 100))
-    quit_button = make_button(650, 550, "QUIT", 75, reactive=True)
-    while True:
-        mouse = pygame.mouse.get_pos()
-        SCREEN.blit(BG, (0, 0))
-        SCREEN.blit(text, text_rect)
-        for button in [quit_button]:
-            button.render(SCREEN, mouse)
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if quit_button.is_hovered(mouse):
-                    pygame.quit()
-                    sys.exit()
-        pygame.display.update()
-
-
 async def old_main():
     global manager
 

@@ -155,14 +155,6 @@ class Drawer:
         for button in button_array:
             button.render(SCREEN, mouse)
 
-    def draw_coord(self, num, letter):
-        coord_text = get_font(15).render("({}, {})".format(letter, num), True, "White")
-        coord_text_rect = coord_text.get_rect(center=(1000, 200))
-        self.coord_tuple = (coord_text, coord_text_rect)
-
-    def clear_coord(self):
-        self.coord_tuple = None
-
     def clear_array(self):
         button_array.clear()
         text_array.clear()
