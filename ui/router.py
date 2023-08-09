@@ -101,8 +101,6 @@ class Drawer:
             self.human_settings()
         elif screen == "human_create_pending":
             self.human_create_pending(manager)
-        elif screen == "AI_settings":
-            self.ai()
         elif screen == "placement":
             self.placement(ships_left)
         elif screen == "play":
@@ -161,20 +159,6 @@ class Drawer:
         for button in [quit_button]:
             button_array.append(button)
         pass
-
-    def ai(self):
-        text = get_font(50).render("Difficulty", True, "#b68f40")
-        text_rect = text.get_rect(center=(650, 100))
-        text_tuple = (text, text_rect)
-        quit_button = make_button(650, 550, "QUIT", 75, reactive=True)
-        easy_button = make_button(400, 175, "Easy", 20, image=confirm_button_image)
-        hard_button = make_button(900, 175, "Hard", 20, image=confirm_button_image)
-
-        for button in [quit_button, easy_button, hard_button]:
-            button_array.append(button)
-
-        for tuple in [text_tuple]:
-            text_array.append(tuple)
 
     def placement(self, ships_left):
         # setup labels for the boards
