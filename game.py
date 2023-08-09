@@ -36,8 +36,8 @@ mixer.music.load("assets/sounds/bg.ogg")
 click_sound = pygame.mixer.Sound("assets/sounds/ui-click.mp3")
 
 PLAYING_SURFACE = pygame.Rect(100, 50, 1100, 700)
-BOARD_SIZE = 2
-NUM_SHIPS = 2
+BOARD_SIZE = 5
+NUM_SHIPS = 5
 
 
 def make_button(x, y, text, font_size, reactive=False, image=base_button_image):
@@ -57,8 +57,8 @@ async def placement(ship_count, game_size):
     # vertical = True by default
     vertical = True
     ships_left = ship_count
-    print(f"ai_easy? {ai_easy}")
-    draw.draw_screen("placement", ships_left=ships_left)
+    # print(ai_level)
+    draw.draw_screen('placement',ships_left=ships_left)
 
     while ships_left > 0:
         mouse = pygame.mouse.get_pos()
@@ -209,9 +209,9 @@ async def human_game_join():
 
 async def AI_settings():
     draw.clear_array()
-    global ai_easy
-    draw.draw_screen("AI_settings")
-
+    global ai_level
+    draw.draw_screen('AI_settings')
+    
     loop = True
     while loop:
         mouse = pygame.mouse.get_pos()
@@ -227,11 +227,16 @@ async def AI_settings():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if button_array[Element.EASY_BUTTON.value].is_hovered(mouse):
                     click_sound.play()
-                    ai_easy = True
+                    # ai_level = 0 indicates easy ai. simalar for 1, 2
+                    ai_level = 0
+                    loop = False
+                elif button_array[Element.MED_BUTTON.value].is_hovered(mouse):
+                    click_sound.play()
+                    ai_level = 1
                     loop = False
                 elif button_array[Element.HARD_BUTTON.value].is_hovered(mouse):
                     click_sound.play()
-                    ai_easy = False
+                    ai_level = 2
                     loop = False
                 elif button_array[Element.QUIT_BUTTON.value].is_hovered(mouse):
                     click_sound.play()
@@ -252,6 +257,11 @@ async def play():
     draw.draw_screen("play")
 
     change_turn = False if ai_game or create else True
+
+    # if hardAI game, allow it to peek into your array
+    if ai_game and ai_level == 2:
+        manager.hard_ai_setup()
+
     # BUG: game freezes after first move until next turn for multiplayer
     # BUG: type of cell does not match opponent's board after guess for multiplayer
     # BUG: game does not notify winner after winning. need to end game.

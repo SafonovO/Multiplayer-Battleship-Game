@@ -17,7 +17,7 @@ class Player:
 
     def init_ships(self) -> bool:
         self.board.place_ships()
-        self.board.print_cells()
+        # self.board.print_cells()
 
     def use_ability(self) -> bool:
         pass

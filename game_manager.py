@@ -4,7 +4,7 @@ from enum import Enum, Flag
 from client import Client
 from players.opponent import Opponent
 from players.player import Player
-from players.ai import EasyAI, AI, HardAI
+from players.ai import EasyAI, AI, HardAI, MedAI
 
 import pygame
 from pygame.locals import *
@@ -24,6 +24,7 @@ class Turn(Flag):
 
 class AIDifficulty(Enum):
     EASY = 0
+    MEDIUM = 1
     HARD = 2
 
 
@@ -93,12 +94,30 @@ class GameManager:
         match ai_difficulty:
             case AIDifficulty.EASY:
                 self.__player2 = EasyAI(ship_count, board_size)
+            case AIDifficulty.MEDIUM:
+                self.__player2 = MedAI(ship_count, board_size)
             case AIDifficulty.HARD:
-                self.__player2 = HardAI(ship_count, board_size)
+                self.__player2 = HardAI(ship_count, board_size, self.__player1)
             case _:
-                print("Unknown AI difficulty")
+                print("Invalid AI Difficulty")
         self.client = None
         self.active_cell = None
+
+    def hard_ai_setup(self):
+        '''
+        HardAI wil be able to peek into its opponent's array.
+
+        However, it is instantiated before the opponentn places
+        their ships. So after the oppoennt has placed their ships,
+        invoke this method to tell the hardAI where they are
+
+        *************PRECONDITION - IMPORTANT!!!!!!!
+        This function will assume __player2 is a hardAI
+        if this is not the case, I make no promises to what
+        this function will do
+        '''
+        if isinstance(self.__player2, HardAI):
+            self.__player2.get_opp_ships()
 
     def update_boards(self):
         # draw my board

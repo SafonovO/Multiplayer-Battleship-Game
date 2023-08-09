@@ -31,12 +31,13 @@ class Element(Enum):
     PLAY_BUTTON = 1
     JOIN_BUTTON = 1
     EASY_BUTTON = 1
+    MED_BUTTON = 2
     ROTATE_BUTTON = 1
     FIRE_BUTTON = 1
     AI_PLAY_BUTTON = 2
     CONFIRM_BUTTON = 2
     CREATE_BUTTON = 2
-    HARD_BUTTON = 2
+    HARD_BUTTON = 3
 
 
 class Screen:
