@@ -1,4 +1,4 @@
 from game_manager import AIDifficulty
-SHIP_COUNT = 2
-BOARD_SIZE = 2
+SHIP_COUNT = 5
+BOARD_SIZE = 5
 AI_LEVEL = AIDifficulty.EASY

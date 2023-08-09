@@ -86,6 +86,8 @@ class Router:
             if screen.draw_background:
                 pygame.draw.rect(SCREEN, Colours.NAVY_BLUE.value, PLAYING_SURFACE)
             for element in screen.text_array:
+                if element == None:
+                    continue
                 SCREEN.blit(element[0], element[1])
             for button in screen.button_array:
                 button.render(SCREEN, mouse)

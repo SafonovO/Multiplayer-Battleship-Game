@@ -83,6 +83,8 @@ class Placement(Screen):
                     # if the placement is successful, subtract the number of ships remaining.
                     if successful_placement:
                         self.ships_left -= 1
+                    if self.ships_left <= 0:
+                        return router.navigate_to("play")
 
                 if self.button_array[Element.ROTATE_BUTTON.value].is_hovered(mouse):
                     self.ship_vertical = not self.ship_vertical

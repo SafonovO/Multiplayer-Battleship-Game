@@ -16,6 +16,7 @@ from ui.screens.all import (
     OnlineGameOptions,
     OnlineJoin,
     Placement,
+    Play,
     SelectOpponent,
 )
 from game_manager import BG, SCREEN, GameManager
@@ -199,6 +200,7 @@ async def main():
             "online_create_pending": OnlineCreatePending,
             "online_join": OnlineJoin,
             "placement": Placement,
+            "play": Play,
         },
     )
     router.navigate_to("main_menu")

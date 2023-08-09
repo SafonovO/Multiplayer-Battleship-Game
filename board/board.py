@@ -1,5 +1,6 @@
 import math
 import random
+import string
 
 from board.board_factory import BoardFactory
 from board.cell import Cell
@@ -31,9 +32,6 @@ class Board:
     # On my board, I want to display the ships' locations.
     # On the opponent's board, I do not
     __display = False
-
-    # For drawing the labels later on
-    letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"]
 
     """
     coordinates is a tuple (x, y) that represents the location
@@ -225,7 +223,7 @@ class Board:
             # Translate it a little to the left
             location2[1] -= 0.7 * self.__cells[i][0].get_width()
 
-            text2 = get_font(15).render("{}".format(self.letters[i]), True, "White")
+            text2 = get_font(15).render("{}".format(string.ascii_uppercase[i]), True, "White")
             rect2 = text.get_rect(center=location2)
             col_labels.append(text2)
             col_rects.append(rect2)
