@@ -18,15 +18,12 @@ class Endgame(Screen):
             Colours.GOLD.value,
         )
 
-        quit_button = make_button(650, 600, "QUIT", 75, reactive=True)
+        self.quit_button = make_button(650, 600, "QUIT", 75, reactive=True)
 
-        for tuple in [endgame_title]:
-            self.text_array.append(tuple)
+        self.text_array = [endgame_title]
+        self.button_array = [self.quit_button]
 
-        for button in [quit_button]:
-            self.button_array.append(button)
-
-    def handle_event(self, event, mouse, router, manager):
+    def handle_event(self, event, mouse, _router, _manager):
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if self.button_array[0].is_hovered(mouse):
+            if self.quit_button.is_hovered(mouse):
                 quit_game()

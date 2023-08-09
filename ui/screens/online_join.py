@@ -3,7 +3,7 @@ import pygame
 from ui.colours import Colours
 from ui.elements import make_button, quit_button_image
 from ui.input import Input
-from ui.router import Element, Screen
+from ui.router import Screen
 from ui.sounds import click_sound
 from ui.text import Text
 
@@ -14,36 +14,30 @@ class OnlineJoin(Screen):
         self.draw_background = True
         self.code_input = Input(max_length=9)
 
-        quit_button = make_button(1000, 25, "QUIT", 20, image=quit_button_image)
+        self.quit_button = make_button(1000, 25, "QUIT", 20, image=quit_button_image)
 
         join_title = Text("Join game", (650, 300), 50, Colours.GOLD.value)
         join_desc = Text(
             "Enter an invite code to join a game", (650, 375), 30, Colours.WHITE.value
         )
 
-        code_chars = Text("_________", (650, 425), 30, "#b68f40")
+        self.code_chars = Text("_________", (650, 425), 30, "#b68f40")
 
-        join_button = make_button(650, 550, "Join", 50, reactive=True)
+        self.join_button = make_button(650, 550, "Join", 50, reactive=True)
 
-        for tuple in [join_title, join_desc, code_chars]:
-            self.text_array.append(tuple)
-
-        for button in [quit_button, join_button]:
-            self.button_array.append(button)
+        self.text_array = [join_title, join_desc, self.code_chars]
+        self.button_array = [self.quit_button, self.join_button]
 
     def render(self, _manager):
-        code_chars = Text(
-            " ".join(self.code_input.value.ljust(9, "_")), (650, 425), 30, Colours.GOLD.value
-        )
-        self.text_array[2] = code_chars
+        self.code_chars.value = " ".join(self.code_input.value.ljust(9, "_"))
 
     def handle_event(self, event, mouse, router, manager):
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if self.button_array[Element.QUIT_BUTTON.value].is_hovered(mouse):
+            if self.quit_button.is_hovered(mouse):
                 click_sound.play()
                 return router.navigate_back()
             if (
-                self.button_array[Element.JOIN_BUTTON.value].is_hovered(mouse)
+                self.join_button.is_hovered(mouse)
                 and len(self.code_input.value) == 9
             ):
                 click_sound.play()
