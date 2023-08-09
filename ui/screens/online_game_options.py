@@ -6,8 +6,8 @@ from game_config import SHIP_COUNT, BOARD_SIZE
 
 
 class OnlineGameOptions(Screen):
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, manager) -> None:
+        super().__init__(manager)
         self.draw_background = True
         create_button = make_button(650, 150, "Create Game", 50, reactive=True)
         join_button = make_button(650, 350, "Join Game", 50, reactive=True)

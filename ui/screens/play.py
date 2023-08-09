@@ -1,6 +1,5 @@
 import string
 import pygame
-from board.board import Board
 from ui.colours import Colours
 from ui.elements import make_button, make_text, confirm_button_image, quit_button_image
 from ui.router import Element, Screen
@@ -8,8 +7,8 @@ from ui.sounds import click_sound
 
 
 class Play(Screen):
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, manager) -> None:
+        super().__init__(manager)
         self.draw_background = True
         self.selected_coords = ()
 

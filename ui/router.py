@@ -41,7 +41,7 @@ class Element(Enum):
 
 
 class Screen:
-    def __init__(self) -> None:
+    def __init__(self, manager: GameManager) -> None:
         """Define layout in the constructor. Subclasses can define more layout after super()ing"""
         self.text_array = []
         self.button_array: list[Button] = []
@@ -69,7 +69,7 @@ class Router:
         screen_type = self.screens.get(screen_name)
         if screen_type == None:
             raise KeyError(f"No screen with name {screen_name}")
-        screen = screen_type()
+        screen = screen_type(self.manager)
         self.routing_stack.append(screen)
 
     def navigate_back(self):

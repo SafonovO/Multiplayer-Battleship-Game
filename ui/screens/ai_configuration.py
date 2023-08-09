@@ -8,8 +8,8 @@ from game_config import SHIP_COUNT, BOARD_SIZE
 
 
 class AIConfiguration(Screen):
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, manager) -> None:
+        super().__init__(manager)
         self.draw_background = True
         text = make_text("Difficulty", (650, 100), 50, Colours.GOLD.value)
         quit_button = make_button(650, 550, "Cancel", 75, reactive=True)

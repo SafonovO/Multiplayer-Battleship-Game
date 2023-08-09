@@ -5,8 +5,8 @@ from ui.sounds import click_sound
 
 
 class SelectOpponent(Screen):
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, manager) -> None:
+        super().__init__(manager)
         self.draw_background = True
         play_button_ai = make_button(650, 150, "Play vs. AI", 50, reactive=True)
         play_button_human = make_button(650, 350, "Play vs. Human", 50, reactive=True)

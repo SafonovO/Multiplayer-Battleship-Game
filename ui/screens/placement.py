@@ -1,15 +1,14 @@
 import pygame
 from ui.colours import Colours
 from ui.elements import make_button, make_text, confirm_button_image, quit_button_image
-from ui.fonts import get_font
 from ui.router import Element, Screen
 from ui.sounds import click_sound
 from game_config import SHIP_COUNT
 
 
 class Placement(Screen):
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, manager) -> None:
+        super().__init__(manager)
         self.draw_background = True
         self.ships_left = SHIP_COUNT
         self.ship_vertical = True

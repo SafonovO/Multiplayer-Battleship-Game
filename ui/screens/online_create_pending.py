@@ -7,8 +7,8 @@ from ui.sounds import click_sound
 
 
 class OnlineCreatePending(Screen):
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, manager) -> None:
+        super().__init__(manager)
         self.draw_background = True
         quit_button = make_button(1000, 25, "QUIT", 20, image=quit_button_image)
 

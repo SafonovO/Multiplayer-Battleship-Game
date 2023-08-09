@@ -7,8 +7,8 @@ from ui.sounds import click_sound
 
 
 class MainMenu(Screen):
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, manager) -> None:
+        super().__init__(manager)
         text = make_text("BATTLESHIP", (650, 150), 100, Colours.GOLD.value)
         play_button = make_button(650, 350, "PLAY", 75, reactive=True)
         quit_button = make_button(650, 550, "QUIT", 75, reactive=True)

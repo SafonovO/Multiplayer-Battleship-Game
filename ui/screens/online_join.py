@@ -8,8 +8,8 @@ from ui.sounds import click_sound
 
 
 class OnlineJoin(Screen):
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, manager) -> None:
+        super().__init__(manager)
         self.draw_background = True
         self.code_input = Input(max_length=9)
 
