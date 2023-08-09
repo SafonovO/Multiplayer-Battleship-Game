@@ -149,33 +149,6 @@ async def select_opponent():
                     await main()
 
 
-async def human_settings():
-    draw.clear_array()
-    global ai_game, create
-    draw.draw_screen("human_settings")
-    loop = True
-    while loop:
-        mouse = pygame.mouse.get_pos()
-        draw.render_screen(mouse)
-        pygame.display.flip()
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                quit_game()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if button_array[Element.CREATE_BUTTON.value].is_hovered(mouse):
-                    click_sound.play()
-                    create = True
-                    loop = False
-                elif button_array[Element.JOIN_BUTTON.value].is_hovered(mouse):
-                    click_sound.play()
-                    create = False
-                    loop = False
-                elif button_array[Element.QUIT_BUTTON.value].is_hovered(mouse):
-                    click_sound.play()
-                    await main()
-
-
 async def human_game_pending():
     draw.clear_array()
     draw.human_create_pending(manager)
