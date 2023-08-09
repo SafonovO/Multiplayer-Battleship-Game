@@ -11,6 +11,7 @@ from ui.fonts import get_font
 from ui.input import Input
 from ui.screens.all import (
     AIConfiguration,
+    Endgame,
     MainMenu,
     OnlineCreatePending,
     OnlineGameOptions,
@@ -185,6 +186,7 @@ async def old_main():
 async def game_loop(stop: asyncio.Event, router: Router):
     while not stop.is_set():
         router.render()
+        # the following line is required to allow asyncio operations to proceed alongside the game loop
         await asyncio.sleep(1 / MAX_FRAME_RATE)
 
 
@@ -201,6 +203,7 @@ async def main():
             "online_join": OnlineJoin,
             "placement": Placement,
             "play": Play,
+            "endgame": Endgame,
         },
     )
     router.navigate_to("main_menu")

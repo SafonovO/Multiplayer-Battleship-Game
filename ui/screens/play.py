@@ -3,7 +3,6 @@ import pygame
 from board.board import Board
 from ui.colours import Colours
 from ui.elements import make_button, make_text, confirm_button_image, quit_button_image
-from ui.input import Input
 from ui.router import Element, Screen
 from ui.sounds import click_sound
 
@@ -54,7 +53,9 @@ class Play(Screen):
                 # if we hit confirm, fire with the manager
                 if self.button_array[Element.FIRE_BUTTON.value].is_hovered(mouse):
                     if manager.active_cell != None:
-                        # change_turn = await manager.fire_shot()
+                        change_turn = manager.fire_shot_new()
                         # update = True
                         self.text_array[3] = None
+                        if manager.game_over:
+                            return router.navigate_to("endgame")
                         # await asyncio.sleep(0.7)

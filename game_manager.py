@@ -37,6 +37,7 @@ fire_sound = pygame.mixer.Sound("assets/sounds/fire.ogg")
 
 async_tasks = set()
 
+
 class GameManager:
     """
     create two instances of board
@@ -77,6 +78,7 @@ class GameManager:
         self.game_over = False
         self.turn = Turn.PLAYER_ONE
         self.run = True
+        self.won = None
         self.__player1 = Player(ship_count, board_size)
         self.__player2 = Opponent(ship_count, board_size)
         self.client.identify()
@@ -89,6 +91,7 @@ class GameManager:
         self.game_over = False
         self.turn = Turn.PLAYER_ONE
         self.run = True
+        self.won = None
         self.__player1 = Player(ship_count, board_size)
         match ai_difficulty:
             case AIDifficulty.EASY:
@@ -103,7 +106,7 @@ class GameManager:
         self.active_cell = None
 
     def hard_ai_setup(self):
-        '''
+        """
         HardAI wil be able to peek into its opponent's array.
 
         However, it is instantiated before the opponentn places
@@ -114,7 +117,7 @@ class GameManager:
         This function will assume __player2 is a hardAI
         if this is not the case, I make no promises to what
         this function will do
-        '''
+        """
         if isinstance(self.__player2, HardAI):
             self.__player2.get_opp_ships()
 
@@ -368,6 +371,32 @@ class GameManager:
             return True
         return False
 
+    def fire_shot_new(self):
+        """
+        Returns true if the shot was fired successfully
+        """
+        if self.active_cell and self.turn == Turn.PLAYER_ONE:
+            click_sound.play()
+            fire_sound.play()
+            self.validate_shot_new(self.active_cell)
+            self.active_cell = None
+            return True
+        return False
+
+    def validate_shot_new(self, active_cell):
+        """
+        Marks the active cell as hit.
+        Checks if there was a ship in the active cell.
+        If ship, returns True, False otherwise.
+        """
+        if active_cell.hit():
+            self.endgame()
+            hit_sound.play()
+            return True
+        else:
+            miss_sound.play(0, 2000)
+            return False
+
     async def validate_shot(self, active_cell):
         """
         Marks the active cell as hit.
@@ -376,7 +405,7 @@ class GameManager:
         """
         if active_cell.hit():
             await asyncio.sleep(0.3)
-            await self.endgame()
+            self.endgame()
             hit_sound.play()
 
             return True
@@ -389,13 +418,11 @@ class GameManager:
     checks if the game is over
     """
 
-    async def endgame(self):
-        if await self.__player1.board.gameover():
+    def endgame(self):
+        self.game_over = True
+        if self.__player1.board.gameover():
             self.won = False
-            self.game_over = True
-        elif await self.__player2.board.gameover():
+        elif self.__player2.board.gameover():
             self.won = True
-            self.game_over = True
         elif self.client and self.client.game_over:
             self.won = self.client.won
-            self.game_over = True

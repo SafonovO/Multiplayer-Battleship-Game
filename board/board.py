@@ -257,5 +257,5 @@ class Board:
 
         return self.__cells[column][row]
 
-    async def gameover(self):
+    def gameover(self):
         return all(ship.sunk() for ship in self.__ships)
