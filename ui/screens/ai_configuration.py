@@ -13,10 +13,11 @@ class AIConfiguration(Screen):
         self.draw_background = True
         text = make_text("Difficulty", (650, 100), 50, Colours.GOLD.value)
         quit_button = make_button(650, 550, "Cancel", 75, reactive=True)
-        easy_button = make_button(400, 175, "Easy", 20, image=confirm_button_image)
-        hard_button = make_button(900, 175, "Hard", 20, image=confirm_button_image)
+        easy_button = make_button(300, 175, "Easy", 20, image=confirm_button_image)
+        med_button = make_button(650, 175, "Medium", 20, image=confirm_button_image)
+        hard_button = make_button(1000, 175, "Hard", 20, image=confirm_button_image)
 
-        for button in [quit_button, easy_button, hard_button]:
+        for button in [quit_button, easy_button, med_button, hard_button]:
             self.button_array.append(button)
 
         for tuple in [text]:
@@ -27,6 +28,10 @@ class AIConfiguration(Screen):
             if self.button_array[Element.EASY_BUTTON.value].is_hovered(mouse):
                 click_sound.play()
                 manager.create_ai_game(SHIP_COUNT, BOARD_SIZE, AIDifficulty.EASY)
+                return router.navigate_to("ai_play")
+            if self.button_array[Element.MED_BUTTON.value].is_hovered(mouse):
+                click_sound.play()
+                manager.create_ai_game(SHIP_COUNT, BOARD_SIZE, AIDifficulty.MEDIUM)
                 return router.navigate_to("ai_play")
             if self.button_array[Element.HARD_BUTTON.value].is_hovered(mouse):
                 click_sound.play()
