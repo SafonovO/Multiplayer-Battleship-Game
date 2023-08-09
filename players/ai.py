@@ -28,6 +28,7 @@ class AI(Opponent):
 
 class EasyAI(AI):
     def __init__(self,ship_count,game_size):
+        # print("started easy ai game")
         super().__init__(ship_count,game_size)
         self.init_ships()
         self.guessed = []
@@ -49,6 +50,7 @@ class EasyAI(AI):
 
 class MedAI(AI):
     def __init__(self,ship_count,game_size):
+        # print("Started med ai game")
         super().__init__(ship_count,game_size)
         self.init_ships()
         self.guessed = []
@@ -166,6 +168,7 @@ class MedAI(AI):
 
 class HardAI(AI):
     def __init__(self,ship_count,game_size, opp):
+        # print("started Hard AI game")
         super().__init__(ship_count,game_size)
         self.init_ships()
         self.guessed = []

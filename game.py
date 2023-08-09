@@ -197,6 +197,10 @@ async def AI_settings():
                     # ai_level = 0 indicates easy ai. simalar for 1, 2
                     ai_level = 0
                     loop = False
+                elif button_array[Element.MED_BUTTON.value].is_hovered(mouse):
+                    click_sound.play()
+                    ai_level = 1
+                    loop = False
                 elif button_array[Element.HARD_BUTTON.value].is_hovered(mouse):
                     click_sound.play()
                     ai_level = 2

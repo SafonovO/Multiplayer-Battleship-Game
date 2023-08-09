@@ -4,7 +4,7 @@ from enum import Flag
 from client import Client
 from players.opponent import Opponent
 from players.player import Player
-from players.ai import EasyAI, AI, HardAI
+from players.ai import EasyAI, AI, HardAI, MedAI
 
 import pygame
 from pygame.locals import *

@@ -25,12 +25,13 @@ class Element(Enum):
     PLAY_BUTTON=1
     JOIN_BUTTON=1
     EASY_BUTTON=1
+    MED_BUTTON=2
     ROTATE_BUTTON=1
     FIRE_BUTTON=1
     AI_PLAY_BUTTON=2
     CONFIRM_BUTTON=2
     CREATE_BUTTON=2
-    HARD_BUTTON=2
+    HARD_BUTTON=3
     
 def make_button(x, y, text, font_size, reactive=False, image=base_button_image):
         button = Button(image=image, pos=(x, y))
@@ -96,10 +97,11 @@ class Drawer():
         text_rect = text.get_rect(center=(650, 100))
         text_tuple=(text,text_rect)
         quit_button = make_button(650, 550, "QUIT", 75, reactive=True)
-        easy_button = make_button(400, 175, "Easy", 20, image=confirm_button_image)
-        hard_button = make_button(900, 175, "Hard", 20, image=confirm_button_image)
+        easy_button = make_button(300, 175, "Easy", 20, image=confirm_button_image)
+        med_button = make_button(650, 175, "Medium", 20, image=confirm_button_image)
+        hard_button = make_button(1000, 175, "Hard", 20, image=confirm_button_image)
         
-        for button in [quit_button, easy_button, hard_button]:
+        for button in [quit_button, easy_button, med_button, hard_button]:
             button_array.append(button)
             
         for tuple in [text_tuple]:
