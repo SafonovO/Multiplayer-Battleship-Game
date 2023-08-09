@@ -28,15 +28,15 @@ class AIConfiguration(Screen):
             if self.button_array[Element.EASY_BUTTON.value].is_hovered(mouse):
                 click_sound.play()
                 manager.create_ai_game(SHIP_COUNT, BOARD_SIZE, AIDifficulty.EASY)
-                return router.navigate_to("ai_play")
+                return router.navigate_to("placement")
             if self.button_array[Element.MED_BUTTON.value].is_hovered(mouse):
                 click_sound.play()
                 manager.create_ai_game(SHIP_COUNT, BOARD_SIZE, AIDifficulty.MEDIUM)
-                return router.navigate_to("ai_play")
+                return router.navigate_to("placement")
             if self.button_array[Element.HARD_BUTTON.value].is_hovered(mouse):
                 click_sound.play()
                 manager.create_ai_game(SHIP_COUNT, BOARD_SIZE, AIDifficulty.HARD)
-                return router.navigate_to("ai_play")
+                return router.navigate_to("placement")
             if self.button_array[Element.QUIT_BUTTON.value].is_hovered(mouse):
                 click_sound.play()
                 return router.navigate_back()

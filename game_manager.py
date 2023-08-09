@@ -213,7 +213,7 @@ class GameManager:
 
             self.__player1.large_board.get_cell(c[0], c[1]).draw_cell_color(SCREEN, color)
 
-    async def place_ship(self, num_left, vertical):
+    def place_ship(self, num_left, vertical):
         """
         Create a list of cells that this ship would occupy
 

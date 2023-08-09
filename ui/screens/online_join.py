@@ -2,7 +2,6 @@ import string
 import pygame
 from ui.colours import Colours
 from ui.elements import make_button, make_text, quit_button_image
-from ui.fonts import get_font
 from ui.input import Input
 from ui.router import Element, Screen
 from ui.sounds import click_sound

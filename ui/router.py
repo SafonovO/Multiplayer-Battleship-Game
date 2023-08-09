@@ -1,4 +1,5 @@
 import asyncio
+from typing import Type
 import pygame
 from enum import Enum
 from pygame.locals import *
@@ -58,19 +59,17 @@ class Screen:
 
 
 class Router:
-    def __init__(self, manager: GameManager, screens: dict[str, Screen] = {}) -> None:
+    def __init__(self, manager: GameManager, screens: dict[str, Type[Screen]] = {}) -> None:
         self.routing_stack: list[Screen] = []
         self.manager = manager
         self.screens = screens
 
     def navigate_to(self, screen_name: str):
-        screen = self.screens.get(screen_name)
-        if screen == None:
+        screen_type = self.screens.get(screen_name)
+        if screen_type == None:
             raise KeyError(f"No screen with name {screen_name}")
-        if screen in self.routing_stack:
-            self.routing_stack = self.routing_stack[: self.routing_stack.index(screen) + 1]
-        else:
-            self.routing_stack.append(screen)
+        screen = screen_type()
+        self.routing_stack.append(screen)
 
     def navigate_back(self):
         self.routing_stack.pop()

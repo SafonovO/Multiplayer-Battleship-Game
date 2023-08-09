@@ -1,0 +1,88 @@
+import pygame
+from ui.colours import Colours
+from ui.elements import make_button, make_text, confirm_button_image, quit_button_image
+from ui.fonts import get_font
+from ui.router import Element, Screen
+from ui.sounds import click_sound
+from game_config import SHIP_COUNT
+
+
+class Placement(Screen):
+    def __init__(self) -> None:
+        super().__init__()
+        self.draw_background = True
+        self.ships_left = SHIP_COUNT
+        self.ship_vertical = True
+
+        placement_board_label = make_text("Board Setup", (425, 100), 30, Colours.WHITE.value)
+        confirm_button = make_button(1000, 225, "Place", 20, image=confirm_button_image)
+        quit_button = make_button(1000, 25, "QUIT", 20, image=quit_button_image)
+        rotate_button = make_button(1000, 150, "Rotate", 20, image=confirm_button_image)
+        ships_left_label = make_text(
+            f"Ships Left: {str(self.ships_left)}", (1000, 1000), 30, Colours.WHITE.value
+        )
+
+        for tuple in [placement_board_label, ships_left_label]:
+            self.text_array.append(tuple)
+
+        for button in [quit_button, rotate_button, confirm_button]:
+            self.button_array.append(button)
+
+    def render(self, manager) -> None:
+        if self.ships_left <= 0:
+            return
+        manager.update_placement()
+        # active cell is teh cell we are clicking on
+        if manager.get_active_cell() != None:
+            """
+            We have selected a cell.
+
+            First, display the cell as text on screen.
+
+            If the user then clicks FIRE, we call the game
+            manager to execute the fire
+
+            Here, I want to draw all the cells that will be occupied
+            by the ship i'm about to place.
+
+            IF there is a conflict, i will draw  the ship's cells in red
+            if there is no conflict, the ship will be drawn in green
+
+            there is a conflict IF:
+                - one or more cells that this ship will occupy is already
+                occupied by some ship
+                - one or more cells that this ship will occupy exceeds the
+                boundaries of the board
+
+            If the user attempts to place a ship in an invlaid position,
+            simply do nothing
+            """
+            manager.preview_ship(self.ships_left, self.ship_vertical)
+
+        ships_left_label = make_text(
+            f"Ships Left: {str(self.ships_left)}", (1000, 1000), 30, Colours.WHITE.value
+        )
+        self.text_array[1] = ships_left_label
+
+        pygame.display.flip()
+
+    def handle_event(self, event, mouse, router, manager):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            # check if we clicked a cell or something else
+            if not manager.set_active_cell_placement(mouse):
+                if self.button_array[Element.QUIT_BUTTON.value].is_hovered(mouse):
+                    click_sound.play()
+                    router.navigate_to("main_menu")
+
+                # if we hit confirm, place with the manager
+                if manager.active_cell is not None and self.button_array[
+                    Element.CONFIRM_BUTTON.value
+                ].is_hovered(mouse):
+                    click_sound.play()
+                    successful_placement = manager.place_ship(self.ships_left, self.ship_vertical)
+                    # if the placement is successful, subtract the number of ships remaining.
+                    if successful_placement:
+                        self.ships_left -= 1
+
+                if self.button_array[Element.ROTATE_BUTTON.value].is_hovered(mouse):
+                    self.ship_vertical = not self.ship_vertical

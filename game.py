@@ -16,11 +16,13 @@ from ui.screens.all import (
     OnlineCreatePending,
     OnlineGameOptions,
     OnlineJoin,
+    Placement,
     SelectOpponent,
 )
 from game_manager import BG, SCREEN, GameManager
 from ui.router import Drawer, button_array, Element, Router, Screen
 from client import Stages
+from utilities import quit_game
 
 MAX_FRAME_RATE = 80
 
@@ -58,7 +60,7 @@ async def placement(ship_count, game_size):
     vertical = True
     ships_left = ship_count
     # print(ai_level)
-    draw.draw_screen('placement',ships_left=ships_left)
+    draw.draw_screen("placement", ships_left=ships_left)
 
     while ships_left > 0:
         mouse = pygame.mouse.get_pos()
@@ -210,8 +212,8 @@ async def human_game_join():
 async def AI_settings():
     draw.clear_array()
     global ai_level
-    draw.draw_screen('AI_settings')
-    
+    draw.draw_screen("AI_settings")
+
     loop = True
     while loop:
         mouse = pygame.mouse.get_pos()
@@ -405,12 +407,13 @@ async def main():
     router = Router(
         manager,
         {
-            "main_menu": MainMenu(),
-            "select_opponent": SelectOpponent(),
-            "ai_configuration": AIConfiguration(),
-            "online_game_options": OnlineGameOptions(),
-            "online_create_pending": OnlineCreatePending(),
-            "online_join": OnlineJoin(),
+            "main_menu": MainMenu,
+            "select_opponent": SelectOpponent,
+            "ai_configuration": AIConfiguration,
+            "online_game_options": OnlineGameOptions,
+            "online_create_pending": OnlineCreatePending,
+            "online_join": OnlineJoin,
+            "placement": Placement,
         },
     )
     router.navigate_to("main_menu")
@@ -432,11 +435,6 @@ async def main():
 def keyboard_interrupt(stop: asyncio.Event):
     stop.set()
     quit_game()
-
-
-def quit_game():
-    pygame.quit()
-    sys.exit()
 
 
 if __name__ == "__main__":
