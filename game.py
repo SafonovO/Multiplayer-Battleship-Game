@@ -9,8 +9,9 @@ from board.board import Board
 from ui.button import Button, ReactiveButton, TextButton
 from ui.fonts import get_font
 from ui.input import Input
+from ui.screens.all import MainMenu, SelectOpponent
 from game_manager import BG, SCREEN, GameManager
-from ui.router import Drawer, button_array,Element
+from ui.router import Drawer, button_array, Element, Router, Screen
 from client import Stages
 
 pygame.init()
@@ -21,12 +22,13 @@ quit_button_image = pygame.image.load("assets/quit.png")
 confirm_button_image = pygame.image.load("assets/ConfirmButton.png")
 
 mixer.init()
-mixer.music.load('assets/sounds/bg.ogg')
-click_sound = pygame.mixer.Sound('assets/sounds/ui-click.mp3')
+mixer.music.load("assets/sounds/bg.ogg")
+click_sound = pygame.mixer.Sound("assets/sounds/ui-click.mp3")
 
 PLAYING_SURFACE = pygame.Rect(100, 50, 1100, 700)
 BOARD_SIZE = 2
 NUM_SHIPS = 2
+
 
 def make_button(x, y, text, font_size, reactive=False, image=base_button_image):
     button = Button(image=image, pos=(x, y))
@@ -38,6 +40,7 @@ def make_button(x, y, text, font_size, reactive=False, image=base_button_image):
         )
     return TextButton(button, text=text, font=get_font(font_size))
 
+
 async def placement(ship_count, game_size):
     draw.clear_array()
     # Track the orientation of the ship we are about to place
@@ -45,7 +48,7 @@ async def placement(ship_count, game_size):
     vertical = True
     ships_left = ship_count
     print(f"ai_easy? {ai_easy}")
-    draw.draw_screen('placement',ships_left=ships_left)
+    draw.draw_screen("placement", ships_left=ships_left)
 
     while ships_left > 0:
         mouse = pygame.mouse.get_pos()
@@ -94,7 +97,9 @@ async def placement(ship_count, game_size):
                         await main()
 
                     # if we hit confirm, place with the manager
-                    if manager.active_cell is not None and button_array[Element.CONFIRM_BUTTON.value].is_hovered(mouse):
+                    if manager.active_cell is not None and button_array[
+                        Element.CONFIRM_BUTTON.value
+                    ].is_hovered(mouse):
                         click_sound.play()
                         successful_placement = await manager.place_ship(ships_left, vertical)
                         await asyncio.sleep(0.1)
@@ -114,15 +119,14 @@ async def placement(ship_count, game_size):
                         vertical = not vertical
 
 
-
 async def select_opponent():
     draw.clear_array()
-    draw.draw_screen('select_opponent')
+    draw.draw_screen("select_opponent")
     loop = True
     while loop:
         mouse = pygame.mouse.get_pos()
         # Draw the backgroudn
-        draw.render_screen(mouse,playing_surface=True)
+        draw.render_screen(mouse, playing_surface=True)
         pygame.display.flip()
 
         for event in pygame.event.get():
@@ -145,14 +149,12 @@ async def select_opponent():
                     await main()
 
 
-
 async def human_settings():
     draw.clear_array()
     global ai_game, create
-    draw.draw_screen('human_settings')
+    draw.draw_screen("human_settings")
     loop = True
     while loop:
-        
         mouse = pygame.mouse.get_pos()
         draw.render_screen(mouse)
         pygame.display.flip()
@@ -209,7 +211,10 @@ async def human_game_join():
                 if button_array[Element.QUIT_BUTTON.value].is_hovered(mouse):
                     click_sound.play()
                     await main()
-                if button_array[Element.JOIN_BUTTON.value].is_hovered(mouse) and len(code_input.value) == 9:
+                if (
+                    button_array[Element.JOIN_BUTTON.value].is_hovered(mouse)
+                    and len(code_input.value) == 9
+                ):
                     click_sound.play()
                     return code_input.value
             if event.type == pygame.KEYDOWN:
@@ -222,13 +227,13 @@ async def human_game_join():
 async def AI_settings():
     draw.clear_array()
     global ai_easy
-    draw.draw_screen('AI_settings')
-    
+    draw.draw_screen("AI_settings")
+
     loop = True
     while loop:
         mouse = pygame.mouse.get_pos()
         # Draw the backgroudn
-        draw.render_screen(mouse,playing_surface=True)
+        draw.render_screen(mouse, playing_surface=True)
         pygame.display.flip()
 
         for event in pygame.event.get():
@@ -250,7 +255,6 @@ async def AI_settings():
                     await main()
 
 
-
 async def play():
     draw.clear_array()
     """
@@ -262,7 +266,7 @@ async def play():
     (100, 50)
     """
 
-    draw.draw_screen('play')
+    draw.draw_screen("play")
 
     change_turn = False if ai_game or create else True
     # BUG: game freezes after first move until next turn for multiplayer
@@ -271,7 +275,7 @@ async def play():
     while not manager.game_over:
         mouse = pygame.mouse.get_pos()
 
-        draw.render_screen(mouse,playing_surface=True)
+        draw.render_screen(mouse, playing_surface=True)
 
         manager.update_boards()
 
@@ -288,8 +292,8 @@ async def play():
             cell_coords = manager.get_active_cell().coordinates
             letter = Board.letters[cell_coords[0]]
             num = cell_coords[1] + 1
-            draw.draw_coord(num,letter)
-        
+            draw.draw_coord(num, letter)
+
         pygame.display.flip()
 
         if manager.client:
@@ -312,10 +316,10 @@ async def play():
                         click_sound.play()
                         # return to main menu
                         await main()
-                    
+
                     # if we hit confirm, fire with the manager
                     if button_array[Element.FIRE_BUTTON.value].is_hovered(mouse):
-                        if manager.active_cell!=None:
+                        if manager.active_cell != None:
                             change_turn = await manager.fire_shot()
                             # update = True
                             draw.clear_coord()
@@ -323,29 +327,6 @@ async def play():
     # outside of while not manager.game_over
     if manager.client:
         manager.client.end_game(manager.won)
-
-async def main_menu():
-    draw.clear_array()
-    draw.main_menu()
-    loop = True
-    while loop:
-        # Draw the background
-        mouse = pygame.mouse.get_pos()
-        draw.render_screen(mouse)
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                quit_game()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if button_array[Element.PLAY_BUTTON.value].is_hovered(mouse):
-                    click_sound.play()
-                    loop = False
-                if button_array[Element.QUIT_BUTTON.value].is_hovered(mouse):
-                    click_sound.play()
-                    quit_game()
-
-        pygame.display.update()
-
 
 
 def endgamescreen(won):
@@ -373,47 +354,49 @@ def endgamescreen(won):
         pygame.display.update()
 
 
-
-async def main():
+def main():
     global ai_game, ai_easy, create, manager, draw
-    draw = Drawer()
+    # draw = Drawer()
     ai_game = True
     ai_easy = None
     create = False
     manager = GameManager()
 
-    await main_menu()
-    await select_opponent()
-    if ai_game:
-        await AI_settings()
-    else:
-        await human_settings()
-    await manager.create_game(
-        ai_game=ai_game,
-        ship_count=NUM_SHIPS,
-        game_size=BOARD_SIZE,
-        create=create,
-        easy_ai = ai_easy
-    )
-    await asyncio.sleep(0.1)
-    if not ai_game:
-        if create:
-            await human_game_pending()
-        else:
-            code = await human_game_join()
-            manager.client.join_game(code)
-    await asyncio.sleep(0.1) # everything breaks if you remove this line
-    await placement(NUM_SHIPS, BOARD_SIZE)
-    await play() # loops forever
-    endgamescreen(manager.won)
+    router = Router({"main_menu": MainMenu(), "select_opponent": SelectOpponent()})
 
+    router.navigate_to("main_menu")
 
+    while True:
+        router.render()
+
+    # FIXME: migrate to new UI structure and remove this chunk of dead code
+    # await main_menu()
+    # await select_opponent()
+    # if ai_game:
+    #     await AI_settings()
+    # else:
+    #     await human_settings()
+    # await manager.create_game(
+    #     ai_game=ai_game, ship_count=NUM_SHIPS, game_size=BOARD_SIZE, create=create, easy_ai=ai_easy
+    # )
+    # await asyncio.sleep(0.1)
+    # if not ai_game:
+    #     if create:
+    #         await human_game_pending()
+    #     else:
+    #         code = await human_game_join()
+    #         manager.client.join_game(code)
+    # await asyncio.sleep(0.1)  # everything breaks if you remove this line
+    # await placement(NUM_SHIPS, BOARD_SIZE)
+    # await play()  # loops forever
+    # endgamescreen(manager.won)
 
 
 def quit_game():
     pygame.quit()
     sys.exit()
 
-mixer.music.play(-1)
-asyncio.run(main())
 
+mixer.music.play(-1)
+if __name__ == "__main__":
+    main()
