@@ -7,7 +7,6 @@ from players.ai import EasyAI, AI, HardAI, MedAI
 
 import pygame
 from pygame.locals import *
-from pygame import mixer
 from ships.normal_ship import NormalShip
 from ui.sounds import miss_sound, hit_sound, click_sound, fire_sound
 
@@ -24,7 +23,6 @@ class AIDifficulty(Enum):
 
 
 SCREEN = pygame.display.set_mode((1300, 800))
-mixer.init()
 
 async_tasks = set()
 
