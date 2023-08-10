@@ -75,8 +75,9 @@ class Placement(Screen):
                     if successful_placement:
                         self.ships_left -= 1
                     if self.ships_left <= 0:
+                        if manager.ai_game:
+                            return router.navigate_to("play")
                         manager.client.set_placement()
-                        return router.navigate_to("play")
 
                 if self.rotate_button.is_hovered(mouse):
                     self.ship_vertical = not self.ship_vertical
@@ -84,4 +85,7 @@ class Placement(Screen):
                 if self.random_button.is_hovered(mouse):
                     click_sound.play()
                     manager.place_random(self.ships_left)
-                    return router.navigate_to("play")
+                    if manager.ai_game:
+                        return router.navigate_to("play")
+                    manager.client.set_placement()
+                    

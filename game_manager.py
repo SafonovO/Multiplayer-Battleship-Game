@@ -66,7 +66,7 @@ class GameManager:
             raise Exception("Multiplayer client must be started first!")
         print(f"{'Creating' if creating_game else 'Joining'} online game")
         self.game_over = False
-        self.turn = Turn.PLAYER_ONE
+        self.turn = Turn.PLAYER_ONE if creating_game else Turn.PLAYER_TWO
         self.run = True
         self.won = False
         self.ai_game = False
