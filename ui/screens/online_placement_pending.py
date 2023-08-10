@@ -25,6 +25,8 @@ class OnlinePlacementPending(Screen):
         self.button_array = [self.quit_button]
 
     async def render(self, mouse, router, manager) -> None:
+        if manager.client.error != None:
+            return router.navigate_to("error")
         if manager.client.stage == Stages.PLAY:
             return router.navigate_to("play")
 

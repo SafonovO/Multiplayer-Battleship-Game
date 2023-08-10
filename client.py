@@ -68,12 +68,12 @@ class Client:
         }"""
         print(f"response {response}")
         msg: dict[str, Any] = json.loads(response)
+        if msg.get("error"):
+            self.error = msg.get("error")
+            self.stage = Stages.ERROR
+            return
         match msg.get("request"):
             case "new_game":
-                if msg.get("error"):
-                    self.error = msg.get("error")
-                    self.stage = Stages.ERROR
-                    return
                 self.game_id = msg.get("game_id")
                 self.code = msg.get("password")
                 self.stage = Stages.PENDING_OPPONENT_JOIN

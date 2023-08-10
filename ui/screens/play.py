@@ -30,6 +30,8 @@ class Play(Screen):
         self.button_array = [self.quit_button, self.fire_button]
 
     async def render(self, mouse, router, manager):
+        if manager.client.error != None:
+            return router.navigate_to("error")
         manager.update_boards()
         if manager.game_over:
             return router.navigate_to("endgame")

@@ -138,8 +138,9 @@ class Server:
                         available_slot = 1
                     if game.players[0].socket == None:
                         available_slot = 0
-                    self.socket_to_player[websocket] = game.players[available_slot]
                     game.players[available_slot].socket = websocket
+                    self.socket_to_player[websocket] = game.players[available_slot]
+                    self.player_to_game[game.players[available_slot]] = game
                     response = {
                         "request": "new_game",
                         "game_id": game.id,
