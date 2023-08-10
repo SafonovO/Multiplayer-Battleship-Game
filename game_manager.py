@@ -24,8 +24,6 @@ class AIDifficulty(Enum):
 
 SCREEN = pygame.display.set_mode((1300, 800))
 
-async_tasks = set()
-
 
 class GameManager:
     """
@@ -68,6 +66,9 @@ class GameManager:
         self.turn = Turn.PLAYER_ONE
         self.run = True
         self.won = False
+        self.ai_game = False
+        self.ai_difficulty = None
+
         self.__player1 = Player(ship_count, board_size)
         self.__player2 = Opponent(ship_count, board_size)
         self.client.identify()
@@ -81,6 +82,9 @@ class GameManager:
         self.turn = Turn.PLAYER_ONE
         self.run = True
         self.won = False
+        self.ai_game = True
+        self.ai_difficulty = ai_difficulty
+
         self.__player1 = Player(ship_count, board_size)
         match ai_difficulty:
             case AIDifficulty.EASY:
@@ -303,6 +307,17 @@ class GameManager:
             self.active_cell = self.__player1.large_board.get_cell_mouse(mouse)
             return True
         return False
+    
+    def change_turn_ai(self):
+        self.turn ^= Turn.PLAYER_TWO
+        if self.turn != Turn.PLAYER_TWO:
+            return
+        if isinstance(self.__player2, AI):
+            x, y = self.__player2.guess()
+            hit = self.validate_shot_new(self.__player1.board.get_cell(x, y))
+            if hit:
+                self.__player2.set_last_hit(x, y)
+        self.turn ^= Turn.PLAYER_TWO
 
     async def change_turn(self):
         self.turn ^= Turn.PLAYER_TWO

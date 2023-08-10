@@ -1,5 +1,6 @@
 import string
 import pygame
+from game_manager import AIDifficulty
 from ui.colours import Colours
 from ui.elements import make_button, confirm_button_image, quit_button_image
 from ui.router import Screen
@@ -12,6 +13,10 @@ class Play(Screen):
         super().__init__(manager)
         self.draw_background = True
         self.selected_coords = ()
+        self.change_turn = False if manager.ai_game or manager.client.player_id == "0" else True
+        
+        if manager.ai_game and manager.ai_difficulty == AIDifficulty.HARD:
+            manager.hard_ai_setup()
 
         opponent_board_label = Text("OPPONENT'S BOARD", (425, 100), 30, Colours.WHITE)
         my_board_label = Text("MY BOARD", (1000, 325), 30, Colours.WHITE)
@@ -26,6 +31,8 @@ class Play(Screen):
 
     def render(self, mouse, router, manager):
         manager.update_boards()
+        if manager.game_over:
+            return router.navigate_to("endgame")
         if manager.get_active_cell() != None:
             """
             We have selected a cell.
@@ -37,6 +44,9 @@ class Play(Screen):
             """
             cell_coords = manager.get_active_cell().coordinates
             self.coord_text.value = f"({string.ascii_uppercase[cell_coords[0]]}, {cell_coords[1] + 1})"
+        if self.change_turn and manager.ai_game:
+            self.change_turn = False
+            manager.change_turn_ai()
 
     def handle_event(self, event, mouse, router, manager):
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -49,7 +59,7 @@ class Play(Screen):
                 # if we hit confirm, fire with the manager
                 if self.fire_button.is_hovered(mouse):
                     if manager.active_cell != None:
-                        change_turn = manager.fire_shot_new()
+                        self.change_turn = manager.fire_shot_new()
                         self.coord_text.value = ""
                         if manager.game_over:
                             return router.navigate_to("endgame")
