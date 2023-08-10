@@ -16,14 +16,15 @@ class Placement(Screen):
 
         placement_board_label = Text("Board Setup", (425, 100), 30, Colours.WHITE)
         self.confirm_button = make_button(1000, 225, "Place", 20, image=confirm_button_image)
+        self.random_button = make_button(1000, 300, "Random", 20, image=confirm_button_image)
         self.quit_button = make_button(1000, 25, "QUIT", 20, image=quit_button_image)
         self.rotate_button = make_button(1000, 150, "Rotate", 20, image=confirm_button_image)
         self.ships_left_label = Text(
-            f"Ships Left: {str(self.ships_left)}", (1000, 1000), 30, Colours.WHITE
+            f"Ships Left: {str(self.ships_left)}", (1000, 500), 30, Colours.WHITE
         )
 
         self.text_array = [placement_board_label, self.ships_left_label]
-        self.button_array = [self.quit_button, self.rotate_button, self.confirm_button]
+        self.button_array = [self.quit_button, self.rotate_button, self.confirm_button, self.random_button]
 
     async def render(self, mouse, router, manager) -> None:
         if self.ships_left <= 0:
@@ -78,3 +79,8 @@ class Placement(Screen):
 
                 if self.rotate_button.is_hovered(mouse):
                     self.ship_vertical = not self.ship_vertical
+
+                if self.random_button.is_hovered(mouse):
+                    click_sound.play()
+                    manager.place_random(self.ships_left)
+                    return router.navigate_to("play")

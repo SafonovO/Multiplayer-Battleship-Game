@@ -9,7 +9,3 @@ class Opponent(Player):
 
     def set_client(self, client):
         self.client = client
-
-
-    # def init_ships(self) -> bool:
-    #     pass

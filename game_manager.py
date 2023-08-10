@@ -130,6 +130,9 @@ class GameManager:
         if self.active_cell is not None:
             self.active_cell.draw_selected_cell(SCREEN)
 
+    def place_random(self, num_ships):
+        self.__player1.board.place_ships(num_ships=num_ships)
+
     def preview_ship(self, num_left: int, vertical: bool):
         """
         This function previews the ship that is about to be placed.
