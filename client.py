@@ -13,6 +13,7 @@ class Stages(Enum):
     PENDING_OPPONENT_JOIN = 0
     PLACEMENT = 1
     PENDING_OPPONENT_PLACEMENT = 2
+    PLAY = 3
 
 
 class Client:

@@ -24,7 +24,12 @@ class Placement(Screen):
         )
 
         self.text_array = [placement_board_label, self.ships_left_label]
-        self.button_array = [self.quit_button, self.rotate_button, self.confirm_button, self.random_button]
+        self.button_array = [
+            self.quit_button,
+            self.rotate_button,
+            self.confirm_button,
+            self.random_button,
+        ]
 
     async def render(self, mouse, router, manager) -> None:
         if self.ships_left <= 0:
@@ -78,6 +83,7 @@ class Placement(Screen):
                         if manager.ai_game:
                             return router.navigate_to("play")
                         manager.client.set_placement()
+                        return router.navigate_to("online_placement_pending")
 
                 if self.rotate_button.is_hovered(mouse):
                     self.ship_vertical = not self.ship_vertical
@@ -88,4 +94,4 @@ class Placement(Screen):
                     if manager.ai_game:
                         return router.navigate_to("play")
                     manager.client.set_placement()
-                    
+                    return router.navigate_to("online_placement_pending")
