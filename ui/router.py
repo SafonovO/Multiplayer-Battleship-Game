@@ -1,3 +1,5 @@
+import asyncio
+import sys
 import pygame
 from game_manager import GameManager
 from pygame.locals import *
@@ -5,7 +7,6 @@ from typing import Type
 from ui.button import Button
 from ui.colours import Colours
 from ui.text import Text
-from utilities import quit_game
 
 
 pygame.init()
@@ -22,6 +23,7 @@ class Screen:
         self.text_array: list[Text] = []
         self.button_array: list[Button] = []
         self.draw_background = False
+        self.should_start_client = False
 
     #  "Router" (with quotes) is a forward reference to the class below to avoid cyclic reference
     def render(self, mouse: tuple[int, int], router: "Router", manager: GameManager) -> None:
@@ -36,9 +38,11 @@ class Screen:
 
 
 class Router:
-    def __init__(self, manager: GameManager, screens: dict[str, Type[Screen]] = {}) -> None:
+    def __init__(self, manager: GameManager, start_client: asyncio.Event, stop: asyncio.Future, screens: dict[str, Type[Screen]] = {}) -> None:
         self.routing_stack: list[Screen] = []
         self.manager = manager
+        self.start_client = start_client
+        self.stop = stop
         self.screens = screens
 
     def navigate_to(self, screen_name: str):
@@ -61,6 +65,8 @@ class Router:
             SCREEN.blit(BG, (0, 0))
             if screen.draw_background:
                 pygame.draw.rect(SCREEN, Colours.NAVY_BLUE.value, PLAYING_SURFACE)
+            if not self.start_client.is_set() and screen.should_start_client:
+                self.start_client.set()
             screen.render(mouse, self, self.manager)
             for text in screen.text_array:
                 text.render(SCREEN)
@@ -68,7 +74,14 @@ class Router:
                 button.render(SCREEN, mouse)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    quit_game()
+                    self.quit_game()
                     return
                 screen.handle_event(event, mouse, self, self.manager)
             pygame.display.update()
+
+    def quit_game(self):
+        self.stop.set_result(None)
+        if not self.start_client.is_set():
+            self.start_client.set()
+        pygame.quit()
+        sys.exit(0)

@@ -37,7 +37,7 @@ class Client:
             "details": details,
         }
 
-    async def start(self, stop: asyncio.Event):
+    async def start(self, stop: asyncio.Future):
         print("connecting to server")
         async with websockets.client.connect(URI) as websocket:
             print("Connected to server")
@@ -51,9 +51,9 @@ class Client:
         async for message in websocket:
             self.handle_response(message)
 
-    async def request_sender(self, websocket, stop: asyncio.Event):
+    async def request_sender(self, websocket, stop: asyncio.Future):
         print("Request sender ready")
-        while not stop.is_set():
+        while not stop.done():
             message = await self.requests.get()
             print(f"message queued: {message}")
             await websocket.send(message)

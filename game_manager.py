@@ -39,15 +39,18 @@ class GameManager:
     2=player2
     """
 
+    client = None
+    won = False
+
     # singleton class
     def __new__(cls):
         if not hasattr(cls, "instance"):
             cls.instance = super(GameManager, cls).__new__(cls)
         return cls.instance
 
-    async def start_client(self, stop: asyncio.Event):
-        print("manager attempting to start client")
+    async def start_client(self, stop: asyncio.Future):
         self.client = Client()
+        print("manager attempting to start client (for real)")
         await self.client.start(stop)
 
     def get_player(self, player_ID):

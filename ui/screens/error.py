@@ -3,7 +3,6 @@ from ui.colours import Colours
 from ui.elements import make_button
 from ui.router import Screen
 from ui.text import Text
-from utilities import quit_game
 
 
 class Error(Screen):
@@ -27,4 +26,4 @@ class Error(Screen):
     def handle_event(self, event, mouse, router, manager):
         if event.type == pygame.MOUSEBUTTONDOWN:
             if self.quit_button.is_hovered(mouse):
-                quit_game()
+                router.quit_game()

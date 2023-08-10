@@ -17,7 +17,6 @@ from ui.screens.all import (
     SelectOpponent,
 )
 from ui.router import Router
-from utilities import quit_game
 
 MAX_FRAME_RATE = 80
 
@@ -89,17 +88,26 @@ async def play():
         manager.client.end_game(manager.won)
 
 
-async def game_loop(stop: asyncio.Event, router: Router):
-    while not stop.is_set():
-        router.render()
-        # the following line is required to allow asyncio operations to proceed alongside the game loop
-        await asyncio.sleep(1 / MAX_FRAME_RATE)
+async def game_loop(stop: asyncio.Future, router: Router):
+    try:
+        while not stop.done():
+            router.render()
+            # the following line is required to allow asyncio operations to proceed alongside the game loop
+            await asyncio.sleep(1 / MAX_FRAME_RATE)
+    except SystemExit:
+        pass
 
 
 async def main():
+    loop = asyncio.get_event_loop()
+    start_client = asyncio.Event()
+    stop = loop.create_future()
+
     manager = GameManager()
     router = Router(
         manager,
+        start_client,
+        stop,
         {
             "main_menu": MainMenu,
             "select_opponent": SelectOpponent,
@@ -115,23 +123,16 @@ async def main():
     )
     router.navigate_to("main_menu")
 
-    loop = asyncio.get_event_loop()
-    stop = asyncio.Event()
-    loop.add_signal_handler(signal.SIGINT, keyboard_interrupt, stop)
+    loop.add_signal_handler(signal.SIGINT, router.quit_game)
 
     try:
-        await asyncio.gather(manager.start_client(stop), game_loop(stop, router))
-    except asyncio.CancelledError:
-        pass
-    except SystemExit:
-        pass
+        asyncio.create_task(game_loop(stop, router))
+        await start_client.wait()
+        if not stop.done():
+            asyncio.create_task(manager.start_client(stop))
+            await stop
     finally:
         loop.remove_signal_handler(signal.SIGINT)
-
-
-def keyboard_interrupt(stop: asyncio.Event):
-    stop.set()
-    quit_game()
 
 
 if __name__ == "__main__":

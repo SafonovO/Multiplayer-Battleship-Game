@@ -1,5 +1,4 @@
 import pygame
-from utilities import quit_game
 from ui.colours import Colours
 from ui.elements import make_button
 from ui.router import Screen
@@ -24,4 +23,4 @@ class MainMenu(Screen):
                 return router.navigate_to("select_opponent")
             if self.quit_button.is_hovered(mouse):
                 click_sound.play()
-                quit_game()
+                router.quit_game()
