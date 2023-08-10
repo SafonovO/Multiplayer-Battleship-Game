@@ -21,7 +21,7 @@ class OnlineJoin(Screen):
             "Enter an invite code to join a game", (650, 375), 30, Colours.WHITE
         )
 
-        self.code_chars = Text("_________", (650, 425), 30, "#b68f40")
+        self.code_chars = Text("_________", (650, 425), 30, Colours.GOLD)
 
         self.join_button = make_button(650, 550, "Join", 50, reactive=True)
 
