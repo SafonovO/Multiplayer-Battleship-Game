@@ -27,7 +27,7 @@ class Button:
 
 
 class Cell:
-    coordinates = (0, 0)
+    coordinates: tuple[int, int] = (0, 0)
     ship: Ship | None = None
     is_hit: bool = False
 

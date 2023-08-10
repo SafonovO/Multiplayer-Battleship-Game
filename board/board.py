@@ -63,9 +63,9 @@ class Board:
     def get_num_ships(self):
         return self.__nships
 
-    def get_ship(self, ID):
+    def get_ship(self, idx: int):
         if self.__ships is not None:
-            return self.__ships[ID]
+            return self.__ships[idx]
 
     # For testing purposes. Print all the cells in the board
     def print_cells(self):

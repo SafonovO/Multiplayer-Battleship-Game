@@ -8,12 +8,8 @@ from players.ai import EasyAI, AI, HardAI, MedAI
 import pygame
 from pygame.locals import *
 from pygame import mixer
-
-from board.board import Board
 from ships.normal_ship import NormalShip
-from ships.ship import Ship
-from ui.button import Button, ReactiveButton, TextButton
-from board.cell import Cell
+from ui.sounds import miss_sound, hit_sound, click_sound, fire_sound
 
 
 class Turn(Flag):
@@ -28,12 +24,7 @@ class AIDifficulty(Enum):
 
 
 SCREEN = pygame.display.set_mode((1300, 800))
-BG = pygame.image.load("assets/Background.png")
 mixer.init()
-miss_sound = pygame.mixer.Sound("assets/sounds/miss.ogg")
-hit_sound = pygame.mixer.Sound("assets/sounds/hit.ogg")
-click_sound = pygame.mixer.Sound("assets/sounds/ui-click.mp3")
-fire_sound = pygame.mixer.Sound("assets/sounds/fire.ogg")
 
 async_tasks = set()
 
@@ -134,7 +125,7 @@ class GameManager:
         if self.active_cell is not None:
             self.active_cell.draw_selected_cell(SCREEN)
 
-    def preview_ship(self, num_left, vertical):
+    def preview_ship(self, num_left: int, vertical: bool):
         """
         This function previews the ship that is about to be placed.
 
