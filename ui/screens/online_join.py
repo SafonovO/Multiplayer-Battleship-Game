@@ -32,6 +32,8 @@ class OnlineJoin(Screen):
     async def render(self, mouse, router, manager):
         if manager.client.stage == Stages.PLACEMENT:
             return router.navigate_to("placement")
+        if manager.client.stage == Stages.PENDING_OPPONENT_JOIN:
+            return router.navigate_to("online_create_pending")
         self.code_chars.value = " ".join(self.code_input.value.ljust(9, "_"))
         if manager.client.error != None:
             return router.navigate_to("error")

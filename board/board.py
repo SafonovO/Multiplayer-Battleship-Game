@@ -63,6 +63,14 @@ class Board:
     def get_num_ships(self):
         return self.__nships
 
+    def get_placement_data(self):
+        cells_in_ships = [[] for ship in self.__ships]
+        for col in self.__cells:
+            for cell in col:
+                if cell.ship != None:
+                    cells_in_ships[self.__ships.index(cell.ship)].append(cell.coordinates)
+        return cells_in_ships
+
     def get_ship(self, idx: int):
         if self.__ships is not None:
             return self.__ships[idx]

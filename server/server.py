@@ -40,6 +40,9 @@ class Game:
     def generate_pw():
         chars = string.ascii_uppercase + string.digits
         return "".join(random.choice(chars) for i in range(9))
+    
+    def is_empty(self):
+        return self.players[0].socket == None and self.players[1].socket == None
 
 
 class Server:
@@ -60,6 +63,7 @@ class Server:
         self.clients = set()
         self.socket_to_player: dict[websockets.server.WebSocketServerProtocol, Player] = {}
         self.code_to_game: dict[str, Game] = {}
+        self.player_to_game: dict[Player, Game] = {}
 
     def create_message(self, request="ok", response="ok"):
         return {"request": request, "response": response}
@@ -88,6 +92,10 @@ class Server:
             socket_player = self.socket_to_player.get(websocket)
             if socket_player:
                 socket_player.socket = None
+                del self.socket_to_player[websocket]
+                game = self.player_to_game.get(socket_player)
+                if game != None:
+                    del self.player_to_game[socket_player]
 
     async def worker(self, websocket: websockets.server.WebSocketServerProtocol, workerID: int):
         while True:
@@ -96,8 +104,9 @@ class Server:
             self.logger.debug(f"worker id: {workerID} packet: {packet}")
             msg: dict = json.loads(packet)
             request = msg.get("request")
-            game_id = msg.get("game")
-            player_id = int(msg.get("player")) if msg.get("player") != None else None
+            player = self.socket_to_player.get(websocket)
+            if player != None:
+                game = self.player_to_game.get(game)
             details = msg.get("details")
             match request:
                 # create a new game
@@ -107,6 +116,7 @@ class Server:
                     self.socket_to_player[websocket] = game.players[0]
                     self.games[game.id] = game
                     self.code_to_game[game.password] = game
+                    self.player_to_game[game.players[0]] = game
                     response = {
                         "request": "new_game",
                         "game_id": game.id,

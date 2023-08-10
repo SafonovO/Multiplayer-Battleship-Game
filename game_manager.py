@@ -424,3 +424,6 @@ class GameManager:
         elif self.client and self.client.game_over:
             self.game_over = True
             self.won = self.client.won
+
+    def get_local_player(self):
+        return self.__player1

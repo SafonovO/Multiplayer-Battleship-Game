@@ -10,10 +10,11 @@ URI = "ws://127.0.0.1:8765"
 
 class Stages(Enum):
     ERROR = -1
-    PENDING_OPPONENT_JOIN = 0
-    PLACEMENT = 1
-    PENDING_OPPONENT_PLACEMENT = 2
-    PLAY = 3
+    WAITING_FOR_CODE = 0
+    PENDING_OPPONENT_JOIN = 1
+    PLACEMENT = 2
+    PENDING_OPPONENT_PLACEMENT = 3
+    PLAY = 4
 
 
 class Client:
@@ -27,7 +28,7 @@ class Client:
         self.my_result = None
         self.won = False
         self.game_over = False
-        self.stage = Stages.PENDING_OPPONENT_JOIN
+        self.stage = Stages.WAITING_FOR_CODE
         self.error = None
 
     def create_message(self, request, details=""):
@@ -75,6 +76,7 @@ class Client:
                     return
                 self.game_id = msg.get("game_id")
                 self.code = msg.get("password")
+                self.stage = Stages.PENDING_OPPONENT_JOIN
                 print(f"set game id to {self.game_id}")
             case "ready_for_placement":
                 print("ready for placement! proceed to placement screen")
@@ -114,8 +116,8 @@ class Client:
         self.player_id = "1"
         print(f"joining game with code {code}")
 
-    def set_placement(self):
-        message = {"request": "set_placement"}
+    def set_placement(self, ships: list[list[tuple[int, int]]]):
+        message = {"request": "set_placement", "ships": ships}
         self.requests.put_nowait(json.dumps(message))
         print("sending placement")
 

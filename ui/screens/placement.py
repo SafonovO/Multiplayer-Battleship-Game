@@ -82,7 +82,7 @@ class Placement(Screen):
                     if self.ships_left <= 0:
                         if manager.ai_game:
                             return router.navigate_to("play")
-                        manager.client.set_placement()
+                        manager.client.set_placement(manager.get_local_player().board.get_placement_data())
                         return router.navigate_to("online_placement_pending")
 
                 if self.rotate_button.is_hovered(mouse):
@@ -93,5 +93,5 @@ class Placement(Screen):
                     manager.place_random(self.ships_left)
                     if manager.ai_game:
                         return router.navigate_to("play")
-                    manager.client.set_placement()
+                    manager.client.set_placement(manager.get_local_player().board.get_placement_data())
                     return router.navigate_to("online_placement_pending")
