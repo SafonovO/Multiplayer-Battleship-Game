@@ -29,7 +29,7 @@ class Play(Screen):
         self.text_array = [opponent_board_label, my_board_label, select_text, self.coord_text]
         self.button_array = [self.quit_button, self.fire_button]
 
-    def render(self, mouse, router, manager):
+    async def render(self, mouse, router, manager):
         manager.update_boards()
         if manager.game_over:
             return router.navigate_to("endgame")
@@ -46,7 +46,7 @@ class Play(Screen):
             self.coord_text.value = f"({string.ascii_uppercase[cell_coords[0]]}, {cell_coords[1] + 1})"
         if self.change_turn and manager.ai_game:
             self.change_turn = False
-            manager.change_turn_ai()
+            await manager.change_turn()
 
     def handle_event(self, event, mouse, router, manager):
         if event.type == pygame.MOUSEBUTTONDOWN:

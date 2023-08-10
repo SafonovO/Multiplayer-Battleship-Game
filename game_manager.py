@@ -288,10 +288,6 @@ class GameManager:
         """
         return True
 
-    def randomize_ships(self):
-        # place player1's ships randomly
-        self.__player1.board.place_ships()
-
     def get_active_cell(self):
         return self.active_cell
 
@@ -324,30 +320,31 @@ class GameManager:
 
     async def change_turn(self):
         self.turn ^= Turn.PLAYER_TWO
-        if self.turn == Turn.PLAYER_TWO:
-            if isinstance(self.__player2, AI):
-                x, y = self.__player2.guess()
-                hit = await self.validate_shot(self.__player1.board.get_cell(x, y))
-                await asyncio.sleep(0.5)
-                if hit:
-                    # if the cell is a hit, set last_hit to x, y
-                    self.__player2.set_last_hit(x, y)
+        if self.turn != Turn.PLAYER_TWO:
+            return
+        if isinstance(self.__player2, AI):
+            x, y = self.__player2.guess()
+            hit = self.validate_shot_new(self.__player1.board.get_cell(x, y))
+            await asyncio.sleep(0.5)
+            if hit:
+                # if the cell is a hit, set last_hit to x, y
+                self.__player2.set_last_hit(x, y)
 
-            elif self.client:
-                print("[manager] get guess")
-                self.client.get_guess()
-                while self.client.opp_guess is None:
-                    # wait for opponent to guess
-                    await asyncio.sleep(0.1)
-                coords = (self.client.opp_guess).split(",")
-                self.client.opp_guess = None
-                # should prob check if coords is valid, ie not of size 0
-                result = await self.validate_shot(
-                    self.__player1.board.get_cell(int(coords[0]), int(coords[1]))
-                )
+        elif self.client:
+            print("[manager] get guess")
+            self.client.get_guess()
+            while self.client.opp_guess is None:
+                # wait for opponent to guess
                 await asyncio.sleep(0.1)
-                self.client.send_result("True" if result else "False")
-            self.turn ^= Turn.PLAYER_TWO
+            coords = (self.client.opp_guess).split(",")
+            self.client.opp_guess = None
+            # should prob check if coords is valid, ie not of size 0
+            result = await self.validate_shot(
+                self.__player1.board.get_cell(int(coords[0]), int(coords[1]))
+            )
+            await asyncio.sleep(0.1)
+            self.client.send_result("True" if result else "False")
+        self.turn ^= Turn.PLAYER_TWO
 
     async def fire_shot(self):
         """

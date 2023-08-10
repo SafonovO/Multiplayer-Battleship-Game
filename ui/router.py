@@ -26,7 +26,7 @@ class Screen:
         self.should_start_client = False
 
     #  "Router" (with quotes) is a forward reference to the class below to avoid cyclic reference
-    def render(self, mouse: tuple[int, int], router: "Router", manager: GameManager) -> None:
+    async def render(self, mouse: tuple[int, int], router: "Router", manager: GameManager):
         """Define layout that depends on dynamic data from game manager"""
         pass
 
@@ -58,7 +58,7 @@ class Router:
     def stack_is_empty(self):
         return len(self.routing_stack) == 0
 
-    def render(self):
+    async def render(self):
         if not self.stack_is_empty():
             mouse = pygame.mouse.get_pos()
             screen = self.routing_stack[-1]
@@ -67,7 +67,7 @@ class Router:
                 pygame.draw.rect(SCREEN, Colours.NAVY_BLUE.value, PLAYING_SURFACE)
             if not self.start_client.is_set() and screen.should_start_client:
                 self.start_client.set()
-            screen.render(mouse, self, self.manager)
+            await screen.render(mouse, self, self.manager)
             for text in screen.text_array:
                 text.render(SCREEN)
             for button in screen.button_array:

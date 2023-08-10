@@ -25,7 +25,7 @@ class Placement(Screen):
         self.text_array = [placement_board_label, self.ships_left_label]
         self.button_array = [self.quit_button, self.rotate_button, self.confirm_button]
 
-    def render(self, mouse, router, manager) -> None:
+    async def render(self, mouse, router, manager) -> None:
         if self.ships_left <= 0:
             return router.navigate_to("play")
         manager.update_placement()

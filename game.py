@@ -91,7 +91,7 @@ async def play():
 async def game_loop(stop: asyncio.Future, router: Router):
     try:
         while not stop.done():
-            router.render()
+            await router.render()
             # the following line is required to allow asyncio operations to proceed alongside the game loop
             await asyncio.sleep(1 / MAX_FRAME_RATE)
     except SystemExit:
