@@ -81,6 +81,8 @@ class Client:
             case "ready_for_placement":
                 print("ready for placement! proceed to placement screen")
                 self.stage = Stages.PLACEMENT
+            case "play":
+                self.stage = Stages.PLAY
             case "getguess":
                 self.opp_guess = msg["response"]
                 # print("set opponents guess to", self.opp_guess)

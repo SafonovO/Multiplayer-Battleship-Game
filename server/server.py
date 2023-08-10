@@ -34,7 +34,7 @@ class Game:
         self.password = Game.generate_pw()
         self.ship_count = ship_count
         self.board_size = board_size
-        self.logger.info(f"Game created, id {self.id} password {self.password}")
+        self.logger.info(f"Game created, id {self.id} password {self.password} {ship_count} {board_size}")
         self.turn = 0
 
     def generate_pw():
@@ -106,7 +106,7 @@ class Server:
             request = msg.get("request")
             player = self.socket_to_player.get(websocket)
             if player != None:
-                game = self.player_to_game.get(game)
+                game = self.player_to_game.get(player)
             details = msg.get("details")
             match request:
                 # create a new game
@@ -156,7 +156,18 @@ class Server:
                         self.logger.debug("Still waiting for both players...")
 
                 case "set_placement":
-                    pass
+                    if player == None or game == None:
+                        response = {"request": "set_placement", "error": "Unknown error"}
+                        response_json = json.dumps(response)
+                        await websocket.send(response_json)
+                    player.ships = msg.get("ships")
+                    if all(len(player.ships) == game.ship_count for player in game.players):
+                        response = {"request": "play", "your_turn": True}
+                        response_json = json.dumps(response)
+                        await game.players[0].socket.send(response_json)
+                        response = {"request": "play", "your_turn": False}
+                        response_json = json.dumps(response)
+                        await game.players[1].socket.send(response_json)
 
                 # join first empty game
                 # might need to return error if no empty games, then create game instead
