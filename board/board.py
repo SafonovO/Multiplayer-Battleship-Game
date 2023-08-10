@@ -78,12 +78,15 @@ class Board:
 
             col += 1
 
-    def place_ships(self):
+    def place_ships(self, num_ships=None):
         """
         Place each ship in a random, legal position
         """
-        for i in range(self.__nships):
-            current_ship = self.__ships[i]
+        if num_ships is None:
+            num_ships = self.__nships
+        starting_index = self.__nships - num_ships
+        for i in range(num_ships):
+            current_ship = self.__ships[starting_index + i]
 
             occupied = False
 
