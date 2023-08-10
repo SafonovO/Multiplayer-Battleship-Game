@@ -24,7 +24,7 @@ class Play(Screen):
         self.text_array = [opponent_board_label, my_board_label, select_text, self.coord_text]
         self.button_array = [self.quit_button, self.fire_button]
 
-    def render(self, manager):
+    def render(self, mouse, router, manager):
         manager.update_boards()
         if manager.get_active_cell() != None:
             """

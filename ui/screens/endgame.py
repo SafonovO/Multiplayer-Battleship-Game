@@ -23,7 +23,7 @@ class Endgame(Screen):
         self.text_array = [endgame_title]
         self.button_array = [self.quit_button]
 
-    def handle_event(self, event, mouse, _router, _manager):
+    def handle_event(self, event, mouse, router, manager):
         if event.type == pygame.MOUSEBUTTONDOWN:
             if self.quit_button.is_hovered(mouse):
                 quit_game()

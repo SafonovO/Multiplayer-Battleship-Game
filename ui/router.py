@@ -27,11 +27,11 @@ class Screen:
         self.button_array: list[Button] = []
         self.draw_background = False
 
-    def render(self, manager: GameManager) -> None:
+    #  "Router" (with quotes) is a forward reference to the class below to avoid cyclic reference
+    def render(self, mouse: tuple[int, int], router: "Router", manager: GameManager) -> None:
         """Define layout that depends on dynamic data from game manager"""
         pass
 
-    #  "Router" (with quotes) is a forward reference to the class below to avoid cyclic reference
     def handle_event(
         self, event: pygame.Event, mouse: tuple[int, int], router: "Router", manager: GameManager
     ):
@@ -65,7 +65,7 @@ class Router:
             SCREEN.blit(BG, (0, 0))
             if screen.draw_background:
                 pygame.draw.rect(SCREEN, Colours.NAVY_BLUE.value, PLAYING_SURFACE)
-            screen.render(self.manager)
+            screen.render(mouse, self, self.manager)
             for text in screen.text_array:
                 text.render(SCREEN)
             for button in screen.button_array:

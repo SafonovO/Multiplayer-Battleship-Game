@@ -28,8 +28,10 @@ class OnlineJoin(Screen):
         self.text_array = [join_title, join_desc, self.code_chars]
         self.button_array = [self.quit_button, self.join_button]
 
-    def render(self, _manager):
+    def render(self, mouse, router, manager):
         self.code_chars.value = " ".join(self.code_input.value.ljust(9, "_"))
+        if manager.client.error != None:
+            return router.navigate_to("error")
 
     def handle_event(self, event, mouse, router, manager):
         if event.type == pygame.MOUSEBUTTONDOWN:

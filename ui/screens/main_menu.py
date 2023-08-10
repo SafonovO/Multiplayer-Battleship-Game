@@ -17,7 +17,7 @@ class MainMenu(Screen):
         self.button_array = [self.quit_button, self.play_button]
         self.text_array = [text]
 
-    def handle_event(self, event, mouse, router, _manager):
+    def handle_event(self, event, mouse, router, manager):
         if event.type == pygame.MOUSEBUTTONDOWN:
             if self.play_button.is_hovered(mouse):
                 click_sound.play()

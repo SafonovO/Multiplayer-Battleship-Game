@@ -25,7 +25,7 @@ class OnlineCreatePending(Screen):
         self.text_array = [waiting_title, waiting_text, self.code_text]
         self.button_array = [self.quit_button]
 
-    def render(self, manager) -> None:
+    def render(self, mouse, router, manager) -> None:
         self.code_text.value = (
             manager.client.code
             if manager.client != None and manager.client.code != ""
