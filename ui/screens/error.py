@@ -21,7 +21,7 @@ class Error(Screen):
 
         self.quit_button = make_button(650, 600, "QUIT", 75, reactive=True)
 
-        self.text_array = [error_title]
+        self.text_array = [error_title, error_text]
         self.button_array = [self.quit_button]
 
     def handle_event(self, event, mouse, router, manager):
