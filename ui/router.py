@@ -10,10 +10,6 @@ from utilities import quit_game
 
 pygame.init()
 pygame.display.set_caption("Battleship")
-base_button_image = pygame.image.load("assets/navy_button.png")
-hovered_button_image = pygame.image.load("assets/navy_button_hover.png")
-quit_button_image = pygame.image.load("assets/quit.png")
-confirm_button_image = pygame.image.load("assets/ConfirmButton.png")
 PLAYING_SURFACE = pygame.Rect(100, 50, 1100, 700)
 
 SCREEN = pygame.display.set_mode((1300, 800))
