@@ -1,4 +1,5 @@
 from board.cell import Cell
+from ships.ship import Ship
 from ships.normal_ship import NormalShip
 
 
@@ -16,7 +17,7 @@ class BoardFactory:
         self.__width = width
 
     # Return a list of nships ships
-    def create_ships(self):
+    def create_ships(self) -> list[Ship]:
         ships = []
 
         """
@@ -62,7 +63,7 @@ class BoardFactory:
         return ships
 
     # create the cells
-    def create_cells(self):
+    def create_cells(self) -> list[list[Cell]]:
         """
         cell size is the total width of the board (_width)
         divided by the number of cells (_size)

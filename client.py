@@ -1,16 +1,24 @@
 import asyncio
 import json
-from time import sleep
-import websockets
+import websockets.client
+from enum import Enum
+from typing import Any
 
 URI = "ws://24.199.115.192:8765"
 URI = "ws://127.0.0.1:8765"
-# URI = "ws://209.87.58.21:8765"
+
+
+class Stages(Enum):
+    ERROR = -1
+    PENDING_OPPONENT_JOIN = 0
+    PLACEMENT = 1
+    PENDING_OPPONENT_PLACEMENT = 2
 
 
 class Client:
     def __init__(self) -> None:
-        self.game_id = None
+        self.game_id: str | None = None
+        self.code = ""
         self.player_id = None
         self.requests = asyncio.Queue()
         self.response = []
@@ -18,32 +26,36 @@ class Client:
         self.my_result = None
         self.won = False
         self.game_over = False
+        self.stage = Stages.PENDING_OPPONENT_JOIN
+        self.error = None
 
     def create_message(self, request, details=""):
         return {
             "request": request,
-            "game": self.game_id if self.game_id is not None else "-1",
+            "game": self.game_id,
             "player": self.player_id if self.player_id is not None else "-1",
             "details": details,
         }
 
-    async def start(self):
+    async def start(self, stop: asyncio.Future):
         print("connecting to server")
-        async with websockets.connect(URI) as websocket:
+        async with websockets.client.connect(URI) as websocket:
             print("Connected to server")
             await asyncio.gather(
                 self.response_handler(websocket),
-                self.request_sender(websocket),
+                self.request_sender(websocket, stop),
             )
 
     async def response_handler(self, websocket):
+        print("Response handler ready")
         async for message in websocket:
             self.handle_response(message)
 
-    async def request_sender(self, websocket):
-        while True:
+    async def request_sender(self, websocket, stop: asyncio.Future):
+        print("Request sender ready")
+        while not stop.done():
             message = await self.requests.get()
-            print(message)
+            print(f"message queued: {message}")
             await websocket.send(message)
             self.requests.task_done()
 
@@ -52,12 +64,20 @@ class Client:
             request:
             response:
         }"""
-        print(response)
-        msg = json.loads(response)
-        match msg["request"]:
-            case "newgame":
-                self.game_id = str(msg["response"])
-                # print("set game id to", self.game_id)
+        print(f"response {response}")
+        msg: dict[str, Any] = json.loads(response)
+        match msg.get("request"):
+            case "new_game":
+                if msg.get("error"):
+                    self.error = msg.get("error")
+                    self.stage = Stages.ERROR
+                    return
+                self.game_id = msg.get("game_id")
+                self.code = msg.get("password")
+                print(f"set game id to {self.game_id}")
+            case "ready_for_placement":
+                print("ready for placement! proceed to placement screen")
+                self.stage = Stages.PLACEMENT
             case "getguess":
                 self.opp_guess = msg["response"]
                 # print("set opponents guess to", self.opp_guess)
@@ -72,20 +92,26 @@ class Client:
             case "ok":
                 pass
                 # print("ok")
+            case "identify":
+                pass
             case other:
                 print("invalid response")
 
-    def create_game(self):
-        message = self.create_message("newgame")
+    def identify(self):
+        message = {"request": "identify"}
+        self.requests.put_nowait(json.dumps(message))
+
+    def create_game(self, ship_count, board_size):
+        message = {"request": "new_game", "ship_count": ship_count, "board_size": board_size}
         self.requests.put_nowait(json.dumps(message))
         self.player_id = "0"
         print("creating game")
 
-    def join_game(self):
-        message = self.create_message("joingame")
+    def join_game(self, code: str):
+        message = {"request": "join_game", "game_code": code}
         self.requests.put_nowait(json.dumps(message))
         self.player_id = "1"
-        print("joining game")
+        print(f"joining game with code {code}")
 
     def get_guess(self):
         message = self.create_message("getguess")

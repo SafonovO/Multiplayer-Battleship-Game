@@ -3,12 +3,12 @@ from .ship import Ship
 
 class NormalShip(Ship):
     # track the size
-    __size = None
+    __size = 0
 
     # track the HP
     __hp = None
 
-    def __init__(self, ship_size):
+    def __init__(self, ship_size: int):
         self.__size = ship_size
         self.__hp = ship_size
 

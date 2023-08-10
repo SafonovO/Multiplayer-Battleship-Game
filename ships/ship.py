@@ -1,7 +1,7 @@
 class Ship:
     # getter for ship size
-    def get_size(self):
-        pass
+    def get_size(self) -> int:
+        return 0
 
     # getter for HP
     def get_hp(self):

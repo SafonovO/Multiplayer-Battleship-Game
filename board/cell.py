@@ -1,6 +1,6 @@
 import pygame
 
-from utilities.fonts import get_font
+from ui.fonts import get_font
 
 # import pygame_gui
 # from menu_views.menu_options import MenuElement
@@ -27,8 +27,8 @@ class Button:
 
 
 class Cell:
-    coordinates = (0, 0)
-    ship: Ship = None
+    coordinates: tuple[int, int] = (0, 0)
+    ship: Ship | None = None
     is_hit: bool = False
 
     # for drawing purposes. the side length and location of the cell

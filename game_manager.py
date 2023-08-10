@@ -1,6 +1,5 @@
 import asyncio
-import sys
-from enum import Flag
+from enum import Enum, Flag
 from client import Client
 from players.opponent import Opponent
 from players.player import Player
@@ -8,14 +7,8 @@ from players.ai import EasyAI, AI, HardAI, MedAI
 
 import pygame
 from pygame.locals import *
-from pygame import mixer
-
-from board.board import Board
 from ships.normal_ship import NormalShip
-from ships.ship import Ship
-from utilities.button import Button, ReactiveButton, TextButton
-from board.cell import Cell
-
+from ui.sounds import miss_sound, hit_sound, click_sound, fire_sound
 
 
 class Turn(Flag):
@@ -23,13 +16,14 @@ class Turn(Flag):
     PLAYER_TWO = 1
 
 
+class AIDifficulty(Enum):
+    EASY = 0
+    MEDIUM = 1
+    HARD = 2
+
+
 SCREEN = pygame.display.set_mode((1300, 800))
-BG = pygame.image.load("assets/Background.png")
-mixer.init()
-miss_sound = pygame.mixer.Sound('Sounds/miss.ogg')
-hit_sound = pygame.mixer.Sound('Sounds/hit.ogg')
-click_sound = pygame.mixer.Sound('Sounds/ui-click.mp3')
-fire_sound = pygame.mixer.Sound('Sounds/fire.ogg') 
+
 
 class GameManager:
     """
@@ -45,15 +39,19 @@ class GameManager:
     2=player2
     """
 
+    client = None
+    won = False
+
     # singleton class
     def __new__(cls):
         if not hasattr(cls, "instance"):
             cls.instance = super(GameManager, cls).__new__(cls)
         return cls.instance
 
-    def start_client(self):
+    async def start_client(self, stop: asyncio.Future):
         self.client = Client()
-        self.client.start()
+        print("manager attempting to start client (for real)")
+        await self.client.start(stop)
 
     def get_player(self, player_ID):
         if player_ID == 1:
@@ -63,36 +61,47 @@ class GameManager:
         else:
             return None
 
-    async def create_game(self, ai_game, ship_count, game_size, create, ai_level):
-        print("is this an ai game?", ai_game)
+    def create_online_game(self, ship_count: int, board_size: int, creating_game: bool):
+        if self.client == None:
+            raise Exception("Multiplayer client must be started first!")
+        print(f"{'Creating' if creating_game else 'Joining'} online game")
         self.game_over = False
         self.turn = Turn.PLAYER_ONE
         self.run = True
-        self.__player1 = Player(ship_count, game_size)
-        if ai_game:
-            if ai_level == 0:
-                self.__player2 = EasyAI(ship_count, game_size)
-            elif ai_level == 1:
-                self.__player2 = MedAI(ship_count, game_size)
-            elif ai_level == 2:
-                self.__player2 = HardAI(ship_count, game_size, self.__player1)
+        self.won = False
+        self.ai_game = False
+        self.ai_difficulty = None
 
-            else:
+        self.__player1 = Player(ship_count, board_size)
+        self.__player2 = Opponent(ship_count, board_size)
+        self.client.identify()
+        if creating_game:
+            self.client.create_game(ship_count, board_size)
+        self.active_cell = None
+
+    def create_ai_game(self, ship_count: int, board_size: int, ai_difficulty: AIDifficulty):
+        print("creating AI game")
+        self.game_over = False
+        self.turn = Turn.PLAYER_ONE
+        self.run = True
+        self.won = False
+        self.ai_game = True
+        self.ai_difficulty = ai_difficulty
+
+        self.__player1 = Player(ship_count, board_size)
+        match ai_difficulty:
+            case AIDifficulty.EASY:
+                self.__player2 = EasyAI(ship_count, board_size)
+            case AIDifficulty.MEDIUM:
+                self.__player2 = MedAI(ship_count, board_size)
+            case AIDifficulty.HARD:
+                self.__player2 = HardAI(ship_count, board_size, self.__player1)
+            case _:
                 print("Invalid AI Difficulty")
-
-            self.client = None
-        else:
-            self.client = Client()
-            task = asyncio.ensure_future(self.client.start())
-            self.__player2 = Opponent(ship_count, game_size)
-            if create:
-                self.client.create_game()
-            else:
-                self.client.join_game()
         self.active_cell = None
 
     def hard_ai_setup(self):
-        '''
+        """
         HardAI wil be able to peek into its opponent's array.
 
         However, it is instantiated before the opponentn places
@@ -103,7 +112,7 @@ class GameManager:
         This function will assume __player2 is a hardAI
         if this is not the case, I make no promises to what
         this function will do
-        '''
+        """
         if isinstance(self.__player2, HardAI):
             self.__player2.get_opp_ships()
 
@@ -121,7 +130,7 @@ class GameManager:
         if self.active_cell is not None:
             self.active_cell.draw_selected_cell(SCREEN)
 
-    def preview_ship(self, num_left, vertical):
+    def preview_ship(self, num_left: int, vertical: bool):
         """
         This function previews the ship that is about to be placed.
 
@@ -201,7 +210,7 @@ class GameManager:
 
             self.__player1.large_board.get_cell(c[0], c[1]).draw_cell_color(SCREEN, color)
 
-    async def place_ship(self, num_left, vertical):
+    def place_ship(self, num_left, vertical):
         """
         Create a list of cells that this ship would occupy
 
@@ -279,14 +288,10 @@ class GameManager:
         """
         return True
 
-    def randomize_ships(self):
-        # place player1's ships randomly
-        self.__player1.board.place_ships()
-
     def get_active_cell(self):
         return self.active_cell
 
-    def set_active_cell(self, mouse):
+    def set_active_cell(self, mouse: tuple[int, int]):
         """
         returns false if mouse click is not on cell,
         returns true and sets the active cell otherwise
@@ -296,7 +301,7 @@ class GameManager:
             return True
         return False
 
-    def set_active_cell_placement(self, mouse):
+    def set_active_cell_placement(self, mouse: tuple[int, int]):
         if self.__player1.large_board.get_cell_mouse(mouse) is not None:
             self.active_cell = self.__player1.large_board.get_cell_mouse(mouse)
             return True
@@ -304,29 +309,31 @@ class GameManager:
 
     async def change_turn(self):
         self.turn ^= Turn.PLAYER_TWO
-        if self.turn == Turn.PLAYER_TWO:
-            if isinstance(self.__player2, AI):
-                x, y = self.__player2.guess()
-                hit = await self.validate_shot(self.__player1.board.get_cell(x, y))
-                await asyncio.sleep(0.5)
-                if hit:
-                    # if the cell is a hit, set last_hit to x, y
-                    self.__player2.set_last_hit(x, y)
+        if self.turn != Turn.PLAYER_TWO:
+            return
+        if isinstance(self.__player2, AI):
+            x, y = self.__player2.guess()
+            hit = self.validate_shot_new(self.__player1.board.get_cell(x, y))
+            await asyncio.sleep(0.5)
+            if hit:
+                # if the cell is a hit, set last_hit to x, y
+                self.__player2.set_last_hit(x, y)
 
-            elif self.client:
-                self.client.get_guess()
-                while self.client.opp_guess is None:
-                    # wait for opponent to guess
-                    await asyncio.sleep(0.1)
-                coords = (self.client.opp_guess).split(",")
-                self.client.opp_guess = None
-                # should prob check if coords is valid, ie not of size 0
-                result = await self.validate_shot(
-                    self.__player1.board.get_cell(int(coords[0]), int(coords[1]))
-                )
+        elif self.client:
+            print("[manager] get guess")
+            self.client.get_guess()
+            while self.client.opp_guess is None:
+                # wait for opponent to guess
                 await asyncio.sleep(0.1)
-                self.client.send_result("True" if result else "False")
-            self.turn ^= Turn.PLAYER_TWO
+            coords = (self.client.opp_guess).split(",")
+            self.client.opp_guess = None
+            # should prob check if coords is valid, ie not of size 0
+            result = await self.validate_shot(
+                self.__player1.board.get_cell(int(coords[0]), int(coords[1]))
+            )
+            await asyncio.sleep(0.1)
+            self.client.send_result("True" if result else "False")
+        self.turn ^= Turn.PLAYER_TWO
 
     async def fire_shot(self):
         """
@@ -334,7 +341,7 @@ class GameManager:
         """
         # checks if it's the right persons turn then proceeds with action
         # play sounds
-        
+
         if self.active_cell and self.turn == Turn.PLAYER_ONE:
             click_sound.play()
             fire_sound.play()
@@ -356,6 +363,32 @@ class GameManager:
             return True
         return False
 
+    def fire_shot_new(self):
+        """
+        Returns true if the shot was fired successfully
+        """
+        if self.active_cell and self.turn == Turn.PLAYER_ONE:
+            click_sound.play()
+            fire_sound.play()
+            self.validate_shot_new(self.active_cell)
+            self.active_cell = None
+            return True
+        return False
+
+    def validate_shot_new(self, active_cell):
+        """
+        Marks the active cell as hit.
+        Checks if there was a ship in the active cell.
+        If ship, returns True, False otherwise.
+        """
+        if active_cell.hit():
+            self.endgame()
+            hit_sound.play()
+            return True
+        else:
+            miss_sound.play(0, 2000)
+            return False
+
     async def validate_shot(self, active_cell):
         """
         Marks the active cell as hit.
@@ -364,26 +397,25 @@ class GameManager:
         """
         if active_cell.hit():
             await asyncio.sleep(0.3)
-            await self.endgame()
+            self.endgame()
             hit_sound.play()
-            
+
             return True
         else:
             await asyncio.sleep(0.3)
-            miss_sound.play(0,2000)
+            miss_sound.play(0, 2000)
             return False
 
-    """
-    checks if the game is over
-    """
-
-    async def endgame(self):
-        if await self.__player1.board.gameover():
+    def endgame(self):
+        """
+        Checks if the game is over and update the state variables accordingly
+        """
+        if self.__player1.board.gameover():
+            self.game_over = True
             self.won = False
+        elif self.__player2.board.gameover():
             self.game_over = True
-        elif await self.__player2.board.gameover():
             self.won = True
-            self.game_over = True
         elif self.client and self.client.game_over:
-            self.won = self.client.won
             self.game_over = True
+            self.won = self.client.won

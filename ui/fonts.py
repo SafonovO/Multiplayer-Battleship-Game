@@ -5,5 +5,5 @@ import pygame
 def get_font(size, font="Georgia"):
     if font == "Georgia":
         return pygame.font.Font("assets/fonts/Georgia.ttf", size)
-    elif font == "Helvetica":
+    if font == "Helvetica":
         return pygame.font.Font("assets/fonts/Helvetica.ttf", size)
