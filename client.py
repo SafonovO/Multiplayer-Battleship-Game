@@ -2,6 +2,7 @@ import asyncio
 import json
 import websockets.client
 from enum import Enum
+from game_manager import GameManager, Turn
 from typing import Any
 
 URI = "ws://24.199.115.192:8765"
@@ -18,7 +19,8 @@ class Stages(Enum):
 
 
 class Client:
-    def __init__(self) -> None:
+    def __init__(self, manager: GameManager) -> None:
+        self.manager = manager
         self.game_id: str | None = None
         self.code = ""
         self.player_id = None
@@ -83,6 +85,7 @@ class Client:
                 self.stage = Stages.PLACEMENT
             case "play":
                 self.stage = Stages.PLAY
+                self.manager.turn = Turn.PLAYER_ONE if msg.get("your_turn") else Turn.PLAYER_TWO
             case "getguess":
                 self.opp_guess = msg["response"]
                 # print("set opponents guess to", self.opp_guess)
@@ -123,20 +126,12 @@ class Client:
         self.requests.put_nowait(json.dumps(message))
         print("sending placement")
 
-    def get_guess(self):
-        message = self.create_message("getguess")
-        self.requests.put_nowait(json.dumps(message))
-
-    def get_result(self):
-        message = self.create_message("getresult")
+    def set_guess(self, coords: tuple[int, int]):
+        message = {"request": "set_guess", "coords": [coords[0], coords[1]]}
         self.requests.put_nowait(json.dumps(message))
 
     def send_result(self, result):
-        message = self.create_message("setresult", result)
-        self.requests.put_nowait(json.dumps(message))
-
-    def set_guess(self, coords: tuple[int, int]):
-        message = {"request": "set_guess", "coords": [coords[0], coords[1]]}
+        message = self.create_message("send_result", result)
         self.requests.put_nowait(json.dumps(message))
 
     def end_game(self, won):

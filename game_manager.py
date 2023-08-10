@@ -338,35 +338,7 @@ class GameManager:
             self.client.send_result("True" if result else "False")
         self.turn ^= Turn.PLAYER_TWO
 
-    async def fire_shot(self):
-        """
-        Returns true if the shot was fired successfully
-        """
-        # checks if it's the right persons turn then proceeds with action
-        # play sounds
-
-        if self.active_cell and self.turn == Turn.PLAYER_ONE:
-            click_sound.play()
-            fire_sound.play()
-            if isinstance(self.__player2, Opponent) and self.client:
-                coords = self.active_cell.coordinates
-                self.client.send_guess(coords[0], coords[1])
-                self.client.get_result()
-                while self.client.my_result is None:
-                    # wait for response
-                    await asyncio.sleep(0.1)
-                # print("result is", self.client.my_result)
-                if self.client.my_result == "True":
-                    print("HIT A SHIP!!!!")
-                    self.active_cell.set_ship(NormalShip(1))
-                self.client.my_result = None
-            await self.validate_shot(self.active_cell)
-            # self.active_cell.print_cell()
-            self.active_cell = None
-            return True
-        return False
-
-    def fire_shot_new(self):
+    def fire_shot(self):
         """
         Returns true if the shot was fired successfully
         """
