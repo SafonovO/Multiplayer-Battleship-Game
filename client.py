@@ -113,6 +113,11 @@ class Client:
         self.player_id = "1"
         print(f"joining game with code {code}")
 
+    def set_placement(self):
+        message = {"request": "set_placement"}
+        self.requests.put_nowait(json.dumps(message))
+        print("sending placement")
+
     def get_guess(self):
         message = self.create_message("getguess")
         self.requests.put_nowait(json.dumps(message))
@@ -125,8 +130,8 @@ class Client:
         message = self.create_message("setresult", result)
         self.requests.put_nowait(json.dumps(message))
 
-    def send_guess(self, x, y):
-        message = self.create_message("setguess", f"{x},{y}")
+    def set_guess(self, coords: tuple[int, int]):
+        message = {"request": "set_guess", "coords": [coords[0], coords[1]]}
         self.requests.put_nowait(json.dumps(message))
 
     def end_game(self, won):

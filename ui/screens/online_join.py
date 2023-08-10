@@ -1,5 +1,6 @@
 import string
 import pygame
+from client import Stages
 from ui.colours import Colours
 from ui.elements import make_button, quit_button_image
 from ui.input import Input
@@ -29,6 +30,8 @@ class OnlineJoin(Screen):
         self.button_array = [self.quit_button, self.join_button]
 
     async def render(self, mouse, router, manager):
+        if manager.client.stage == Stages.PLACEMENT:
+            return router.navigate_to("placement")
         self.code_chars.value = " ".join(self.code_input.value.ljust(9, "_"))
         if manager.client.error != None:
             return router.navigate_to("error")

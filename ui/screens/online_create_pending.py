@@ -1,4 +1,5 @@
 import pygame
+from client import Stages
 from ui.colours import Colours
 from ui.elements import make_button, quit_button_image
 from ui.router import Screen
@@ -26,6 +27,8 @@ class OnlineCreatePending(Screen):
         self.button_array = [self.quit_button]
 
     async def render(self, mouse, router, manager) -> None:
+        if manager.client.stage == Stages.PLACEMENT:
+            return router.navigate_to("placement")
         self.code_text.value = (
             manager.client.code
             if manager.client != None and manager.client.code != ""

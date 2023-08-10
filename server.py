@@ -145,6 +145,9 @@ class Server:
                     else:
                         self.logger.debug("Still waiting for both players...")
 
+                case "set_placement":
+                    pass
+
                 # join first empty game
                 # might need to return error if no empty games, then create game instead
                 case "joinrandom":
