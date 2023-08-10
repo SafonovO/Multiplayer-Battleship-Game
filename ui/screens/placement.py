@@ -14,12 +14,12 @@ class Placement(Screen):
         self.ships_left = SHIP_COUNT
         self.ship_vertical = True
 
-        placement_board_label = Text("Board Setup", (425, 100), 30, Colours.WHITE.value)
+        placement_board_label = Text("Board Setup", (425, 100), 30, Colours.WHITE)
         self.confirm_button = make_button(1000, 225, "Place", 20, image=confirm_button_image)
         self.quit_button = make_button(1000, 25, "QUIT", 20, image=quit_button_image)
         self.rotate_button = make_button(1000, 150, "Rotate", 20, image=confirm_button_image)
         self.ships_left_label = Text(
-            f"Ships Left: {str(self.ships_left)}", (1000, 1000), 30, Colours.WHITE.value
+            f"Ships Left: {str(self.ships_left)}", (1000, 1000), 30, Colours.WHITE
         )
 
         self.text_array = [placement_board_label, self.ships_left_label]

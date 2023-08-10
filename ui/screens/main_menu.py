@@ -10,7 +10,7 @@ from ui.text import Text
 class MainMenu(Screen):
     def __init__(self, manager) -> None:
         super().__init__(manager)
-        text = Text("BATTLESHIP", (650, 150), 100, Colours.GOLD.value)
+        text = Text("BATTLESHIP", (650, 150), 100, Colours.GOLD)
         self.play_button = make_button(650, 350, "PLAY", 75, reactive=True)
         self.quit_button = make_button(650, 550, "QUIT", 75, reactive=True)
 

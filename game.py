@@ -7,6 +7,7 @@ from pygame.locals import *
 from ui.screens.all import (
     AIConfiguration,
     Endgame,
+    Error,
     MainMenu,
     OnlineCreatePending,
     OnlineGameOptions,
@@ -109,6 +110,7 @@ async def main():
             "placement": Placement,
             "play": Play,
             "endgame": Endgame,
+            "error": Error,
         },
     )
     router.navigate_to("main_menu")

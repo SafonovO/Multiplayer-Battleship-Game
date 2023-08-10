@@ -6,21 +6,22 @@ from ui.text import Text
 from utilities import quit_game
 
 
-class Endgame(Screen):
+class Error(Screen):
     def __init__(self, manager) -> None:
         super().__init__(manager)
         self.draw_background = True
 
-        endgame_title = Text(
-            "Congratulations, you won!" if manager.won else "You lost, try again..",
+        error_title = Text(
+            "Error",
             (650, 150),
             100,
             Colours.GOLD,
         )
+        error_text = Text(manager.client.error, (650, 300), 50, Colours.WHITE)
 
         self.quit_button = make_button(650, 600, "QUIT", 75, reactive=True)
 
-        self.text_array = [endgame_title]
+        self.text_array = [error_title]
         self.button_array = [self.quit_button]
 
     def handle_event(self, event, mouse, _router, _manager):

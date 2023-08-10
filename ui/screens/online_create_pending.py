@@ -12,15 +12,15 @@ class OnlineCreatePending(Screen):
         self.draw_background = True
         self.quit_button = make_button(1000, 25, "QUIT", 20, image=quit_button_image)
 
-        waiting_title = Text("Waiting for opponent", (650, 300), 50, Colours.GOLD.value)
+        waiting_title = Text("Waiting for opponent", (650, 300), 50, Colours.GOLD)
         waiting_text = Text(
             "You can invite a friend to this game with the code below",
             (650, 375),
             30,
-            Colours.WHITE.value,
+            Colours.WHITE,
         )
 
-        self.code_text = Text("", (650, 425), 30, Colours.GOLD.value)
+        self.code_text = Text("", (650, 425), 30, Colours.GOLD)
 
         self.text_array = [waiting_title, waiting_text, self.code_text]
         self.button_array = [self.quit_button]

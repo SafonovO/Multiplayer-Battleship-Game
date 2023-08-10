@@ -13,10 +13,10 @@ class Play(Screen):
         self.draw_background = True
         self.selected_coords = ()
 
-        opponent_board_label = Text("OPPONENT'S BOARD", (425, 100), 30, Colours.WHITE.value)
-        my_board_label = Text("MY BOARD", (1000, 325), 30, Colours.WHITE.value)
-        select_text = Text("YOU HAVE SELECTED:", (1000, 150), 15, Colours.WHITE.value)
-        self.coord_text = Text("", (1000, 200), 15, Colours.WHITE.value)
+        opponent_board_label = Text("OPPONENT'S BOARD", (425, 100), 30, Colours.WHITE)
+        my_board_label = Text("MY BOARD", (1000, 325), 30, Colours.WHITE)
+        select_text = Text("YOU HAVE SELECTED:", (1000, 150), 15, Colours.WHITE)
+        self.coord_text = Text("", (1000, 200), 15, Colours.WHITE)
 
         self.fire_button = make_button(1000, 250, "FIRE", 20, image=confirm_button_image)
         self.quit_button = make_button(1000, 25, "QUIT", 20, image=quit_button_image)

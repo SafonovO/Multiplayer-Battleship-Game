@@ -16,9 +16,9 @@ class OnlineJoin(Screen):
 
         self.quit_button = make_button(1000, 25, "QUIT", 20, image=quit_button_image)
 
-        join_title = Text("Join game", (650, 300), 50, Colours.GOLD.value)
+        join_title = Text("Join game", (650, 300), 50, Colours.GOLD)
         join_desc = Text(
-            "Enter an invite code to join a game", (650, 375), 30, Colours.WHITE.value
+            "Enter an invite code to join a game", (650, 375), 30, Colours.WHITE
         )
 
         self.code_chars = Text("_________", (650, 425), 30, "#b68f40")

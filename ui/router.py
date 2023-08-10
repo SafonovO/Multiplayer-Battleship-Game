@@ -1,12 +1,9 @@
-from typing import Type
 import pygame
-from enum import Enum
-from pygame.locals import *
 from game_manager import GameManager
+from pygame.locals import *
+from typing import Type
 from ui.button import Button
 from ui.colours import Colours
-from ui.elements import make_button
-from ui.fonts import get_font
 from ui.text import Text
 from utilities import quit_game
 
@@ -79,12 +76,3 @@ class Router:
                     return
                 screen.handle_event(event, mouse, self, self.manager)
             pygame.display.update()
-
-
-class Drawer:
-    def error(self, error_msg: str):
-        error_text = Text(error_msg, (650, 375), 30, "#ffffff")
-        quit_button = make_button(650, 550, "Quit", 50, reactive=True)
-
-        self.text_array = [error_text]
-        self.button_array = [quit_button]

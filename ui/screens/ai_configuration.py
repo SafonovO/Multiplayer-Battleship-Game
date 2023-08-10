@@ -12,7 +12,7 @@ class AIConfiguration(Screen):
     def __init__(self, manager) -> None:
         super().__init__(manager)
         self.draw_background = True
-        text = Text("Difficulty", (650, 100), 50, Colours.GOLD.value)
+        text = Text("Difficulty", (650, 100), 50, Colours.GOLD)
         self.quit_button = make_button(650, 550, "Cancel", 75, reactive=True)
         self.easy_button = make_button(300, 175, "Easy", 20, image=confirm_button_image)
         self.med_button = make_button(650, 175, "Medium", 20, image=confirm_button_image)

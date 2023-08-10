@@ -12,6 +12,6 @@ class Text:
     colour: Colours
 
     def render(self, screen: pygame.Surface):
-        text_rendered = get_font(self.size).render(self.value, True, self.colour)
+        text_rendered = get_font(self.size).render(self.value, True, self.colour.value)
         text_rect = text_rendered.get_rect(center=self.pos)
         screen.blit(text_rendered, text_rect)
