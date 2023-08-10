@@ -2,6 +2,7 @@ import asyncio
 import json
 import websockets.client
 from enum import Enum
+from typing import Any
 
 URI = "ws://24.199.115.192:8765"
 URI = "ws://127.0.0.1:8765"
@@ -64,7 +65,7 @@ class Client:
             response:
         }"""
         print(f"response {response}")
-        msg = json.loads(response)
+        msg: dict[str, Any] = json.loads(response)
         match msg.get("request"):
             case "new_game":
                 if msg.get("error"):

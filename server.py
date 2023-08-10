@@ -35,6 +35,7 @@ class Game:
         self.ship_count = ship_count
         self.board_size = board_size
         self.logger.info(f"Game created, id {self.id} password {self.password}")
+        self.turn = 0
 
     def generate_pw():
         chars = string.ascii_uppercase + string.digits
