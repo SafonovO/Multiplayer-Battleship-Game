@@ -33,6 +33,8 @@ class Board:
     # On the opponent's board, I do not
     __display = False
 
+    __foreign = False
+
     """
     coordinates is a tuple (x, y) that represents the location
     of the board's top left corner when you draw it on the screen
@@ -41,20 +43,21 @@ class Board:
     side length of the board
     """
 
-    def __init__(self, size, num_ships, coords, width, display):
+    def __init__(self, size, num_ships, coords, width, display, foreign=False):
         self.__nships = num_ships
         self.__size = size
 
         self.__coordinates = coords
         self.__width = width
         self.__display = display
+        self.__foreign = foreign
 
         self.__board_factory = BoardFactory(
             self.__size, self.__nships, self.__coordinates, self.__width
         )
 
     def build_board(self):
-        self.__cells = self.__board_factory.create_cells()
+        self.__cells = self.__board_factory.create_cells(self.__foreign)
         self.__ships = self.__board_factory.create_ships()
 
     def get_size(self):

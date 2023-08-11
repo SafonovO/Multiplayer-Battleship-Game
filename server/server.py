@@ -19,8 +19,8 @@ logging.basicConfig(
 
 class Player:
     def __init__(self):
-        self.guessed = []
         self.ships: list[list[tuple[int, int]]] = []
+        self.guessed_by_opponent: list[list[tuple[int, int]]] = []
         self.next_guess = None
         self.result = None
         self.socket: websockets.server.WebSocketServerProtocol | None = None
@@ -169,7 +169,9 @@ class Server:
                         response = {"request": "set_placement", "error": "Unknown error"}
                         response_json = json.dumps(response)
                         await websocket.send(response_json)
-                    player.ships = [[tuple(cell) for cell in ship] for ship in msg.get("ships")]
+                    ships = msg.get("ships")
+                    player.ships = [[tuple(cell) for cell in ship] for ship in ships]
+                    player.guessed_by_opponent = [[] for ship in ships]
                     if all(len(player.ships) == game.ship_count for player in game.players):
                         response = {"request": "play", "your_turn": True}
                         response_json = json.dumps(response)
@@ -193,6 +195,10 @@ class Server:
                     print("set guess as", coords)
                     opponent = game.players[player_id ^ 1]
                     hit = any(coords in ship for ship in opponent.ships)
+                    if hit:
+                        for i in range(len(opponent.ships)):
+                            if coords in opponent.ships[i]:
+                                opponent.guessed_by_opponent[i].append(coords)
                     game.turn ^= 1
                     response = {"request": "set_guess", "hit": hit}
                     await websocket.send(json.dumps(response))
@@ -201,14 +207,14 @@ class Server:
 
                 case "broadcast":
                     broadcast = self.create_message("broadcast")
-                    for player in self.games[game_id].players:
+                    for player in game.players:
                         await player.socket.send(json.dumps(broadcast))
 
                 case "endgame":
                     # tell player_id ^ 1 that they lost
                     # games[game_id] = None
                     broadcast = self.create_message("endgame")
-                    for player in self.games[game_id].players:
+                    for player in game.players:
                         await player.socket.send(json.dumps(broadcast))
 
                 case "identify":

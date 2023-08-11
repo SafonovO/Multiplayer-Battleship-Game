@@ -92,6 +92,8 @@ class Client:
                 hit = msg.get("hit")
                 print(f"hit? {hit}")
                 self.manager.turn = Turn.PLAYER_TWO
+                self.manager.active_cell
+                self.manager.active_cell = None
             case "opponent_guess":
                 self.manager.turn = Turn.PLAYER_ONE
             case "broadcast":
