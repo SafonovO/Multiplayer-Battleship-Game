@@ -183,22 +183,6 @@ class Server:
                 case "joinrandom":
                     pass
 
-                case "getguess":
-                    guess = await self.get_guess(game_id, player_id ^ 1)
-                    response = self.create_message("getguess", guess)
-                    await websocket.send(json.dumps(response))
-
-                case "getresult":
-                    result = await self.get_result(game_id, player_id)
-                    response = self.create_message("getresult", result)
-                    await websocket.send(json.dumps(response))
-                    self.games[game_id].players[player_id].result = None
-
-                case "setresult":
-                    self.games[game_id].players[player_id ^ 1].result = details
-                    response = self.create_message()
-                    await websocket.send(json.dumps(response))
-
                 case "set_guess":
                     if player_id != game.turn:
                         response = {"request": "set_guess", "warning": "not_your_turn"}
@@ -234,18 +218,6 @@ class Server:
                     self.logger.debug("Invalid request")
 
             self.queues[workerID].task_done()
-
-    async def get_guess(self, game_id, player_id):
-        while not self.games[game_id].players[player_id].next_guess:
-            # wait for the player to guess
-            await asyncio.sleep(0.1)
-        return self.games[game_id].players[player_id].next_guess
-
-    async def get_result(self, game_id, player_id):
-        while self.games[game_id].players[player_id].result == None:
-            # wait for the opponent to validate the guess
-            await asyncio.sleep(0.1)
-        return self.games[game_id].players[player_id].result
 
 
 async def main():
