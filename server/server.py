@@ -111,117 +111,120 @@ class Server:
                     player_id = 0
                     self.logger.error("Player associated with game, but game does not recognise")
             details = msg.get("details")
-            match request:
-                # create a new game
-                case "new_game":
-                    game = Game(msg.get("ship_count"), msg.get("board_size"))
-                    game.players[0].socket = websocket
-                    self.socket_to_player[websocket] = game.players[0]
-                    self.games[game.id] = game
-                    self.code_to_game[game.password] = game
-                    self.player_to_game[game.players[0]] = game
-                    response = {
-                        "request": "new_game",
-                        "game_id": game.id,
-                        "password": game.password,
-                    }
-                    await websocket.send(json.dumps(response))
-
-                case "join_game":
-                    game = self.code_to_game.get(msg.get("game_code"))
-                    if game == None:
-                        self.logger.debug("No such game")
-                        await websocket.send(
-                            json.dumps({"request": "new_game", "error": "Invalid invite code"})
-                        )
-                        return
-                    if game.players[0].socket != None and game.players[1].socket != None:
-                        self.logger.debug("Game is full")
-                        return
-                    available_slot = -1
-                    if game.players[1].socket == None:
-                        available_slot = 1
-                    if game.players[0].socket == None:
-                        available_slot = 0
-                    game.players[available_slot].socket = websocket
-                    self.socket_to_player[websocket] = game.players[available_slot]
-                    self.player_to_game[game.players[available_slot]] = game
-                    response = {
-                        "request": "new_game",
-                        "game_id": game.id,
-                        "password": game.password,
-                    }
-                    await websocket.send(json.dumps(response))
-                    if game.players[0].socket != None and game.players[1].socket != None:
-                        self.logger.debug("Game starting, notifying clients")
-                        response = {"request": "ready_for_placement"}
-                        response_json = json.dumps(response)
-                        await game.players[0].socket.send(response_json)
-                        await game.players[1].socket.send(response_json)
-                    else:
-                        self.logger.debug("Still waiting for both players...")
-
-                case "set_placement":
-                    if player == None or game == None:
-                        response = {"request": "set_placement", "error": "Unknown error"}
-                        response_json = json.dumps(response)
-                        await websocket.send(response_json)
-                    ships = msg.get("ships")
-                    player.ships = [[tuple(cell) for cell in ship] for ship in ships]
-                    player.guessed_by_opponent = [[] for ship in ships]
-                    if all(len(player.ships) == game.ship_count for player in game.players):
-                        response = {"request": "play", "your_turn": True}
-                        response_json = json.dumps(response)
-                        await game.players[0].socket.send(response_json)
-                        response = {"request": "play", "your_turn": False}
-                        response_json = json.dumps(response)
-                        await game.players[1].socket.send(response_json)
-
-                # join first empty game
-                # might need to return error if no empty games, then create game instead
-                case "joinrandom":
-                    pass
-
-                case "set_guess":
-                    if player_id != game.turn:
-                        response = {"request": "set_guess", "warning": "not_your_turn"}
+            try:
+                match request:
+                    # create a new game
+                    case "new_game":
+                        game = Game(msg.get("ship_count"), msg.get("board_size"))
+                        game.players[0].socket = websocket
+                        self.socket_to_player[websocket] = game.players[0]
+                        self.games[game.id] = game
+                        self.code_to_game[game.password] = game
+                        self.player_to_game[game.players[0]] = game
+                        response = {
+                            "request": "new_game",
+                            "game_id": game.id,
+                            "password": game.password,
+                        }
                         await websocket.send(json.dumps(response))
-                        break
-                    # sanitize input before passing on to opponent
-                    coords = (msg.get("coords")[0], msg.get("coords")[1])
-                    print("set guess as", coords)
-                    opponent = game.players[player_id ^ 1]
-                    hit = any(coords in ship for ship in opponent.ships)
-                    if hit:
-                        for i in range(len(opponent.ships)):
-                            if coords in opponent.ships[i]:
-                                opponent.guessed_by_opponent[i].append(coords)
 
-                    is_endgame = all(
-                        set(ship) == set(opponent.guessed_by_opponent[i])
-                        for i, ship in enumerate(opponent.ships)
-                    )
-                    game.turn ^= 1
-                    response = {
-                        "request": "set_guess",
-                        "hit": hit,
-                        "endgame": is_endgame,
-                        "won": is_endgame,
-                    }
-                    await websocket.send(json.dumps(response))
-                    response = {
-                        "request": "opponent_guess",
-                        "coords": coords,
-                        "hit": hit,
-                        "endgame": is_endgame,
-                    }
-                    await opponent.socket.send(json.dumps(response))
+                    case "join_game":
+                        game = self.code_to_game.get(msg.get("game_code"))
+                        if game == None:
+                            self.logger.debug("No such game")
+                            await websocket.send(
+                                json.dumps({"request": "new_game", "error": "Invalid invite code"})
+                            )
+                            raise Exception("No such game")
+                        if game.players[0].socket != None and game.players[1].socket != None:
+                            self.logger.debug("Game is full")
+                            raise Exception("Game is full")
+                        available_slot = -1
+                        if game.players[1].socket == None:
+                            available_slot = 1
+                        if game.players[0].socket == None:
+                            available_slot = 0
+                        game.players[available_slot].socket = websocket
+                        self.socket_to_player[websocket] = game.players[available_slot]
+                        self.player_to_game[game.players[available_slot]] = game
+                        response = {
+                            "request": "new_game",
+                            "game_id": game.id,
+                            "password": game.password,
+                        }
+                        await websocket.send(json.dumps(response))
+                        if game.players[0].socket != None and game.players[1].socket != None:
+                            self.logger.debug("Game starting, notifying clients")
+                            response = {"request": "ready_for_placement"}
+                            response_json = json.dumps(response)
+                            await game.players[0].socket.send(response_json)
+                            await game.players[1].socket.send(response_json)
+                        else:
+                            self.logger.debug("Still waiting for both players...")
 
-                case "identify":
-                    await websocket.send(json.dumps({"request": "identify", "response": "hello"}))
+                    case "set_placement":
+                        if player == None or game == None:
+                            response = {"request": "set_placement", "error": "Unknown error"}
+                            response_json = json.dumps(response)
+                            await websocket.send(response_json)
+                        ships = msg.get("ships")
+                        player.ships = [[tuple(cell) for cell in ship] for ship in ships]
+                        player.guessed_by_opponent = [[] for ship in ships]
+                        if all(len(player.ships) == game.ship_count for player in game.players):
+                            response = {"request": "play", "your_turn": True}
+                            response_json = json.dumps(response)
+                            await game.players[0].socket.send(response_json)
+                            response = {"request": "play", "your_turn": False}
+                            response_json = json.dumps(response)
+                            await game.players[1].socket.send(response_json)
 
-                case _:
-                    self.logger.debug("Invalid request")
+                    # join first empty game
+                    # might need to return error if no empty games, then create game instead
+                    case "joinrandom":
+                        pass
+
+                    case "set_guess":
+                        if player_id != game.turn:
+                            response = {"request": "set_guess", "warning": "not_your_turn"}
+                            await websocket.send(json.dumps(response))
+                            break
+                        # sanitize input before passing on to opponent
+                        coords = (msg.get("coords")[0], msg.get("coords")[1])
+                        print("set guess as", coords)
+                        opponent = game.players[player_id ^ 1]
+                        hit = any(coords in ship for ship in opponent.ships)
+                        if hit:
+                            for i in range(len(opponent.ships)):
+                                if coords in opponent.ships[i]:
+                                    opponent.guessed_by_opponent[i].append(coords)
+
+                        is_endgame = all(
+                            set(ship) == set(opponent.guessed_by_opponent[i])
+                            for i, ship in enumerate(opponent.ships)
+                        )
+                        game.turn ^= 1
+                        response = {
+                            "request": "set_guess",
+                            "hit": hit,
+                            "endgame": is_endgame,
+                            "won": is_endgame,
+                        }
+                        await websocket.send(json.dumps(response))
+                        response = {
+                            "request": "opponent_guess",
+                            "coords": coords,
+                            "hit": hit,
+                            "endgame": is_endgame,
+                        }
+                        await opponent.socket.send(json.dumps(response))
+
+                    case "identify":
+                        await websocket.send(json.dumps({"request": "identify", "response": "hello"}))
+
+                    case _:
+                        self.logger.debug("Invalid request")
+            except Exception:
+                pass
 
             self.queues[workerID].task_done()
 

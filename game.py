@@ -3,6 +3,7 @@ import pygame
 import signal
 from game_manager import GameManager
 from pygame.locals import *
+from ui.router import Router
 from ui.screens.all import (
     AIConfiguration,
     Endgame,
@@ -16,7 +17,6 @@ from ui.screens.all import (
     Play,
     SelectOpponent,
 )
-from ui.router import Router
 
 MAX_FRAME_RATE = 80
 
