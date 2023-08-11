@@ -20,7 +20,7 @@ logging.basicConfig(
 class Player:
     def __init__(self):
         self.guessed = []
-        self.ships = []
+        self.ships: list[list[tuple[int, int]]] = []
         self.next_guess = None
         self.result = None
         self.socket: websockets.server.WebSocketServerProtocol | None = None
@@ -34,13 +34,15 @@ class Game:
         self.password = Game.generate_pw()
         self.ship_count = ship_count
         self.board_size = board_size
-        self.logger.info(f"Game created, id {self.id} password {self.password} {ship_count} {board_size}")
+        self.logger.info(
+            f"Game created, id {self.id} password {self.password} {ship_count} {board_size}"
+        )
         self.turn = 0
 
     def generate_pw():
         chars = string.ascii_uppercase + string.digits
         return "".join(random.choice(chars) for i in range(9))
-    
+
     def is_empty(self):
         return self.players[0].socket == None and self.players[1].socket == None
 
@@ -107,6 +109,10 @@ class Server:
             player = self.socket_to_player.get(websocket)
             if player != None:
                 game = self.player_to_game.get(player)
+                player_id = game.players.index(player)
+                if not (player_id in [0, 1]):
+                    player_id = 0
+                    self.logger.error("Player associated with game, but game does not recognise")
             details = msg.get("details")
             match request:
                 # create a new game
@@ -128,7 +134,9 @@ class Server:
                     game = self.code_to_game.get(msg.get("game_code"))
                     if game == None:
                         self.logger.debug("No such game")
-                        await websocket.send(json.dumps({"request": "new_game", "error": "Invalid invite code"}))
+                        await websocket.send(
+                            json.dumps({"request": "new_game", "error": "Invalid invite code"})
+                        )
                         return
                     if game.players[0].socket != None and game.players[1].socket != None:
                         self.logger.debug("Game is full")
@@ -161,7 +169,7 @@ class Server:
                         response = {"request": "set_placement", "error": "Unknown error"}
                         response_json = json.dumps(response)
                         await websocket.send(response_json)
-                    player.ships = msg.get("ships")
+                    player.ships = [[tuple(cell) for cell in ship] for ship in msg.get("ships")]
                     if all(len(player.ships) == game.ship_count for player in game.players):
                         response = {"request": "play", "your_turn": True}
                         response_json = json.dumps(response)
@@ -191,11 +199,21 @@ class Server:
                     response = self.create_message()
                     await websocket.send(json.dumps(response))
 
-                case "setguess":
-                    self.games[game_id].players[player_id].next_guess = details
-                    print("set guess as", details)
-                    response = self.create_message()
+                case "set_guess":
+                    if player_id != game.turn:
+                        response = {"request": "set_guess", "warning": "not_your_turn"}
+                        await websocket.send(json.dumps(response))
+                        break
+                    # sanitize input before passing on to opponent
+                    coords = (msg.get("coords")[0], msg.get("coords")[1])
+                    print("set guess as", coords)
+                    opponent = game.players[player_id ^ 1]
+                    hit = any(coords in ship for ship in opponent.ships)
+                    game.turn ^= 1
+                    response = {"request": "set_guess", "hit": hit}
                     await websocket.send(json.dumps(response))
+                    response = {"request": "opponent_guess", "coords": coords, "hit": hit}
+                    await opponent.socket.send(json.dumps(response))
 
                 case "broadcast":
                     broadcast = self.create_message("broadcast")

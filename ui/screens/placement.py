@@ -32,7 +32,7 @@ class Placement(Screen):
         ]
 
     async def render(self, mouse, router, manager) -> None:
-        if manager.client.error != None:
+        if manager.client != None and manager.client.error != None:
             return router.navigate_to("error")
         if self.ships_left <= 0:
             return router.navigate_to("play")

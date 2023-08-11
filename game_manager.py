@@ -1,5 +1,5 @@
 import asyncio
-from enum import Enum, Flag
+from enum import Enum
 from client import Client
 from players.opponent import Opponent
 from players.player import Player
@@ -9,11 +9,7 @@ import pygame
 from pygame.locals import *
 from ships.normal_ship import NormalShip
 from ui.sounds import miss_sound, hit_sound, click_sound, fire_sound
-
-
-class Turn(Flag):
-    PLAYER_ONE = 0
-    PLAYER_TWO = 1
+from utilities import Turn
 
 
 class AIDifficulty(Enum):
@@ -49,7 +45,7 @@ class GameManager:
         return cls.instance
 
     async def start_client(self, stop: asyncio.Future):
-        self.client = Client()
+        self.client = Client(self)
         print("manager attempting to start client (for real)")
         await self.client.start(stop)
 

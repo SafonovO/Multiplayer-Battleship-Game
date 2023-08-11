@@ -2,8 +2,10 @@ import asyncio
 import json
 import websockets.client
 from enum import Enum
-from game_manager import GameManager, Turn
-from typing import Any
+from utilities import Turn
+from typing import Any, TYPE_CHECKING
+if TYPE_CHECKING:
+    from game_manager import GameManager
 
 URI = "ws://24.199.115.192:8765"
 URI = "ws://127.0.0.1:8765"
@@ -19,7 +21,7 @@ class Stages(Enum):
 
 
 class Client:
-    def __init__(self, manager: GameManager) -> None:
+    def __init__(self, manager: "GameManager") -> None:
         self.manager = manager
         self.game_id: str | None = None
         self.code = ""
@@ -86,12 +88,12 @@ class Client:
             case "play":
                 self.stage = Stages.PLAY
                 self.manager.turn = Turn.PLAYER_ONE if msg.get("your_turn") else Turn.PLAYER_TWO
-            case "getguess":
-                self.opp_guess = msg["response"]
-                # print("set opponents guess to", self.opp_guess)
-            case "getresult":
-                self.my_result = msg["response"]
-                # print("set my result to", self.my_result)
+            case "set_guess":
+                hit = msg.get("hit")
+                print(f"hit? {hit}")
+                self.manager.turn = Turn.PLAYER_TWO
+            case "opponent_guess":
+                self.manager.turn = Turn.PLAYER_ONE
             case "broadcast":
                 print("broadcasting...")
             case "endgame":
