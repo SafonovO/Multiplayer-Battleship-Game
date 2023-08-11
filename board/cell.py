@@ -29,7 +29,9 @@ class Button:
 class Cell:
     coordinates: tuple[int, int] = (0, 0)
     ship: Ship | None = None
+    is_guessed: bool = False
     is_hit: bool = False
+    foreign: bool = False
 
     # for drawing purposes. the side length and location of the cell
     __width = 0
@@ -44,8 +46,9 @@ class Cell:
     the top left corner of the cell when it is drawn on teh screen
     """
 
-    def __init__(self, coords, width, location) -> None:
+    def __init__(self, coords, width, location, foreign=False) -> None:
         self.coordinates = coords
+        self.foreign = foreign
         self.__width = width
         self.__location = location
 
@@ -53,19 +56,24 @@ class Cell:
         self.ship = ship
 
     def hit(self) -> bool:
-        self.is_hit = True
+        self.is_guessed = True
 
         if self.ship == None:
             return False
 
+        self.is_hit = True
         self.ship.hit()
 
         return True
+    
+    def multiplayer_hit(self, hit: bool):
+        self.is_guessed = True
+        self.is_hit = hit
 
     def print_cell(self):
         print("Coords:", self.coordinates, "Hit?", self.is_hit, "Ship?", self.ship != None)
 
-    def draw_cell(self, screen, display):
+    def draw_cell(self, screen: pygame.Surface, display):
         """
         x, y are the coordinate of the top left corner
         of the cell.
@@ -105,18 +113,18 @@ class Cell:
             screen.blit(ship, self.get_cell_corner())
 
         # draw a cell that has not been fired on
-        elif not self.is_hit:
+        elif not self.is_guessed:
             pygame.draw.rect(screen, "#59A2E1", cell, 2)
 
-        # draw a cell that has been fired on with no ship
-        elif self.is_hit and self.ship == None:
+        # draw a cell that has been fired on without hitting a ship
+        elif not self.is_hit:
             # draw the square yellow
             pygame.draw.rect(screen, "#DAE159", cell)
             # draw the dash
             screen.blit(dash_text, dash_rect)
 
-        # draw a cell that has been fired on with ship
-        elif self.is_hit and self.ship != None:
+        # draw a cell that has been fired on hitting a ship
+        else:
             pygame.draw.rect(screen, "Red", cell)
             # draw the X
             screen.blit(x_text, x_rect)

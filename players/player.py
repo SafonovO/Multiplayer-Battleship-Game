@@ -1,17 +1,30 @@
-
-
 from board.board import Board
 
 BOARD_SIZE = 4
 NUM_SHIPS = 5
 
+
 class Player:
-    def __init__(self,ship_count,game_size, coords=(850, 375), width=300, display=True):
+    def __init__(
+        self, ship_count, game_size, coords=(850, 375), width=300, display=True, foreign=False
+    ):
         self.__miss_next_turn: False
-        self.board = Board(size=game_size, num_ships=ship_count,
-                           coords=coords, width=width, display=display)
-        self.large_board = Board(size=self.board.get_size(), num_ships=self.board.get_num_ships(),
-                                  coords=(150, 150), width=550, display=True)
+        self.board = Board(
+            size=game_size,
+            num_ships=ship_count,
+            coords=coords,
+            width=width,
+            display=display,
+            foreign=foreign,
+        )
+        self.large_board = Board(
+            size=self.board.get_size(),
+            num_ships=self.board.get_num_ships(),
+            coords=(150, 150),
+            width=550,
+            display=True,
+            foreign=foreign,
+        )
         self.large_board.build_board()
         self.board.build_board()
 
@@ -22,8 +35,6 @@ class Player:
     def use_ability(self) -> bool:
         pass
 
-
-
     # Large board is needed for the placement screen since we have the player board of a fixed size
-    def draw_large_board(self,screen):
+    def draw_large_board(self, screen):
         self.large_board.draw_board(screen)

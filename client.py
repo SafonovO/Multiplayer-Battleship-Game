@@ -2,7 +2,11 @@ import asyncio
 import json
 import websockets.client
 from enum import Enum
-from typing import Any
+from board.cell import Cell
+from utilities import Turn
+from typing import Any, TYPE_CHECKING
+if TYPE_CHECKING:
+    from game_manager import GameManager
 
 URI = "ws://24.199.115.192:8765"
 URI = "ws://127.0.0.1:8765"
@@ -10,13 +14,16 @@ URI = "ws://127.0.0.1:8765"
 
 class Stages(Enum):
     ERROR = -1
-    PENDING_OPPONENT_JOIN = 0
-    PLACEMENT = 1
-    PENDING_OPPONENT_PLACEMENT = 2
+    WAITING_FOR_CODE = 0
+    PENDING_OPPONENT_JOIN = 1
+    PLACEMENT = 2
+    PENDING_OPPONENT_PLACEMENT = 3
+    PLAY = 4
 
 
 class Client:
-    def __init__(self) -> None:
+    def __init__(self, manager: "GameManager") -> None:
+        self.manager = manager
         self.game_id: str | None = None
         self.code = ""
         self.player_id = None
@@ -26,16 +33,9 @@ class Client:
         self.my_result = None
         self.won = False
         self.game_over = False
-        self.stage = Stages.PENDING_OPPONENT_JOIN
+        self.stage = Stages.WAITING_FOR_CODE
         self.error = None
-
-    def create_message(self, request, details=""):
-        return {
-            "request": request,
-            "game": self.game_id,
-            "player": self.player_id if self.player_id is not None else "-1",
-            "details": details,
-        }
+        self.current_target: Cell | None = None
 
     async def start(self, stop: asyncio.Future):
         print("connecting to server")
@@ -66,32 +66,42 @@ class Client:
         }"""
         print(f"response {response}")
         msg: dict[str, Any] = json.loads(response)
+        if msg.get("error"):
+            self.error = msg.get("error")
+            self.stage = Stages.ERROR
+            return
         match msg.get("request"):
             case "new_game":
-                if msg.get("error"):
-                    self.error = msg.get("error")
-                    self.stage = Stages.ERROR
-                    return
                 self.game_id = msg.get("game_id")
                 self.code = msg.get("password")
+                self.stage = Stages.PENDING_OPPONENT_JOIN
                 print(f"set game id to {self.game_id}")
             case "ready_for_placement":
                 print("ready for placement! proceed to placement screen")
                 self.stage = Stages.PLACEMENT
-            case "getguess":
-                self.opp_guess = msg["response"]
-                # print("set opponents guess to", self.opp_guess)
-            case "getresult":
-                self.my_result = msg["response"]
-                # print("set my result to", self.my_result)
-            case "broadcast":
-                print("broadcasting...")
-            case "endgame":
-                self.won = msg["response"]
-                self.game_over = True
-            case "ok":
-                pass
-                # print("ok")
+            case "play":
+                self.stage = Stages.PLAY
+                self.manager.turn = Turn.PLAYER_ONE if msg.get("your_turn") else Turn.PLAYER_TWO
+            case "set_guess":
+                hit = msg.get("hit")
+                print(f"hit? {hit}")
+                self.manager.turn = Turn.PLAYER_TWO
+                self.current_target.multiplayer_hit(hit)
+                self.manager.active_cell = None
+                if msg.get("endgame"):
+                    self.game_over = True
+                    self.won = msg.get("won")
+                    self.manager.endgame()
+            case "opponent_guess":
+                self.manager.turn = Turn.PLAYER_ONE
+                hit = msg.get("hit")
+                coords = msg.get("coords")
+                targeted_cell = self.manager.get_local_player().board.get_cell(coords[0], coords[1])
+                targeted_cell.multiplayer_hit(hit)
+                if msg.get("endgame"):
+                    self.game_over = True
+                    self.won = False
+                    self.manager.endgame()
             case "identify":
                 pass
             case other:
@@ -113,27 +123,13 @@ class Client:
         self.player_id = "1"
         print(f"joining game with code {code}")
 
-    def get_guess(self):
-        message = self.create_message("getguess")
+    def set_placement(self, ships: list[list[tuple[int, int]]]):
+        message = {"request": "set_placement", "ships": ships}
         self.requests.put_nowait(json.dumps(message))
+        print("sending placement")
 
-    def get_result(self):
-        message = self.create_message("getresult")
-        self.requests.put_nowait(json.dumps(message))
-
-    def send_result(self, result):
-        message = self.create_message("setresult", result)
-        self.requests.put_nowait(json.dumps(message))
-
-    def send_guess(self, x, y):
-        message = self.create_message("setguess", f"{x},{y}")
-        self.requests.put_nowait(json.dumps(message))
-
-    def end_game(self, won):
-        message = self.create_message("endgame", won)
-        self.requests.put_nowait(json.dumps(message))
-        print("ending game")
-
-    def broadcast(self):
-        message = self.create_message("broadcast")
+    def set_guess(self, cell: Cell):
+        self.current_target = cell
+        coords = cell.coordinates
+        message = {"request": "set_guess", "coords": [coords[0], coords[1]]}
         self.requests.put_nowait(json.dumps(message))

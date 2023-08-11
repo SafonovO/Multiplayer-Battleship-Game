@@ -3,6 +3,7 @@ import pygame
 import signal
 from game_manager import GameManager
 from pygame.locals import *
+from ui.router import Router
 from ui.screens.all import (
     AIConfiguration,
     Endgame,
@@ -11,11 +12,11 @@ from ui.screens.all import (
     OnlineCreatePending,
     OnlineGameOptions,
     OnlineJoin,
+    OnlinePlacementPending,
     Placement,
     Play,
     SelectOpponent,
 )
-from ui.router import Router
 
 MAX_FRAME_RATE = 80
 
@@ -54,6 +55,7 @@ async def main():
             "online_create_pending": OnlineCreatePending,
             "online_join": OnlineJoin,
             "placement": Placement,
+            "online_placement_pending": OnlinePlacementPending,
             "play": Play,
             "endgame": Endgame,
             "error": Error,

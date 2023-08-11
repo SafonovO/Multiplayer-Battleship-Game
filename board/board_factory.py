@@ -63,7 +63,7 @@ class BoardFactory:
         return ships
 
     # create the cells
-    def create_cells(self) -> list[list[Cell]]:
+    def create_cells(self, foreign=False) -> list[list[Cell]]:
         """
         cell size is the total width of the board (_width)
         divided by the number of cells (_size)
@@ -98,6 +98,7 @@ class BoardFactory:
                         coords=(x, y),
                         width=cell_size,
                         location=(location_x, location_y),
+                        foreign=foreign,
                     )
                 )
             cells.append(row)

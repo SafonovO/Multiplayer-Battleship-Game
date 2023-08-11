@@ -1,5 +1,5 @@
 import asyncio
-from enum import Enum, Flag
+from enum import Enum
 from client import Client
 from players.opponent import Opponent
 from players.player import Player
@@ -9,11 +9,7 @@ import pygame
 from pygame.locals import *
 from ships.normal_ship import NormalShip
 from ui.sounds import miss_sound, hit_sound, click_sound, fire_sound
-
-
-class Turn(Flag):
-    PLAYER_ONE = 0
-    PLAYER_TWO = 1
+from utilities import Turn
 
 
 class AIDifficulty(Enum):
@@ -49,7 +45,7 @@ class GameManager:
         return cls.instance
 
     async def start_client(self, stop: asyncio.Future):
-        self.client = Client()
+        self.client = Client(self)
         print("manager attempting to start client (for real)")
         await self.client.start(stop)
 
@@ -66,7 +62,7 @@ class GameManager:
             raise Exception("Multiplayer client must be started first!")
         print(f"{'Creating' if creating_game else 'Joining'} online game")
         self.game_over = False
-        self.turn = Turn.PLAYER_ONE
+        self.turn = Turn.PLAYER_ONE if creating_game else Turn.PLAYER_TWO
         self.run = True
         self.won = False
         self.ai_game = False
@@ -338,45 +334,19 @@ class GameManager:
             self.client.send_result("True" if result else "False")
         self.turn ^= Turn.PLAYER_TWO
 
-    async def fire_shot(self):
+    def fire_shot(self):
         """
         Returns true if the shot was fired successfully
         """
-        # checks if it's the right persons turn then proceeds with action
-        # play sounds
-
-        if self.active_cell and self.turn == Turn.PLAYER_ONE:
-            click_sound.play()
-            fire_sound.play()
-            if isinstance(self.__player2, Opponent) and self.client:
-                coords = self.active_cell.coordinates
-                self.client.send_guess(coords[0], coords[1])
-                self.client.get_result()
-                while self.client.my_result is None:
-                    # wait for response
-                    await asyncio.sleep(0.1)
-                # print("result is", self.client.my_result)
-                if self.client.my_result == "True":
-                    print("HIT A SHIP!!!!")
-                    self.active_cell.set_ship(NormalShip(1))
-                self.client.my_result = None
-            await self.validate_shot(self.active_cell)
-            # self.active_cell.print_cell()
-            self.active_cell = None
-            return True
-        return False
-
-    def fire_shot_new(self):
-        """
-        Returns true if the shot was fired successfully
-        """
-        if self.active_cell and self.turn == Turn.PLAYER_ONE:
-            click_sound.play()
-            fire_sound.play()
-            self.validate_shot_new(self.active_cell)
-            self.active_cell = None
-            return True
-        return False
+        if not self.active_cell or self.turn != Turn.PLAYER_ONE:
+            return False
+        click_sound.play()
+        fire_sound.play()
+        if isinstance(self.__player2, Opponent) and self.client:
+            self.client.set_guess(self.active_cell)
+        self.validate_shot_new(self.active_cell)
+        self.active_cell = None
+        return True
 
     def validate_shot_new(self, active_cell):
         """
@@ -422,3 +392,6 @@ class GameManager:
         elif self.client and self.client.game_over:
             self.game_over = True
             self.won = self.client.won
+
+    def get_local_player(self):
+        return self.__player1

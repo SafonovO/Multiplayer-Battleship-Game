@@ -3,6 +3,7 @@ from ui.screens.endgame import Endgame
 from ui.screens.error import Error
 from ui.screens.main_menu import MainMenu
 from ui.screens.online_create_pending import OnlineCreatePending
+from ui.screens.online_placement_pending import OnlinePlacementPending
 from ui.screens.online_game_options import OnlineGameOptions
 from ui.screens.online_join import OnlineJoin
 from ui.screens.placement import Placement

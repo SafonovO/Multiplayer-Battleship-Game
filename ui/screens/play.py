@@ -30,6 +30,8 @@ class Play(Screen):
         self.button_array = [self.quit_button, self.fire_button]
 
     async def render(self, mouse, router, manager):
+        if manager.client != None and manager.client.error != None:
+            return router.navigate_to("error")
         manager.update_boards()
         if manager.game_over:
             return router.navigate_to("endgame")
@@ -59,7 +61,7 @@ class Play(Screen):
                 # if we hit confirm, fire with the manager
                 if self.fire_button.is_hovered(mouse):
                     if manager.active_cell != None:
-                        self.change_turn = manager.fire_shot_new()
+                        self.change_turn = manager.fire_shot()
                         self.coord_text.value = ""
                         if manager.game_over:
                             return router.navigate_to("endgame")
