@@ -343,7 +343,7 @@ class GameManager:
         click_sound.play()
         fire_sound.play()
         if isinstance(self.__player2, Opponent) and self.client:
-            self.client.set_guess(self.active_cell.coordinates)
+            self.client.set_guess(self.active_cell)
         self.validate_shot_new(self.active_cell)
         self.active_cell = None
         return True

@@ -2,6 +2,7 @@ import asyncio
 import json
 import websockets.client
 from enum import Enum
+from board.cell import Cell
 from utilities import Turn
 from typing import Any, TYPE_CHECKING
 if TYPE_CHECKING:
@@ -34,14 +35,7 @@ class Client:
         self.game_over = False
         self.stage = Stages.WAITING_FOR_CODE
         self.error = None
-
-    def create_message(self, request, details=""):
-        return {
-            "request": request,
-            "game": self.game_id,
-            "player": self.player_id if self.player_id is not None else "-1",
-            "details": details,
-        }
+        self.current_target: Cell | None = None
 
     async def start(self, stop: asyncio.Future):
         print("connecting to server")
@@ -92,18 +86,22 @@ class Client:
                 hit = msg.get("hit")
                 print(f"hit? {hit}")
                 self.manager.turn = Turn.PLAYER_TWO
-                self.manager.active_cell
+                self.current_target.multiplayer_hit(hit)
                 self.manager.active_cell = None
+                if msg.get("endgame"):
+                    self.game_over = True
+                    self.won = msg.get("won")
+                    self.manager.endgame()
             case "opponent_guess":
                 self.manager.turn = Turn.PLAYER_ONE
-            case "broadcast":
-                print("broadcasting...")
-            case "endgame":
-                self.won = msg["response"]
-                self.game_over = True
-            case "ok":
-                pass
-                # print("ok")
+                hit = msg.get("hit")
+                coords = msg.get("coords")
+                targeted_cell = self.manager.get_local_player().board.get_cell(coords[0], coords[1])
+                targeted_cell.multiplayer_hit(hit)
+                if msg.get("endgame"):
+                    self.game_over = True
+                    self.won = False
+                    self.manager.endgame()
             case "identify":
                 pass
             case other:
@@ -130,19 +128,8 @@ class Client:
         self.requests.put_nowait(json.dumps(message))
         print("sending placement")
 
-    def set_guess(self, coords: tuple[int, int]):
+    def set_guess(self, cell: Cell):
+        self.current_target = cell
+        coords = cell.coordinates
         message = {"request": "set_guess", "coords": [coords[0], coords[1]]}
-        self.requests.put_nowait(json.dumps(message))
-
-    def send_result(self, result):
-        message = self.create_message("send_result", result)
-        self.requests.put_nowait(json.dumps(message))
-
-    def end_game(self, won):
-        message = self.create_message("endgame", won)
-        self.requests.put_nowait(json.dumps(message))
-        print("ending game")
-
-    def broadcast(self):
-        message = self.create_message("broadcast")
         self.requests.put_nowait(json.dumps(message))
