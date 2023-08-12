@@ -1,29 +1,12 @@
 import pygame
 
 from ui.fonts import get_font
-
-# import pygame_gui
-# from menu_views.menu_options import MenuElement
 from ships.normal_ship import Ship
 
-"""
-
-class Button:
-    position = (0, 0)
-    text = ''
-    manager = None
-    gui_button = None
-
-    def __init__(self, position: tuple, text: str, manager: pygame_gui.UIManager, height: int, width: int):
-        self.position = position
-        self.text = text
-        self.manager = manager
-        self.gui_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect(
-            position, (width, height)), manager=manager)
-        
-    def on_click(self):
-        pass
-"""
+ship_1x1 = pygame.image.load("assets/ships/ship_1x1.png")
+ship_head = pygame.image.load("assets/ships/ship_head.png")
+ship_middle = pygame.image.load("assets/ships/ship_middle.png")
+ship_tail = pygame.image.load("assets/ships/ship_tail.png")
 
 
 class Cell:
@@ -65,7 +48,7 @@ class Cell:
         self.ship.hit()
 
         return True
-    
+
     def multiplayer_hit(self, hit: bool):
         self.is_guessed = True
         self.is_hit = hit
@@ -106,10 +89,15 @@ class Cell:
 
         # if display, draw unhit ships differently
         if display and self.ship is not None and self.is_hit == False:
-            pygame.draw.rect(screen, "Grey", cell)
-            ship = pygame.image.load("assets/ship.png")
+            if self.ship.get_size() == 1:
+                ship = ship_1x1
+            else:
+                pygame.draw.rect(screen, "Grey", cell)
+                ship = pygame.image.load("assets/ship.png")
             ship = pygame.Surface.convert_alpha(ship)
             ship = pygame.transform.scale(ship, (self.__width, self.__width))
+            if not self.ship.vertical:
+                ship = pygame.transform.rotate(ship, 90)
             screen.blit(ship, self.get_cell_corner())
 
         # draw a cell that has not been fired on
@@ -172,17 +160,3 @@ class Cell:
 
     def get_width(self):
         return self.__width
-
-
-"""
-class UICell(Button):
-    cell = None
-    def __init__(self, position: tuple, text: str, manager: pygame_gui.UIManager, size: int, coordinates: tuple):
-        super().__init__(position, text, manager, height=size, width=size)
-        self.cell = Cell(coordinates)
-        self.gui_button.show()
-
-    def on_click(self):
-        pass
-
-"""

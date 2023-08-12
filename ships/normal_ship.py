@@ -8,6 +8,8 @@ class NormalShip(Ship):
     # track the HP
     __hp = None
 
+    vertical = False
+
     def __init__(self, ship_size: int):
         self.__size = ship_size
         self.__hp = ship_size
@@ -17,6 +19,9 @@ class NormalShip(Ship):
 
     def get_hp(self):
         return self.__hp
+    
+    def set_orientation(self, vertical: bool) -> None:
+        self.vertical = vertical
 
     """
     "Hits" this ship.

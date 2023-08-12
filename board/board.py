@@ -155,7 +155,7 @@ class Board:
                         if c[0] < self.__size and c[1] < self.__size:
                             cell = self.__cells[c[0]][c[1]]
                             if cell.ship == None:
-                                cell.ship = current_ship
+                                cell.set_ship(current_ship)
                                 occupied = True
                                 # print("Place a size "+ str(current_ship.get_size()) + " ship on coords " + str(c[0]) + "," + str(c[1]))
 

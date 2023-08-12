@@ -234,6 +234,7 @@ class GameManager:
         ship should be placed vertically. Set the cells as such
         """
         s = self.__player1.board.get_ship(-num_left)
+        s.set_orientation(vertical)
 
         cells = []
 
@@ -270,8 +271,8 @@ class GameManager:
 
         # set the ship in each cell
         for c in cells:
-            self.__player1.board.get_cell(c[0], c[1]).ship = s
-            self.__player1.large_board.get_cell(c[0], c[1]).ship = s
+            self.__player1.board.get_cell(c[0], c[1]).set_ship(s)
+            self.__player1.large_board.get_cell(c[0], c[1]).set_ship(s)
 
         self.active_cell = None
 
