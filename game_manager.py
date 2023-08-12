@@ -270,9 +270,11 @@ class GameManager:
                 return False
 
         # set the ship in each cell
-        for c in cells:
+        for i, c in enumerate(cells):
             self.__player1.board.get_cell(c[0], c[1]).set_ship(s)
+            self.__player1.board.get_cell(c[0], c[1]).set_index(i)
             self.__player1.large_board.get_cell(c[0], c[1]).set_ship(s)
+            self.__player1.large_board.get_cell(c[0], c[1]).set_index(i)
 
         self.active_cell = None
 

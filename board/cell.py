@@ -15,6 +15,7 @@ class Cell:
     is_guessed: bool = False
     is_hit: bool = False
     foreign: bool = False
+    index: int = -1
 
     # for drawing purposes. the side length and location of the cell
     __width = 0
@@ -37,6 +38,9 @@ class Cell:
 
     def set_ship(self, ship: Ship):
         self.ship = ship
+
+    def set_index(self, index: int):
+        self.index = index
 
     def hit(self) -> bool:
         self.is_guessed = True
@@ -91,9 +95,12 @@ class Cell:
         if display and self.ship is not None and self.is_hit == False:
             if self.ship.get_size() == 1:
                 ship = ship_1x1
+            elif self.index == 0:
+                ship = ship_head
+            elif self.index == self.ship.get_size() - 1:
+                ship = ship_tail
             else:
-                pygame.draw.rect(screen, "Grey", cell)
-                ship = pygame.image.load("assets/ship.png")
+                ship = ship_middle
             ship = pygame.Surface.convert_alpha(ship)
             ship = pygame.transform.scale(ship, (self.__width, self.__width))
             if not self.ship.vertical:

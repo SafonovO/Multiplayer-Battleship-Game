@@ -8,7 +8,7 @@ class NormalShip(Ship):
     # track the HP
     __hp = None
 
-    vertical = False
+    vertical = True
 
     def __init__(self, ship_size: int):
         self.__size = ship_size
