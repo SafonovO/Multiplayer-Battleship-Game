@@ -127,6 +127,7 @@ class GameManager:
             self.active_cell.draw_selected_cell(SCREEN)
 
     def place_random(self, num_ships):
+        self.active_cell = None
         self.__player1.board.place_ships(num_ships=num_ships)
 
     def preview_ship(self, num_left: int, vertical: bool):
