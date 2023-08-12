@@ -1,5 +1,6 @@
 import pygame
 
+from ui.colours import Colours
 from ui.fonts import get_font
 from ships.normal_ship import Ship
 
@@ -7,7 +8,6 @@ ship_1x1 = pygame.image.load("assets/ships/ship_1x1.png")
 ship_head = pygame.image.load("assets/ships/ship_head.png")
 ship_middle = pygame.image.load("assets/ships/ship_middle.png")
 ship_tail = pygame.image.load("assets/ships/ship_tail.png")
-
 
 class Cell:
     coordinates: tuple[int, int] = (0, 0)
@@ -106,10 +106,11 @@ class Cell:
             if not self.ship.vertical:
                 ship = pygame.transform.rotate(ship, 90)
             screen.blit(ship, self.get_cell_corner())
+            pygame.draw.rect(screen, Colours.GOLD.value, cell, 1)
 
         # draw a cell that has not been fired on
         elif not self.is_guessed:
-            pygame.draw.rect(screen, "#59A2E1", cell, 2)
+            pygame.draw.rect(screen, Colours.GOLD.value, cell, 2)
 
         # draw a cell that has been fired on without hitting a ship
         elif not self.is_hit:
