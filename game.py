@@ -76,7 +76,7 @@ async def main():
             await stop
     finally:
         try:
-            loop.add_signal_handler(signal.SIGTERM, loop.stop)
+            loop.remove_signal_handler(signal.SIGTERM)
         except NotImplementedError:
             pass  # Ignore if not implemented. Means this program is running in windows.
 
