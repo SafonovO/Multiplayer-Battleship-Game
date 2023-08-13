@@ -18,9 +18,11 @@ class SelectOpponent(Screen):
         if event.type == pygame.MOUSEBUTTONDOWN:
             if self.play_button_ai.is_hovered(mouse):
                 click_sound.play()
+                manager.set_ai_game(True)
                 return router.navigate_to("ai_configuration")
             if self.play_button_human.is_hovered(mouse):
                 click_sound.play()
+                manager.set_ai_game(False)
                 return router.navigate_to("online_game_options")
             if self.quit_button.is_hovered(mouse):
                 click_sound.play()

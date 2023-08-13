@@ -76,6 +76,13 @@ class Client:
                 self.code = msg.get("password")
                 self.stage = Stages.PENDING_OPPONENT_JOIN
                 print(f"set game id to {self.game_id}")
+                size = msg.get("board_size")
+                ships = msg.get("num_ships")
+                if size is not None:
+                    self.manager.set_size(size)
+                if ships is not None:
+                    self.manager.set_num_ships(ships)
+
             case "ready_for_placement":
                 print("ready for placement! proceed to placement screen")
                 self.stage = Stages.PLACEMENT

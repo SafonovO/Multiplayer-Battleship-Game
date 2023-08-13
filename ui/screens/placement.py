@@ -4,14 +4,13 @@ from ui.elements import make_button, confirm_button_image, quit_button_image
 from ui.router import Screen
 from ui.sounds import click_sound
 from ui.text import Text
-from game_config import SHIP_COUNT
 
 
 class Placement(Screen):
     def __init__(self, manager) -> None:
         super().__init__(manager)
         self.draw_background = True
-        self.ships_left = SHIP_COUNT
+        self.ships_left = manager.num_ships
         self.ship_vertical = True
 
         placement_board_label = Text("Board Setup", (425, 100), 30, Colours.WHITE)
