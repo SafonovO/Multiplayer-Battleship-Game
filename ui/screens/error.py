@@ -1,7 +1,7 @@
 import pygame
 from client import Stages
 from ui.colours import Colours
-from ui.elements import make_button
+from ui.elements import make_back_button, make_button
 from ui.router import Screen
 from ui.text import Text
 
@@ -23,7 +23,7 @@ class Error(Screen):
         self.text_array = [error_title, error_text]
         if manager.client.error == "Invalid invite code":
             self.quit_button = None
-            self.back_button = make_button(650, 600, "Back", 75, reactive=True)
+            self.back_button = make_back_button()
             self.button_array = [self.back_button]
         else:
             self.quit_button = make_button(650, 600, "QUIT", 75, reactive=True)
