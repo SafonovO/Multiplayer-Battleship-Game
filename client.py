@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from game_manager import GameManager
 
 URI = "ws://24.199.115.192:8765"
-URI = "ws://127.0.0.1:8765"
+# URI = "ws://127.0.0.1:8765"
 
 
 class Stages(Enum):
