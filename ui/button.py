@@ -50,6 +50,9 @@ class TextButton(ButtonDecorator):
         self.text = text
         self.font = font
 
+    def set_image(self, image):
+        self.button.image = image
+
     @property
     def text(self):
         return self.__text
