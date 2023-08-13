@@ -42,7 +42,7 @@ class Size(Screen):
             950, 500, "9", 20, image=confirm_button_image)
 
         self.incompatible_text = Text("", (650, 565), 20, Colours.RED)
-        self.next_button = make_button(900, 650, "Next", 75, reactive=True)
+        self.next_button = make_button(650, 650, "Next", 75, reactive=True)
         self.back_button = make_back_button()
 
         self.ship_buttons = [self.ships4_button, self.ships5_button, self.ships6_button,
@@ -74,7 +74,11 @@ class Size(Screen):
                         button) + START_SIZE
             for button in self.size_buttons:
                 if button.is_hovered(mouse):
+                    if not self.check_compatible(manager.num_ships, self.size_buttons.index(button) + START_SIZE):
+                        self.incompatible_text.value = "Too small of a board size for the selected number of ships!"
+                        break
                     click_sound.play()
+                    self.incompatible_text.value = ""
                     self.size_buttons[manager.board_size -
                                       START_SIZE].set_image(confirm_button_image)
                     button.set_image(confirm_button_select)
