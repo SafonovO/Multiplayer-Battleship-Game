@@ -1,6 +1,7 @@
 import asyncio
 from enum import Enum
 from client import Client
+from game_config import DEFAULT_SIZE
 from players.opponent import Opponent
 from players.player import Player
 from players.ai import EasyAI, AI, HardAI, MedAI
@@ -37,6 +38,8 @@ class GameManager:
 
     client = None
     won = False
+    board_size = DEFAULT_SIZE
+    num_ships = DEFAULT_SIZE
 
     # singleton class
     def __new__(cls):
@@ -57,7 +60,7 @@ class GameManager:
         else:
             return None
 
-    def create_online_game(self, ship_count: int, board_size: int, creating_game: bool):
+    def create_online_game(self, creating_game: bool):
         if self.client == None:
             raise Exception("Multiplayer client must be started first!")
         print(f"{'Creating' if creating_game else 'Joining'} online game")
@@ -65,36 +68,50 @@ class GameManager:
         self.turn = Turn.PLAYER_ONE if creating_game else Turn.PLAYER_TWO
         self.run = True
         self.won = False
-        self.ai_game = False
         self.ai_difficulty = None
 
-        self.__player1 = Player(ship_count, board_size)
-        self.__player2 = Opponent(ship_count, board_size)
+        self.__player1 = Player(self.num_ships, self.board_size)
+        self.__player2 = Opponent(self.num_ships, self.board_size)
         self.client.identify()
         if creating_game:
-            self.client.create_game(ship_count, board_size)
+            self.client.create_game(self.num_ships, self.board_size)
         self.active_cell = None
 
-    def create_ai_game(self, ship_count: int, board_size: int, ai_difficulty: AIDifficulty):
+    def create_ai_game(self):
         print("creating AI game")
         self.game_over = False
         self.turn = Turn.PLAYER_ONE
         self.run = True
         self.won = False
-        self.ai_game = True
-        self.ai_difficulty = ai_difficulty
 
-        self.__player1 = Player(ship_count, board_size)
-        match ai_difficulty:
+        self.__player1 = Player(self.num_ships, self.board_size)
+        match self.ai_difficulty:
             case AIDifficulty.EASY:
-                self.__player2 = EasyAI(ship_count, board_size)
+                self.__player2 = EasyAI(self.num_ships, self.board_size)
             case AIDifficulty.MEDIUM:
-                self.__player2 = MedAI(ship_count, board_size)
+                self.__player2 = MedAI(self.num_ships, self.board_size)
             case AIDifficulty.HARD:
-                self.__player2 = HardAI(ship_count, board_size, self.__player1)
+                self.__player2 = HardAI(self.num_ships, self.board_size, self.__player1)
             case _:
                 print("Invalid AI Difficulty")
         self.active_cell = None
+
+    def reset(self):
+        self.board_size = DEFAULT_SIZE
+        self.num_ships = DEFAULT_SIZE
+        self.ai_difficulty = None
+
+    def set_size(self, size):
+        self.board_size = size
+
+    def set_num_ships(self, num):
+        self.num_ships = num
+
+    def set_ai_game(self, ai_bool: bool):
+        self.ai_game = ai_bool
+
+    def set_ai_difficulty(self, difficulty: AIDifficulty):
+        self.ai_difficulty = difficulty
 
     def hard_ai_setup(self):
         """
