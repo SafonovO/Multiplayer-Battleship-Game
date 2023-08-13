@@ -96,6 +96,14 @@ class GameManager:
                 print("Invalid AI Difficulty")
         self.active_cell = None
 
+    def reset(self):
+        self.board_size = DEFAULT_SIZE
+        self.num_ships = DEFAULT_SIZE
+        self.ai_difficulty = None
+
+    def set_ai_difficulty(self, difficulty: AIDifficulty):
+        self.ai_difficulty = difficulty
+
     def hard_ai_setup(self):
         """
         HardAI wil be able to peek into its opponent's array.
