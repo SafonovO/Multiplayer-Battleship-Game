@@ -20,8 +20,8 @@ class Cell:
     # for drawing purposes. the side length and location of the cell
     __width = 0
     __location = None
-    __bigMarkingSize = 36
-    __smallMarkingSize = 24
+    __bigMarkingSize = 64
+    __smallMarkingSize = 48
     """
     width represents a number of pixels that is the side length
     of the cell when you draw it on the screen
@@ -35,6 +35,8 @@ class Cell:
         self.foreign = foreign
         self.__width = width
         self.__location = location
+        self.__bigMarkingSize = int(width)
+        self.__smallMarkingSize = int(width/1.1)
 
     def set_ship(self, ship: Ship):
         self.ship = ship
@@ -84,11 +86,11 @@ class Cell:
         cell_center = self.get_cell_center()
 
         # If cell is a hit ship, print an X on it
-        x_text = get_font(markingSize, "Helvetica").render("X", True, "White")
+        x_text = get_font(markingSize, "Helvetica").render("X", True, Colours.RED.value)
         x_rect = x_text.get_rect(center=cell_center)
 
         # if cell missed, print a - on it
-        dash_text = get_font(markingSize, "Helvetica").render("-", True, "Black")
+        dash_text = get_font(markingSize, "Helvetica").render("-", True, "Yellow")
         dash_rect = dash_text.get_rect(center=cell_center)
 
         # if display, draw unhit ships differently
@@ -115,13 +117,29 @@ class Cell:
         # draw a cell that has been fired on without hitting a ship
         elif not self.is_hit:
             # draw the square yellow
-            pygame.draw.rect(screen, "#DAE159", cell)
+            pygame.draw.rect(screen, Colours.GOLD.value, cell, 2)
             # draw the dash
             screen.blit(dash_text, dash_rect)
 
         # draw a cell that has been fired on hitting a ship
         else:
-            pygame.draw.rect(screen, "Red", cell)
+            if self.ship is not None and display:
+                if self.ship.get_size() == 1:
+                    ship = ship_1x1
+                elif self.index == 0:
+                    ship = ship_head
+                elif self.index == self.ship.get_size() - 1:
+                    ship = ship_tail
+                else:
+                    ship = ship_middle
+                ship = pygame.Surface.convert_alpha(ship)
+                ship = pygame.transform.scale(ship, (self.__width, self.__width))
+                if not self.ship.vertical:
+                    ship = pygame.transform.rotate(ship, 90)
+                screen.blit(ship, self.get_cell_corner())
+                pygame.draw.rect(screen, Colours.GOLD.value, cell, 1)
+
+            pygame.draw.rect(screen, Colours.GOLD.value, cell, 2)
             # draw the X
             screen.blit(x_text, x_rect)
 
