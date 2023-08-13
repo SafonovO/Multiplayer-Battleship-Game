@@ -29,6 +29,7 @@ class OnlineJoin(Screen):
 
     async def render(self, mouse, router, manager):
         if manager.client.stage == Stages.PLACEMENT:
+            manager.create_online_game(False)
             return router.navigate_to("placement")
         if manager.client.stage == Stages.PENDING_OPPONENT_JOIN:
             return router.navigate_to("online_create_pending")

@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from game_manager import GameManager
 
 URI = "ws://24.199.115.192:8765"
-URI = "ws://127.0.0.1:8765"
+# URI = "ws://127.0.0.1:8765"
 
 
 class Stages(Enum):
@@ -76,6 +76,13 @@ class Client:
                 self.code = msg.get("password")
                 self.stage = Stages.PENDING_OPPONENT_JOIN
                 print(f"set game id to {self.game_id}")
+                size = msg.get("board_size")
+                ships = msg.get("num_ships")
+                if size is not None:
+                    self.manager.set_size(size)
+                if ships is not None:
+                    self.manager.set_num_ships(ships)
+
             case "ready_for_placement":
                 print("ready for placement! proceed to placement screen")
                 self.stage = Stages.PLACEMENT

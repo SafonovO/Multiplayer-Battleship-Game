@@ -151,6 +151,8 @@ class Server:
                             "request": "new_game",
                             "game_id": game.id,
                             "password": game.password,
+                            "board_size": game.board_size,
+                            "num_ships": game.ship_count
                         }
                         await websocket.send(json.dumps(response))
                         if game.players[0].socket != None and game.players[1].socket != None:
