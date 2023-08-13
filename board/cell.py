@@ -8,6 +8,8 @@ ship_1x1 = pygame.image.load("assets/ships/ship_1x1.png")
 ship_head = pygame.image.load("assets/ships/ship_head.png")
 ship_middle = pygame.image.load("assets/ships/ship_middle.png")
 ship_tail = pygame.image.load("assets/ships/ship_tail.png")
+X_img = pygame.image.load("assets/X.png")
+Dash_img = pygame.image.load("assets/Dash.png")
 
 class Cell:
     coordinates: tuple[int, int] = (0, 0)
@@ -86,12 +88,9 @@ class Cell:
         cell_center = self.get_cell_center()
 
         # If cell is a hit ship, print an X on it
-        x_text = get_font(markingSize, "Helvetica").render("X", True, Colours.DARK_RED.value)
+        x_text = get_font(markingSize, "Helvetica").render("X", True, Colours.RED.value)
         x_rect = x_text.get_rect(center=cell_center)
 
-        # if cell missed, print a - on it
-        dash_text = get_font(markingSize, "Helvetica").render("-", True, Colours.YELLOW.value)
-        dash_rect = dash_text.get_rect(center=cell_center)
 
         # if display, draw unhit ships differently
         if display and self.ship is not None and self.is_hit == False:
@@ -119,7 +118,9 @@ class Cell:
             # draw the square yellow
             pygame.draw.rect(screen, Colours.GOLD.value, cell, 2)
             # draw the dash
-            screen.blit(dash_text, dash_rect)
+            Dash = pygame.Surface.convert_alpha(Dash_img)
+            Dash = pygame.transform.scale(Dash, (self.__width, self.__width))
+            screen.blit(Dash, self.get_cell_corner())
 
         # draw a cell that has been fired on hitting a ship
         else:
@@ -141,7 +142,9 @@ class Cell:
 
             pygame.draw.rect(screen, Colours.GOLD.value, cell, 2)
             # draw the X
-            screen.blit(x_text, x_rect)
+            X = pygame.Surface.convert_alpha(X_img)
+            X = pygame.transform.scale(X, (self.__width, self.__width))
+            screen.blit(X, self.get_cell_corner())
 
     def draw_selected_cell(self, screen):
         # Draw a special cell that has been selected
