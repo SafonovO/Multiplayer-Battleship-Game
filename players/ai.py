@@ -35,8 +35,6 @@ class EasyAI(AI):
         self.__size = self.board.get_size()
 
     def guess(self):
-        sleep(1)
-
         success = False
 
         while not success:

@@ -312,9 +312,9 @@ class GameManager:
         if self.turn != Turn.PLAYER_TWO:
             return
         if isinstance(self.__player2, AI):
+            await asyncio.sleep(1)
             x, y = self.__player2.guess()
             hit = self.validate_shot_new(self.__player1.board.get_cell(x, y))
-            await asyncio.sleep(0.5)
             if hit:
                 # if the cell is a hit, set last_hit to x, y
                 self.__player2.set_last_hit(x, y)

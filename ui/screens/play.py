@@ -1,3 +1,4 @@
+import asyncio
 import string
 import pygame
 from game_manager import AIDifficulty
@@ -6,6 +7,7 @@ from ui.elements import make_button, confirm_button_image, quit_button_image
 from ui.router import Screen
 from ui.sounds import click_sound
 from ui.text import Text
+from utilities import Turn
 
 
 class Play(Screen):
@@ -20,19 +22,21 @@ class Play(Screen):
 
         opponent_board_label = Text("OPPONENT'S BOARD", (425, 100), 30, Colours.WHITE)
         my_board_label = Text("MY BOARD", (1000, 325), 30, Colours.WHITE)
+        self.turn_text = Text("", (1000, 100), 30, Colours.GOLD)
         select_text = Text("YOU HAVE SELECTED:", (1000, 150), 15, Colours.WHITE)
         self.coord_text = Text("", (1000, 200), 15, Colours.WHITE)
 
         self.fire_button = make_button(1000, 250, "FIRE", 20, image=confirm_button_image)
         self.quit_button = make_button(1000, 25, "QUIT", 20, image=quit_button_image)
 
-        self.text_array = [opponent_board_label, my_board_label, select_text, self.coord_text]
+        self.text_array = [opponent_board_label, my_board_label, self.turn_text, select_text, self.coord_text]
         self.button_array = [self.quit_button, self.fire_button]
 
     async def render(self, mouse, router, manager):
         if manager.client != None and manager.client.error != None:
             return router.navigate_to("error")
         manager.update_boards()
+        self.turn_text.value = "Your Turn" if manager.turn == Turn.PLAYER_ONE else "Opponent's Turn"
         if manager.game_over:
             return router.navigate_to("endgame")
         if manager.get_active_cell() != None:
@@ -48,7 +52,7 @@ class Play(Screen):
             self.coord_text.value = f"({string.ascii_uppercase[cell_coords[0]]}, {cell_coords[1] + 1})"
         if self.change_turn and manager.ai_game:
             self.change_turn = False
-            await manager.change_turn()
+            asyncio.create_task(manager.change_turn())
 
     def handle_event(self, event, mouse, router, manager):
         if event.type == pygame.MOUSEBUTTONDOWN:
