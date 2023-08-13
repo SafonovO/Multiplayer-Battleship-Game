@@ -16,7 +16,7 @@ class Placement(Screen):
 
         placement_board_label = Text("Board Setup", (425, 100), 30, Colours.WHITE)
         self.confirm_button = make_button(1000, 225, "Place", 20, image=confirm_button_image)
-        self.random_button = make_button(1000, 300, "Random", 20, image=confirm_button_image)
+        self.random_button = make_button(1000, 300, "Randomize", 20, image=confirm_button_image)
         self.quit_button = make_button(1000, 25, "QUIT", 20, image=quit_button_image)
         self.rotate_button = make_button(1000, 150, "Rotate", 20, image=confirm_button_image)
         self.ships_left_label = Text(
