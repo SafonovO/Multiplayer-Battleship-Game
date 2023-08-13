@@ -86,11 +86,11 @@ class Cell:
         cell_center = self.get_cell_center()
 
         # If cell is a hit ship, print an X on it
-        x_text = get_font(markingSize, "Helvetica").render("X", True, Colours.RED.value)
+        x_text = get_font(markingSize, "Helvetica").render("X", True, Colours.DARK_RED.value)
         x_rect = x_text.get_rect(center=cell_center)
 
         # if cell missed, print a - on it
-        dash_text = get_font(markingSize, "Helvetica").render("-", True, "Yellow")
+        dash_text = get_font(markingSize, "Helvetica").render("-", True, Colours.YELLOW.value)
         dash_rect = dash_text.get_rect(center=cell_center)
 
         # if display, draw unhit ships differently

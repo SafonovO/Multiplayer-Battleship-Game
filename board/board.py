@@ -7,7 +7,7 @@ from board.board_factory import BoardFactory
 from ui.fonts import get_font
 
 sea = pygame.image.load("assets/Sea.png")
-sea.set_alpha(180)
+sea.set_alpha(170)
 class Board:
     # number of ships on the board
     __nships = 0
