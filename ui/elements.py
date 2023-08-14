@@ -11,6 +11,10 @@ confirm_button_greyed = pygame.image.load("assets/ConfirmButtonGreyed.png")
 confirm_button_select = pygame.image.load("assets/ConfirmSelected.png")
 back_button_image = pygame.image.load("assets/back_arrow.png")
 hovered_back = pygame.image.load("assets/back_arrow_hover.png")
+volume_image = pygame.image.load("assets/volume.png")
+hovered_volume = pygame.image.load("assets/volume_hover.png")
+plus_button_image = pygame.image.load("assets/plus.png")
+minus_button_image = pygame.image.load("assets/minus.png")
 
 
 def make_button(x, y, text, font_size, reactive=False, image=base_button_image,
@@ -28,3 +32,5 @@ def make_back_button():
     return make_button(175, 115, "", 75, reactive=True, image=back_button_image, 
                        hovered_image=hovered_back)
 
+def make_volume_button():
+    return make_button(1250, 40, "", 0, reactive=True, image=volume_image, hovered_image=hovered_volume)

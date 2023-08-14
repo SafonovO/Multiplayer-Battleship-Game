@@ -1,7 +1,7 @@
 import asyncio
 from enum import Enum
 from client import Client
-from game_config import DEFAULT_SIZE
+from game_config import DEFAULT_SIZE, DEFAULT_VOLUME, MAX_VOLUME, MIN_VOLUME
 from players.opponent import Opponent
 from players.player import Player
 from players.ai import EasyAI, AI, HardAI, MedAI
@@ -38,8 +38,6 @@ class GameManager:
 
     client = None
     won = False
-    board_size = DEFAULT_SIZE
-    num_ships = DEFAULT_SIZE
 
     # singleton class
     def __new__(cls):
@@ -96,10 +94,31 @@ class GameManager:
                 print("Invalid AI Difficulty")
         self.active_cell = None
 
-    def reset(self):
+    def reset(self, init=False):
         self.board_size = DEFAULT_SIZE
         self.num_ships = DEFAULT_SIZE
         self.ai_difficulty = None
+        if init:
+            self.volumes = {}
+            self.volumes["bg"] = DEFAULT_VOLUME
+            self.volumes["sfx"] = DEFAULT_VOLUME
+            self.volumes["click"] = DEFAULT_VOLUME
+
+    def change_volume(self, type, increase=True, mute=False):
+        if mute:
+            self.volumes[type] = 0
+        elif increase:
+            self.volumes[type] = min(self.volumes[type]+1, MAX_VOLUME)
+        else:
+            self.volumes[type] = max(self.volumes[type]-1, MIN_VOLUME)
+        pygame.mixer.music.set_volume(self.volumes["bg"] * 0.1)
+        hit_sound.set_volume(self.volumes["sfx"] * 0.1)
+        miss_sound.set_volume(self.volumes["sfx"] * 0.1)
+        fire_sound.set_volume(self.volumes["sfx"] * 0.1)
+        click_sound.set_volume(self.volumes["click"] * 0.1)
+
+    def get_volume(self, type):
+        return self.volumes[type]
 
     def set_size(self, size):
         self.board_size = size

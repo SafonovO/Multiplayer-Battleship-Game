@@ -2,7 +2,7 @@ import string
 import pygame
 from client import Stages
 from ui.colours import Colours
-from ui.elements import make_back_button, make_button
+from ui.elements import make_back_button, make_button, make_volume_button
 from ui.input import Input
 from ui.router import Screen
 from ui.sounds import click_sound
@@ -16,6 +16,7 @@ class OnlineJoin(Screen):
         self.code_input = Input(max_length=9)
 
         self.back_button = make_back_button()
+        self.volume_button = make_volume_button()
 
         join_title = Text("Join game", (650, 300), 50, Colours.GOLD)
         join_desc = Text("Enter an invite code to join a game", (650, 375), 30, Colours.WHITE)
@@ -25,7 +26,7 @@ class OnlineJoin(Screen):
         self.join_button = make_button(650, 550, "Join", 50, reactive=True)
 
         self.text_array = [join_title, join_desc, self.code_chars]
-        self.button_array = [self.back_button, self.join_button]
+        self.button_array = [self.back_button, self.volume_button, self.join_button]
 
     async def render(self, mouse, router, manager):
         if manager.client.stage == Stages.PLACEMENT:
@@ -46,6 +47,9 @@ class OnlineJoin(Screen):
                 click_sound.play()
                 manager.client.join_game(self.code_input.value)
                 return
+            if self.volume_button.is_hovered(mouse):
+                click_sound.play()
+                return router.navigate_to("volume")
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_BACKSPACE:
                 self.code_input.backspace()

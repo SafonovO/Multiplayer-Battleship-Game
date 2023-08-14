@@ -10,3 +10,4 @@ from ui.screens.placement import Placement
 from ui.screens.play import Play
 from ui.screens.select_opponent import SelectOpponent
 from ui.screens.size import Size
+from ui.screens.volume import Volume
