@@ -17,12 +17,12 @@ class Endgame(Screen):
             Colours.GOLD,
         )
 
-        self.quit_button = make_button(650, 600, "QUIT", 75, reactive=True)
+        self.main_menu_button = make_button(650, 600, "Main Menu", 75, reactive=True)
 
         self.text_array = [endgame_title]
-        self.button_array = [self.quit_button]
+        self.button_array = [self.main_menu_button]
 
     def handle_event(self, event, mouse, router, manager):
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if self.quit_button.is_hovered(mouse):
-                router.quit_game()
+            if self.main_menu_button.is_hovered(mouse):
+                router.navigate_to("main_menu")
