@@ -93,12 +93,12 @@ class Board:
     def place_ships(self, num_ships=None):
         """
         Place each ship in a random, legal position
+        num_ships is number of ships left to place
         """
         if num_ships is None:
             num_ships = self.__nships
-        starting_index = self.__nships - num_ships
-        for i in range(num_ships):
-            current_ship = self.__ships[starting_index + i]
+        for i in range(1, num_ships + 1):
+            current_ship = self.__ships[-(self.__nships - num_ships + i)]
 
             occupied = False
 
@@ -153,12 +153,12 @@ class Board:
 
                 # place ships if possible
                 if not conflict:
-                    for i, c in enumerate(cells):
+                    for index, c in enumerate(cells):
                         if c[0] < self.__size and c[1] < self.__size:
                             cell = self.__cells[c[0]][c[1]]
                             if cell.ship == None:
                                 cell.set_ship(current_ship)
-                                cell.set_index(i)
+                                cell.set_index(index)
                                 occupied = True
                                 # print("Place a size "+ str(current_ship.get_size()) + " ship on coords " + str(c[0]) + "," + str(c[1]))
 
