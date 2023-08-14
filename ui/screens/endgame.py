@@ -3,6 +3,7 @@ from ui.colours import Colours
 from ui.elements import make_button
 from ui.router import Screen
 from ui.text import Text
+from ui.sounds import click_sound
 
 
 class Endgame(Screen):
@@ -25,4 +26,5 @@ class Endgame(Screen):
     def handle_event(self, event, mouse, router, manager):
         if event.type == pygame.MOUSEBUTTONDOWN:
             if self.main_menu_button.is_hovered(mouse):
+                click_sound.play()
                 router.navigate_to("main_menu")
