@@ -2,7 +2,7 @@ from game_config import DEFAULT_SIZE, START_SIZE
 import pygame
 from game_manager import AIDifficulty
 from ui.colours import Colours
-from ui.elements import make_button, confirm_button_image, confirm_button_select
+from ui.elements import make_back_button, make_button, confirm_button_image, confirm_button_select
 from ui.router import Screen
 from ui.sounds import click_sound
 from ui.text import Text
@@ -15,42 +15,42 @@ class Size(Screen):
 
         size_text = Text("Board Size", (650, 100), 40, Colours.GOLD)
         self.x4_button = make_button(
-            300, 175, "4x4", 20, image=confirm_button_image)
+            350, 175, "4x4", 20, image=confirm_button_image)
         self.x5_button = make_button(
             650, 175, "5x5", 20, image=confirm_button_image)
         self.x6_button = make_button(
-            1000, 175, "6x6", 20, image=confirm_button_image)
+            950, 175, "6x6", 20, image=confirm_button_image)
         self.x7_button = make_button(
-            300, 250, "7x7", 20, image=confirm_button_image)
+            350, 250, "7x7", 20, image=confirm_button_image)
         self.x8_button = make_button(
             650, 250, "8x8", 20, image=confirm_button_image)
         self.x9_button = make_button(
-            1000, 250, "9x9", 20, image=confirm_button_image)
+            950, 250, "9x9", 20, image=confirm_button_image)
 
         ships_text = Text("Number of Ships", (650, 350), 40, Colours.GOLD)
         self.ships4_button = make_button(
-            300, 425, "4", 20, image=confirm_button_image)
+            350, 425, "4", 20, image=confirm_button_image)
         self.ships5_button = make_button(
             650, 425, "5", 20, image=confirm_button_image)
         self.ships6_button = make_button(
-            1000, 425, "6", 20, image=confirm_button_image)
+            950, 425, "6", 20, image=confirm_button_image)
         self.ships7_button = make_button(
-            300, 500, "7", 20, image=confirm_button_image)
+            350, 500, "7", 20, image=confirm_button_image)
         self.ships8_button = make_button(
             650, 500, "8", 20, image=confirm_button_image)
         self.ships9_button = make_button(
-            1000, 500, "9", 20, image=confirm_button_image)
+            950, 500, "9", 20, image=confirm_button_image)
 
         self.incompatible_text = Text("", (650, 565), 20, Colours.RED)
-        self.next_button = make_button(900, 650, "Next", 75, reactive=True)
-        self.quit_button = make_button(400, 650, "Cancel", 75, reactive=True)
+        self.next_button = make_button(650, 650, "Next", 75, reactive=True)
+        self.back_button = make_back_button()
 
         self.ship_buttons = [self.ships4_button, self.ships5_button, self.ships6_button,
                              self.ships7_button, self.ships8_button, self.ships9_button]
         self.size_buttons = [self.x4_button, self.x5_button, self.x6_button, self.x7_button,
                              self.x8_button, self.x9_button]
         self.button_array = [
-            self.quit_button, self.next_button] + self.ship_buttons + self.size_buttons
+            self.back_button, self.next_button] + self.ship_buttons + self.size_buttons
         self.text_array = [size_text, ships_text, self.incompatible_text]
 
         self.ship_buttons[DEFAULT_SIZE -
@@ -74,7 +74,11 @@ class Size(Screen):
                         button) + START_SIZE
             for button in self.size_buttons:
                 if button.is_hovered(mouse):
+                    if not self.check_compatible(manager.num_ships, self.size_buttons.index(button) + START_SIZE):
+                        self.incompatible_text.value = "Too small of a board size for the selected number of ships!"
+                        break
                     click_sound.play()
+                    self.incompatible_text.value = ""
                     self.size_buttons[manager.board_size -
                                       START_SIZE].set_image(confirm_button_image)
                     button.set_image(confirm_button_select)
@@ -88,7 +92,7 @@ class Size(Screen):
                 else:
                     manager.create_online_game(True)
                     return router.navigate_to("online_create_pending")
-            if self.quit_button.is_hovered(mouse):
+            if self.back_button.is_hovered(mouse):
                 click_sound.play()
                 manager.num_ships = DEFAULT_SIZE
                 manager.board_size = DEFAULT_SIZE
