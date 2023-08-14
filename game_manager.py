@@ -9,7 +9,7 @@ from players.ai import EasyAI, AI, HardAI, MedAI
 import pygame
 from pygame.locals import *
 from ships.normal_ship import NormalShip
-from ui.sounds import miss_sound, hit_sound, click_sound
+from ui.sounds import miss_sound, hit_sound, click_sound, fire_sound
 from utilities import Turn
 
 
@@ -363,6 +363,7 @@ class GameManager:
             return False
         if isinstance(self.__player2, Opponent) and self.client:
             self.client.set_guess(self.active_cell)
+        fire_sound.play()
         self.validate_shot_new(self.active_cell)
         self.active_cell = None
         return True
@@ -378,7 +379,7 @@ class GameManager:
             hit_sound.play()
             return True
         else:
-            miss_sound.play(0, 2000)
+            miss_sound.play(0)
             return False
 
     async def validate_shot(self, active_cell):
