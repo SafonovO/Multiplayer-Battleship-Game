@@ -6,7 +6,8 @@ import string
 from board.board_factory import BoardFactory
 from ui.fonts import get_font
 
-
+sea = pygame.image.load("assets/Sea.png")
+sea.set_alpha(170)
 class Board:
     # number of ships on the board
     __nships = 0
@@ -120,7 +121,7 @@ class Board:
                     - it exceeds the boundaries of the board
                     - the cell already contains a ship
                 """
-
+                current_ship.vertical = True
                 conflict = False
                 cells: list[tuple[int, int]] = []
                 for j in range(current_ship.get_size()):
@@ -135,6 +136,7 @@ class Board:
                         conflict = True
 
                 if conflict:
+                    current_ship.vertical = False
                     # If there are conflicts, explore in the other direction
                     conflict = False
                     cells = []
@@ -151,11 +153,12 @@ class Board:
 
                 # place ships if possible
                 if not conflict:
-                    for c in cells:
+                    for i, c in enumerate(cells):
                         if c[0] < self.__size and c[1] < self.__size:
                             cell = self.__cells[c[0]][c[1]]
                             if cell.ship == None:
-                                cell.ship = current_ship
+                                cell.set_ship(current_ship)
+                                cell.set_index(i)
                                 occupied = True
                                 # print("Place a size "+ str(current_ship.get_size()) + " ship on coords " + str(c[0]) + "," + str(c[1]))
 
@@ -184,10 +187,11 @@ class Board:
         """
         x_0 = self.__coordinates[0]
         y_0 = self.__coordinates[1]
-
+        sea_bg = pygame.Surface.convert_alpha(sea)
+        sea_bg = pygame.transform.scale(sea_bg, (self.__width, self.__width))
+        screen.blit(sea_bg, (x_0, y_0))
         # draw the board labels
         self.draw_labels(screen)
-
         for i in range(self.__size):
             for j in range(self.__size):
                 """
@@ -201,6 +205,7 @@ class Board:
                 cell = self.__cells[i][j]
 
                 cell.draw_cell(screen, self.__display)
+
 
     def draw_labels(self, screen: pygame.Surface):
         """

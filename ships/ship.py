@@ -1,4 +1,5 @@
 class Ship:
+    vertical: bool
     # getter for ship size
     def get_size(self) -> int:
         return 0
@@ -18,5 +19,8 @@ class Ship:
         pass
 
     # determine if this ship is sunk
-    def sunk(self):
+    def sunk(self) -> bool:
+        pass
+
+    def set_orientation(self, vertical: bool) -> None:
         pass

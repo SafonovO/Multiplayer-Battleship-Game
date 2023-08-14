@@ -65,7 +65,10 @@ async def main():
     )
     router.navigate_to("main_menu")
 
-    loop.add_signal_handler(signal.SIGINT, router.quit_game)
+    try:
+        loop.add_signal_handler(signal.SIGTERM, loop.stop)
+    except NotImplementedError:
+        pass  # Ignore if not implemented. Means this program is running in windows.
 
     try:
         asyncio.create_task(game_loop(stop, router))
@@ -74,7 +77,10 @@ async def main():
             asyncio.create_task(manager.start_client(stop))
             await stop
     finally:
-        loop.remove_signal_handler(signal.SIGINT)
+        try:
+            loop.remove_signal_handler(signal.SIGTERM)
+        except NotImplementedError:
+            pass  # Ignore if not implemented. Means this program is running in windows.
 
 
 if __name__ == "__main__":

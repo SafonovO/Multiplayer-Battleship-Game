@@ -236,7 +236,10 @@ async def main():
 
     loop = asyncio.get_running_loop()
     stop = loop.create_future()
-    loop.add_signal_handler(signal.SIGINT, stop.set_result, None)
+    try:
+        loop.add_signal_handler(signal.SIGTERM, loop.stop)
+    except NotImplementedError:
+        pass  # Ignore if not implemented. Means this program is running in windows.
 
     async with websockets.server.serve(server.handler, ADDRESS, PORT, ping_interval=None):
         await stop  # run forever
