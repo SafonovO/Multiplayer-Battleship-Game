@@ -104,9 +104,11 @@ class GameManager:
             self.volumes["sfx"] = DEFAULT_VOLUME
             self.volumes["click"] = DEFAULT_VOLUME
 
-    def change_volume(self, type, increase=True, mute=False):
+    def change_volume(self, type, increase=True, mute=False, unmute=False):
         if mute:
             self.volumes[type] = 0
+        elif unmute:
+            self.volumes[type] = DEFAULT_VOLUME
         elif increase:
             self.volumes[type] = min(self.volumes[type]+1, MAX_VOLUME)
         else:

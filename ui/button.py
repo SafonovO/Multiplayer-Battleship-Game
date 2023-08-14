@@ -42,13 +42,11 @@ class ButtonDecorator(Button):
 
 
 class TextButton(ButtonDecorator):
-    __text = ""
-    __font = None
 
     def __init__(self, button: Button, text: str, font: pygame.font.Font) -> None:
         super().__init__(button)
-        self.text = text
-        self.font = font
+        self.__text = text
+        self.__font = font
 
     def set_image(self, image):
         self.button.image = image
@@ -57,8 +55,7 @@ class TextButton(ButtonDecorator):
     def text(self):
         return self.__text
 
-    @text.setter
-    def text(self, value: str):
+    def set_text(self, value: str):
         self.__text = value
 
     @property
@@ -66,13 +63,13 @@ class TextButton(ButtonDecorator):
         return self.__font
 
     @font.setter
-    def font(self, value: pygame.font.Font):
+    def set_font(self, value: pygame.font.Font):
         self.__font = value
-        self._rendered_text: pygame.Surface = self.font.render(self.text, True, "White")
-        self._text_rect = self._rendered_text.get_rect(center=self.button.pos)
 
     def render(self, screen: pygame.Surface, mouse_position: tuple[int, int]):
         self.button.render(screen, mouse_position)
+        self._rendered_text: pygame.Surface = self.__font.render(self.__text, True, "White")
+        self._text_rect = self._rendered_text.get_rect(center=self.button.pos)
         screen.blit(self._rendered_text, self._text_rect)
 
 
