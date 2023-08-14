@@ -9,7 +9,7 @@ from players.ai import EasyAI, AI, HardAI, MedAI
 import pygame
 from pygame.locals import *
 from ships.normal_ship import NormalShip
-from ui.sounds import miss_sound, hit_sound, click_sound, fire_sound
+from ui.sounds import miss_sound, hit_sound, click_sound
 from utilities import Turn
 
 
@@ -361,8 +361,6 @@ class GameManager:
         """
         if not self.active_cell or self.turn != Turn.PLAYER_ONE:
             return False
-        click_sound.play()
-        fire_sound.play()
         if isinstance(self.__player2, Opponent) and self.client:
             self.client.set_guess(self.active_cell)
         self.validate_shot_new(self.active_cell)
