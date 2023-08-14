@@ -161,7 +161,7 @@ class GameManager:
 
         The parameter vertical tells us the orientation of the ship
         """
-        s = self.__player1.board.get_ship(-num_left)
+        s = self.__player1.board.get_ship(num_left - self.num_ships - 1)
 
         cells = []
 
@@ -251,7 +251,7 @@ class GameManager:
         NEW PARAMETER: vertical=True indiccates that this
         ship should be placed vertically. Set the cells as such
         """
-        s = self.__player1.board.get_ship(-num_left)
+        s = self.__player1.board.get_ship(num_left - self.num_ships - 1)
         s.set_orientation(vertical)
 
         cells = []
