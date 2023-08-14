@@ -361,10 +361,10 @@ class GameManager:
         """
         if not self.active_cell or self.turn != Turn.PLAYER_ONE:
             return False
-        click_sound.play()
         fire_sound.play()
         if isinstance(self.__player2, Opponent) and self.client:
             self.client.set_guess(self.active_cell)
+        
         self.validate_shot_new(self.active_cell)
         self.active_cell = None
         return True
@@ -380,7 +380,7 @@ class GameManager:
             hit_sound.play()
             return True
         else:
-            miss_sound.play(0, 2000)
+            miss_sound.play(0)
             return False
 
     async def validate_shot(self, active_cell):

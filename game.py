@@ -25,7 +25,7 @@ pygame.init()
 pygame.display.set_caption("Battleship")
 
 pygame.mixer.init()
-pygame.mixer.music.load("assets/sounds/bg.ogg")
+pygame.mixer.music.load("assets/sounds/Bgmusic.wav")
 
 
 async def game_loop(stop: asyncio.Future, router: Router):

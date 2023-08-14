@@ -1,6 +1,6 @@
 import pygame
 pygame.mixer.init()
-miss_sound = pygame.mixer.Sound("assets/sounds/miss.ogg")
-hit_sound = pygame.mixer.Sound("assets/sounds/hit.ogg")
-click_sound = pygame.mixer.Sound("assets/sounds/ui-click.ogg")
-fire_sound = pygame.mixer.Sound("assets/sounds/fire.ogg")
+miss_sound = pygame.mixer.Sound("assets/sounds/miss.wav")
+hit_sound = pygame.mixer.Sound("assets/sounds/hit.wav")
+click_sound = pygame.mixer.Sound("assets/sounds/ui-click.wav")
+fire_sound = pygame.mixer.Sound("assets/sounds/fire.wav")
