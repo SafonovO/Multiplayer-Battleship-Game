@@ -15,7 +15,10 @@ volume_image = pygame.image.load("assets/volume.png")
 hovered_volume = pygame.image.load("assets/volume_hover.png")
 plus_button_image = pygame.image.load("assets/plus.png")
 minus_button_image = pygame.image.load("assets/minus.png")
-
+help_button_image = pygame.image.load("assets/help.png")
+help_button_hover = pygame.image.load("assets/help_hover.png")
+small_x_image = pygame.image.load("assets/x_small.png")
+small_dash_image = pygame.image.load("assets/dash_small.png")
 
 def make_button(x, y, text, font_size, reactive=False, image=base_button_image,
                 hovered_image=hovered_button_image):
@@ -34,3 +37,6 @@ def make_back_button():
 
 def make_volume_button():
     return make_button(1250, 40, "", 0, reactive=True, image=volume_image, hovered_image=hovered_volume)
+
+def make_help_button():
+    return make_button(1250, 125, "", 0, reactive=True, image=help_button_image, hovered_image=help_button_hover)
