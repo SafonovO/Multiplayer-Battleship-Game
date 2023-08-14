@@ -18,8 +18,9 @@ class AIDifficulty(Enum):
     MEDIUM = 1
     HARD = 2
 
+SCREEN_SIZE = (1300, 800)
 
-SCREEN = pygame.display.set_mode((1300, 800))
+SCREEN = pygame.display.set_mode(SCREEN_SIZE)
 
 
 class GameManager:
