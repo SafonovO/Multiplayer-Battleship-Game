@@ -9,14 +9,22 @@ quit_button_image = pygame.image.load("assets/quit.png")
 confirm_button_image = pygame.image.load("assets/ConfirmButton.png")
 confirm_button_greyed = pygame.image.load("assets/ConfirmButtonGreyed.png")
 confirm_button_select = pygame.image.load("assets/ConfirmSelected.png")
+back_button_image = pygame.image.load("assets/back_arrow.png")
+hovered_back = pygame.image.load("assets/back_arrow_hover.png")
 
 
-def make_button(x, y, text, font_size, reactive=False, image=base_button_image):
+def make_button(x, y, text, font_size, reactive=False, image=base_button_image,
+                hovered_image=hovered_button_image):
     button = Button(image=image, pos=(x, y))
     if reactive:
         button = ReactiveButton(
             button,
-            hover_surface=hovered_button_image,
-            active_surface=hovered_button_image,
+            hover_surface=hovered_image,
+            active_surface=hovered_image,
         )
     return TextButton(button, text=text, font=get_font(font_size))
+
+def make_back_button():
+    return make_button(175, 115, "", 75, reactive=True, image=back_button_image, 
+                       hovered_image=hovered_back)
+
