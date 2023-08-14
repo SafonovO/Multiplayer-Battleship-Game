@@ -70,7 +70,7 @@ class Play(Screen):
 
                 # if we hit confirm, fire with the manager
                 if self.fire_button.is_hovered(mouse):
-                    if manager.active_cell != None:
+                    if manager.active_cell is not None:
                         self.change_turn = manager.fire_shot()
                         self.coord_text.value = ""
                         if manager.game_over:

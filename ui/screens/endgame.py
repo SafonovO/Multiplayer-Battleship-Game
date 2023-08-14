@@ -14,7 +14,7 @@ class Endgame(Screen):
         endgame_title = Text(
             "Congratulations, you won!" if manager.won else "You lost, try again..",
             (650, 150),
-            100,
+            80,
             Colours.GOLD,
         )
 
