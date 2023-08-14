@@ -43,8 +43,8 @@ async def main():
 
     manager = GameManager()
     manager.reset(init=True)
-    manager.bg_music = pygame.mixer.init()
-    pygame.mixer.music.load("assets/sounds/bg.ogg")
+    pygame.mixer.init()
+    pygame.mixer.music.load("assets/sounds/Bgmusic.wav")
     pygame.mixer.music.play(-1)
 
     router = Router(
