@@ -361,9 +361,10 @@ class GameManager:
         """
         if not self.active_cell or self.turn != Turn.PLAYER_ONE:
             return False
+        fire_sound.play()
         if isinstance(self.__player2, Opponent) and self.client:
             self.client.set_guess(self.active_cell)
-        fire_sound.play()
+        
         self.validate_shot_new(self.active_cell)
         self.active_cell = None
         return True
