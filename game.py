@@ -17,15 +17,13 @@ from ui.screens.all import (
     Play,
     SelectOpponent,
     Size,
+    Volume,
 )
 
 MAX_FRAME_RATE = 80
 
 pygame.init()
 pygame.display.set_caption("Battleship")
-
-pygame.mixer.init()
-pygame.mixer.music.load("assets/sounds/bg.ogg")
 
 
 async def game_loop(stop: asyncio.Future, router: Router):
@@ -44,6 +42,11 @@ async def main():
     stop = loop.create_future()
 
     manager = GameManager()
+    manager.reset(init=True)
+    manager.bg_music = pygame.mixer.init()
+    pygame.mixer.music.load("assets/sounds/bg.ogg")
+    pygame.mixer.music.play(-1)
+
     router = Router(
         manager,
         start_client,
@@ -61,6 +64,7 @@ async def main():
             "endgame": Endgame,
             "error": Error,
             "size": Size,
+            "volume": Volume,
         },
     )
     router.navigate_to("main_menu")
@@ -84,5 +88,4 @@ async def main():
 
 
 if __name__ == "__main__":
-    pygame.mixer.music.play(-1)
     asyncio.run(main())
