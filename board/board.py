@@ -271,6 +271,7 @@ class Board:
             or row >= self.__size
             or column >= self.__size
             or self.__cells[column][row].is_hit
+            or self.__cells[column][row].is_guessed
         ):
             return None
 

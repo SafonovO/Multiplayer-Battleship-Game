@@ -37,8 +37,8 @@ class Cell:
         self.foreign = foreign
         self.__width = width
         self.__location = location
-        self.__bigMarkingSize = int(width)
-        self.__smallMarkingSize = int(width/1.1)
+        self.__bigMarkingSize = int(width/1.2)
+        self.__smallMarkingSize = int(width/1.2)
 
     def set_ship(self, ship: Ship):
         self.ship = ship
@@ -87,9 +87,6 @@ class Cell:
         # Get the center of the cell
         cell_center = self.get_cell_center()
 
-        # If cell is a hit ship, print an X on it
-        x_text = get_font(markingSize, "Helvetica").render("X", True, Colours.RED.value)
-        x_rect = x_text.get_rect(center=cell_center)
 
 
         # if display, draw unhit ships differently
@@ -157,11 +154,11 @@ class Cell:
         cell_center = self.get_cell_center()
 
         # Draw teh cell in green
-        pygame.draw.rect(screen, "Green", cell)
+        pygame.draw.rect(screen, "Green", cell,int(self.__width/10))
 
         # Draw its marking
-        question_text = get_font(self.__bigMarkingSize, "Helvetica").render("?", True, "Black")
-        question_rect = question_text.get_rect(center=cell_center)
+        question_text = get_font(self.__bigMarkingSize, "Helvetica").render("?", True, "Green")
+        question_rect = question_text.get_rect(center=(cell_center[0],cell_center[1]+int(self.__width/12)))
         screen.blit(question_text, question_rect)
 
     def draw_cell_color(self, screen, color):
@@ -175,8 +172,11 @@ class Cell:
         # Get the center of the cell
         cell_center = self.get_cell_center()
 
-        # Draw teh cell in green
-        pygame.draw.rect(screen, color, cell)
+        pygame.draw.rect(screen, color, cell, int(self.__width / 10))
+
+        question_text = get_font(self.__bigMarkingSize, "Helvetica").render("?", True, color)
+        question_rect = question_text.get_rect(center=(cell_center[0], cell_center[1] + int(self.__width / 12)))
+        screen.blit(question_text, question_rect)
 
     def get_cell_center(self):
         return (
