@@ -1,4 +1,3 @@
-from game_config import MAX_VOLUME, MIN_VOLUME
 import pygame
 from ui.colours import Colours
 from ui.elements import (
