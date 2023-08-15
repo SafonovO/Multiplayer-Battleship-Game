@@ -1,5 +1,5 @@
 import pygame
-from ui.elements import make_back_button, make_button, make_volume_button
+from ui.elements import make_back_button, make_button, make_settings_button
 from ui.router import Screen
 from ui.sounds import click_sound
 
@@ -13,7 +13,7 @@ class OnlineGameOptions(Screen):
         self.create_button = make_button(650, 150, "Create Game", 50, reactive=True)
         self.join_button = make_button(650, 350, "Join Game", 50, reactive=True)
         self.back_button = make_back_button()
-        self.volume_button = make_volume_button()
+        self.volume_button = make_settings_button()
 
         self.button_array = [self.back_button, 
                              self.volume_button, 

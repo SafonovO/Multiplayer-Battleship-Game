@@ -2,7 +2,7 @@ from game_config import DEFAULT_SIZE, START_SIZE
 import pygame
 from game_manager import AIDifficulty
 from ui.colours import Colours
-from ui.elements import make_back_button, make_button, confirm_button_image, confirm_button_select, make_volume_button
+from ui.elements import make_back_button, make_button, confirm_button_image, confirm_button_select, make_settings_button
 from ui.router import Screen
 from ui.sounds import click_sound
 from ui.text import Text
@@ -44,7 +44,7 @@ class Size(Screen):
         self.incompatible_text = Text("", (650, 565), 20, Colours.RED)
         self.next_button = make_button(650, 650, "Next", 75, reactive=True)
         self.back_button = make_back_button()
-        self.volume_button = make_volume_button()
+        self.volume_button = make_settings_button()
 
         self.ship_buttons = [self.ships4_button,
                              self.ships5_button,

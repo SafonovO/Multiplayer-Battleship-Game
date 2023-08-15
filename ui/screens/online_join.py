@@ -2,7 +2,7 @@ import string
 import pygame
 from client import Stages
 from ui.colours import Colours
-from ui.elements import make_back_button, make_button, make_volume_button
+from ui.elements import make_back_button, make_button, make_settings_button
 from ui.input import Input
 from ui.router import Screen
 from ui.sounds import click_sound
@@ -16,7 +16,7 @@ class OnlineJoin(Screen):
         self.code_input = Input(max_length=9)
 
         self.back_button = make_back_button()
-        self.volume_button = make_volume_button()
+        self.volume_button = make_settings_button()
 
         join_title = Text("Join game", (650, 300), 50, Colours.GOLD)
         join_desc = Text("Enter an invite code to join a game", (650, 375), 30, Colours.WHITE)

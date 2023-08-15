@@ -11,4 +11,4 @@ from ui.screens.play import Play
 from ui.screens.play_help import PlayHelp
 from ui.screens.select_opponent import SelectOpponent
 from ui.screens.size import Size
-from ui.screens.volume import Volume
+from ui.screens.settings import Settings
