@@ -43,4 +43,5 @@ class OnlineCreatePending(Screen):
                 return router.navigate_to("volume")
             if self.back_button.is_hovered(mouse):
                 click_sound.play()
+                manager.client.stage = Stages.WAITING_FOR_CODE
                 return router.navigate_back()
