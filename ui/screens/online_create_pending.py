@@ -1,7 +1,7 @@
 import pygame
 from client import Stages
 from ui.colours import Colours
-from ui.elements import make_back_button, make_volume_button
+from ui.elements import make_back_button, make_settings_button
 from ui.router import Screen
 from ui.sounds import click_sound
 from ui.text import Text
@@ -12,7 +12,7 @@ class OnlineCreatePending(Screen):
         super().__init__(manager)
         self.draw_background = True
         self.back_button = make_back_button()
-        self.volume_button = make_volume_button()
+        self.volume_button = make_settings_button()
 
         waiting_title = Text("Waiting for opponent", (650, 300), 50, Colours.GOLD)
         waiting_text = Text(

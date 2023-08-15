@@ -1,7 +1,7 @@
 import pygame
 from client import Stages
 from ui.colours import Colours
-from ui.elements import make_back_button, make_button, make_volume_button
+from ui.elements import make_back_button, make_button, make_settings_button
 from ui.router import Screen
 from ui.text import Text
 from ui.sounds import click_sound
@@ -18,7 +18,7 @@ class Error(Screen):
             Colours.GOLD,
         )
         error_text = Text(manager.client.error, (650, 300), 50, Colours.WHITE)
-        self.volume_button = make_volume_button()
+        self.volume_button = make_settings_button()
 
         self.text_array = [error_title, error_text]
         if manager.client.error == "Invalid invite code":

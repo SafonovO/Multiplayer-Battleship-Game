@@ -1,6 +1,6 @@
 import pygame
 from ui.colours import Colours
-from ui.elements import make_button, confirm_button_image, make_volume_button, quit_button_image
+from ui.elements import make_button, confirm_button_image, make_settings_button, quit_button_image
 from ui.router import Screen
 from ui.sounds import click_sound
 from ui.text import Text
@@ -17,7 +17,7 @@ class Placement(Screen):
         self.confirm_button = make_button(1000, 225, "Place", 20, image=confirm_button_image)
         self.random_button = make_button(1000, 300, "Randomize", 20, image=confirm_button_image)
         self.quit_button = make_button(1000, 25, "QUIT", 20, image=quit_button_image)
-        self.volume_button = make_volume_button()
+        self.volume_button = make_settings_button()
         self.rotate_button = make_button(1000, 150, "Rotate", 20, image=confirm_button_image)
         self.ships_left_label = Text(
             f"Ships Left: {str(self.ships_left)}", (1000, 500), 30, Colours.WHITE

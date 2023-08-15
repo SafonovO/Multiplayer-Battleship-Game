@@ -3,7 +3,7 @@ import string
 import pygame
 from game_manager import AIDifficulty
 from ui.colours import Colours
-from ui.elements import make_button, confirm_button_image, make_help_button, make_volume_button, quit_button_image, confirm_button_greyed
+from ui.elements import make_button, confirm_button_image, make_help_button, make_settings_button, quit_button_image, confirm_button_greyed
 from ui.router import Screen
 from ui.sounds import click_sound
 from ui.text import Text
@@ -28,7 +28,7 @@ class Play(Screen):
 
         self.fire_button = make_button(1000, 250, "FIRE", 20, image=confirm_button_greyed)
         self.quit_button = make_button(1000, 25, "QUIT", 20, image=quit_button_image)
-        self.volume_button = make_volume_button()
+        self.volume_button = make_settings_button()
         self.help_button = make_help_button()
 
         self.text_array = [opponent_board_label, 

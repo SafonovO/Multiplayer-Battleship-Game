@@ -1,5 +1,5 @@
 import pygame
-from ui.elements import make_button, make_back_button, make_volume_button
+from ui.elements import make_button, make_back_button, make_settings_button
 from ui.router import Screen
 from ui.sounds import click_sound
 
@@ -11,7 +11,7 @@ class SelectOpponent(Screen):
         self.play_button_ai = make_button(650, 150, "Play vs. AI", 50, reactive=True)
         self.play_button_human = make_button(650, 350, "Play vs. Human", 50, reactive=True)
         self.back_button = make_back_button()
-        self.volume_button = make_volume_button()
+        self.volume_button = make_settings_button()
 
         self.button_array = [self.back_button, 
                              self.volume_button, 

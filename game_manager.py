@@ -100,6 +100,7 @@ class GameManager:
         self.num_ships = DEFAULT_SIZE
         self.ai_difficulty = None
         if init:
+            self.animations = True
             self.volumes = {}
             self.volumes["bg"] = DEFAULT_VOLUME
             self.volumes["sfx"] = DEFAULT_VOLUME
@@ -403,7 +404,7 @@ class GameManager:
         Checks if there was a ship in the active cell.
         If ship, returns True, False otherwise.
         """
-        if active_cell.hit():
+        if active_cell.hit(flash=self.animations):
             self.endgame()
             hit_sound.play()
             return True
@@ -417,7 +418,7 @@ class GameManager:
         Checks if there was a ship in the active cell.
         If ship, returns True, False otherwise.
         """
-        if active_cell.hit():
+        if active_cell.hit(flash=self.animations):
             await asyncio.sleep(0.3)
             self.endgame()
             hit_sound.play()

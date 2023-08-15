@@ -18,7 +18,7 @@ from ui.screens.all import (
     PlayHelp,
     SelectOpponent,
     Size,
-    Volume,
+    Settings,
 )
 
 MAX_FRAME_RATE = 80
@@ -66,7 +66,7 @@ async def main():
             "endgame": Endgame,
             "error": Error,
             "size": Size,
-            "volume": Volume,
+            "volume": Settings,
         },
     )
     router.navigate_to("main_menu")

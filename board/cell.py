@@ -50,14 +50,14 @@ class Cell:
     def set_index(self, index: int):
         self.index = index
 
-    def hit(self) -> bool:
+    def hit(self, flash) -> bool:
         self.is_guessed = True
 
         if self.ship == None:
             return False
 
         self.is_hit = True
-        self.flash = NUM_FLASHES
+        self.flash = NUM_FLASHES if flash else 0
         self.ship.hit()
 
         return True
