@@ -149,7 +149,7 @@ class Cell:
             Xi = pygame.Surface.convert_alpha(X_invert)
             Xi = pygame.transform.scale(Xi, (self.__width, self.__width))
 
-            if display and self.flash > 0:
+            if self.flash > 0:
                 if self.flash % 2 == 1:
                     screen.blit(Xi, self.get_cell_corner())
                 else:
