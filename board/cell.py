@@ -1,3 +1,5 @@
+from time import sleep
+from game_config import FLASH_DURATION, NUM_FLASHES
 import pygame
 
 from ui.colours import Colours
@@ -9,6 +11,7 @@ ship_head = pygame.image.load("assets/ships/ship_head.png")
 ship_middle = pygame.image.load("assets/ships/ship_middle.png")
 ship_tail = pygame.image.load("assets/ships/ship_tail.png")
 X_img = pygame.image.load("assets/X.png")
+X_invert = pygame.image.load("assets/Xinvert.png")
 Dash_img = pygame.image.load("assets/Dash.png")
 
 class Cell:
@@ -18,6 +21,7 @@ class Cell:
     is_hit: bool = False
     foreign: bool = False
     index: int = -1
+    flash: int = 0
 
     # for drawing purposes. the side length and location of the cell
     __width = 0
@@ -53,6 +57,7 @@ class Cell:
             return False
 
         self.is_hit = True
+        self.flash = NUM_FLASHES
         self.ship.hit()
 
         return True
@@ -141,7 +146,19 @@ class Cell:
             # draw the X
             X = pygame.Surface.convert_alpha(X_img)
             X = pygame.transform.scale(X, (self.__width, self.__width))
-            screen.blit(X, self.get_cell_corner())
+            Xi = pygame.Surface.convert_alpha(X_invert)
+            Xi = pygame.transform.scale(Xi, (self.__width, self.__width))
+
+            if display and self.flash > 0:
+                if self.flash % 2 == 1:
+                    screen.blit(Xi, self.get_cell_corner())
+                else:
+                    screen.blit(X, self.get_cell_corner())
+                sleep(FLASH_DURATION)
+                self.flash -= 1
+            else:
+                screen.blit(X, self.get_cell_corner())
+
 
     def draw_selected_cell(self, screen):
         # Draw a special cell that has been selected

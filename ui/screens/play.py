@@ -88,5 +88,3 @@ class Play(Screen):
                     if manager.active_cell is not None:
                         self.change_turn = manager.fire_shot()
                         self.coord_text.value = ""
-                        if manager.game_over:
-                            return router.navigate_to("endgame")
