@@ -1,3 +1,4 @@
+from game_config import MAX_VOLUME, MIN_VOLUME
 import pygame
 from ui.colours import Colours
 from ui.elements import make_back_button, make_button, plus_button_image, minus_button_image, quit_button_image
@@ -24,6 +25,8 @@ class Volume(Screen):
                             (675, 345), 40, Colours.WHITE)
         self.click_sound_val = Text(
             str(manager.get_volume("click")), (675, 445), 40, Colours.WHITE)
+        
+        self.error_text = Text("", (650, 550), 30, Colours.RED)
 
         self.bg_inc = make_button(750, 250, "", 0, image=plus_button_image)
         self.bg_dec = make_button(600, 250, "", 0, image=minus_button_image)
@@ -53,37 +56,54 @@ class Volume(Screen):
                            click_sound_text,
                            self.bg_music_val,
                            self.sfx_val,
-                           self.click_sound_val]
+                           self.click_sound_val,
+                           self.error_text]
 
     def handle_event(self, event, mouse, router, manager):
         def update_labels():
             self.bg_music_val.value = str(manager.get_volume("bg"))
             self.sfx_val.value = str(manager.get_volume("sfx"))
             self.click_sound_val.value = str(manager.get_volume("click"))
+            self.error_text.value = ""
+            mute_buttons = zip(self.mute_buttons, labels)
+            for button, label in mute_buttons:
+                if manager.volumes[label] == 0:
+                    button.set_text("UNMUTE")
+                else:
+                    button.set_text("MUTE")
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             labels = ["bg", "sfx", "click"]
             inc_buttons = zip(self.inc_buttons, labels)
             for button, label in inc_buttons:
                 if button.is_hovered(mouse):
-                    click_sound.play()
-                    manager.change_volume(label, increase=True)
-                    update_labels()
+                    if manager.volumes[label] != MAX_VOLUME:
+                        click_sound.play()
+                        manager.change_volume(label, increase=True)
+                        update_labels()
+                    else:
+                        self.error_text.value = f"Maximum volume is {MAX_VOLUME}"
                     return
 
             dec_buttons = zip(self.dec_buttons, labels)
             for button, label in dec_buttons:
                 if button.is_hovered(mouse):
-                    click_sound.play()
-                    manager.change_volume(label, increase=False)
-                    update_labels()
+                    if manager.volumes[label] != MIN_VOLUME:
+                        click_sound.play()
+                        manager.change_volume(label, increase=False)
+                        update_labels()
+                    else:
+                        self.error_text.value = f"Minimum volume is {MIN_VOLUME}"
                     return
 
             mute_buttons = zip(self.mute_buttons, labels)
             for button, label in mute_buttons:
                 if button.is_hovered(mouse):
                     click_sound.play()
-                    manager.change_volume(label, mute=True)
+                    if manager.volumes[label] != MIN_VOLUME:
+                        manager.change_volume(label, mute=True)
+                    else:
+                        manager.change_volume(label, unmute=True)
                     update_labels()
                     return
 

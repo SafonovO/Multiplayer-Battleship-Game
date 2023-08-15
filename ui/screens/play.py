@@ -3,7 +3,7 @@ import string
 import pygame
 from game_manager import AIDifficulty
 from ui.colours import Colours
-from ui.elements import make_button, confirm_button_image, make_volume_button, quit_button_image, confirm_button_greyed
+from ui.elements import make_button, confirm_button_image, make_help_button, make_volume_button, quit_button_image, confirm_button_greyed
 from ui.router import Screen
 from ui.sounds import click_sound
 from ui.text import Text
@@ -29,13 +29,17 @@ class Play(Screen):
         self.fire_button = make_button(1000, 250, "FIRE", 20, image=confirm_button_greyed)
         self.quit_button = make_button(1000, 25, "QUIT", 20, image=quit_button_image)
         self.volume_button = make_volume_button()
+        self.help_button = make_help_button()
 
         self.text_array = [opponent_board_label, 
                            my_board_label, 
                            self.turn_text, 
                            select_text, 
                            self.coord_text]
-        self.button_array = [self.quit_button, self.volume_button, self.fire_button]
+        self.button_array = [self.quit_button,
+                             self.volume_button,
+                             self.fire_button,
+                             self.help_button]
 
     async def render(self, mouse, router, manager):
         if manager.client != None and manager.client.error != None:
@@ -67,6 +71,9 @@ class Play(Screen):
 
     def handle_event(self, event, mouse, router, manager):
         if event.type == pygame.MOUSEBUTTONDOWN:
+            if self.help_button.is_hovered(mouse):
+                click_sound.play()
+                return router.navigate_to("play_help")
             if self.volume_button.is_hovered(mouse):
                 click_sound.play()
                 return router.navigate_to("volume")
@@ -81,5 +88,3 @@ class Play(Screen):
                     if manager.active_cell is not None:
                         self.change_turn = manager.fire_shot()
                         self.coord_text.value = ""
-                        if manager.game_over:
-                            return router.navigate_to("endgame")
